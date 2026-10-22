@@ -41,7 +41,7 @@ function themeVars(t, mode){
   };
 }
 function applyTheme(){
-  let id="earth", mode="dark";
+  let id="earth", mode="light";
   try{ id = localStorage.getItem("theme") || id; mode = localStorage.getItem("mode") || mode; }catch(e){}
   const t = THEMES.find(x=>x.id===id) || THEMES[0];
   const v = themeVars(t, mode), r = document.documentElement.style;
@@ -627,7 +627,7 @@ function fillSettings(){
   as.value = asrChoice;
 
   document.querySelectorAll(".seg button[data-fmt]").forEach(b=> b.setAttribute("aria-pressed", b.dataset.fmt === timeFmt ? "true" : "false"));
-  const mode = store.get("mode","dark"), theme = store.get("theme","earth");
+  const mode = store.get("mode","light"), theme = store.get("theme","earth");
   document.querySelectorAll(".seg button[data-mode]").forEach(b=> b.setAttribute("aria-pressed", b.dataset.mode === mode ? "true" : "false"));
   const sw = document.getElementById("swatches"); sw.innerHTML = "";
   THEMES.forEach((th,i)=>{
