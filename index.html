@@ -156,6 +156,9 @@ applyTheme();
   .seg button[data-fmt]{font-family:'Noto Sans',sans-serif;direction:ltr}
   .seg button[aria-pressed=true]{background:var(--green);color:#fff}
 
+  .cityrow{display:flex;gap:8px;margin-top:8px}
+  .cityrow input{max-width:none;padding:8px 12px;font-size:.92rem}
+  .cityrow .btn{padding:8px 16px;font-size:.92rem}
   .swatches{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
   .sw{aspect-ratio:1;border-radius:50%;border:2px solid var(--line);cursor:pointer;position:relative;padding:0;max-width:48px;justify-self:center;width:100%}
   .sw::after{content:"";position:absolute;inset:28%;border-radius:50%;background:var(--a)}
@@ -181,7 +184,7 @@ applyTheme();
 </div>
 
 <header>
-  <div class="brand"><img src="/icon-192.png" alt="" width="60" height="60"><div class="logo" id="logo">آذان كُرد</div></div>
+  <div class="brand"><img src="/icon-192.png" alt="" width="60" height="60"><div class="logo" id="logo">آذان كرد</div></div>
   <div class="sub" data-i="tagline"></div>
 </header>
 
@@ -226,6 +229,10 @@ applyTheme();
     <div class="field">
       <label for="citySelect" data-i="cityLabel"></label>
       <select id="citySelect"></select>
+      <div class="cityrow">
+        <input id="setCityInput">
+        <button class="btn" type="button" id="setCityBtn" data-i="search"></button>
+      </div>
     </div>
     <div class="field">
       <label for="methodSelect" data-i="methodLabel"></label>
@@ -261,7 +268,7 @@ applyTheme();
 <script>
 /* ---------- الترجمات ---------- */
 const I18N = {
-  ar:{dir:"rtl",cityLabel:"المدينة",noteDenied:"الوصول إلى موقعك محجوب، لذلك تظهر مواقيت مكة المكرمة. ابحث عن مدينتك أو استعد الموقع.",noteUnknown:"لم يُحدَّد موقعك بعد، لذلك تظهر مواقيت مكة المكرمة. ابحث عن مدينتك أو فعّل الموقع.",btnRestore:"استعادة الموقع",btnEnable:"تفعيل الموقع",helpDenied:"المتصفح يمنع الموقع. اضغط على رمز القفل بجانب عنوان الصفحة، واسمح بالموقع، ثم أعد تحميل الصفحة.",appearance:"المظهر",light:"فاتح",dark:"داكن",color:"اللون",label:"العربية",logo:"آذان كُرد",
+  ar:{dir:"rtl",cityLabel:"المدينة",noteDenied:"الوصول إلى موقعك محجوب، لذلك تظهر مواقيت مكة المكرمة. ابحث عن مدينتك أو استعد الموقع.",noteUnknown:"لم يُحدَّد موقعك بعد، لذلك تظهر مواقيت مكة المكرمة. ابحث عن مدينتك أو فعّل الموقع.",btnRestore:"استعادة الموقع",btnEnable:"تفعيل الموقع",helpDenied:"المتصفح يمنع الموقع. اضغط على رمز القفل بجانب عنوان الصفحة، واسمح بالموقع، ثم أعد تحميل الصفحة.",appearance:"المظهر",light:"فاتح",dark:"داكن",color:"اللون",label:"العربية",logo:"آذان كرد",
     tagline:"الآذان ومواقيت الصلاة لكل مكان في العالم",todayTimes:"مواقيت الصلاة اليوم",nextPrayer:"الصلاة القادمة",
     locating:"جارٍ تحديد الموقع…",cityPh:"اكتب مدينتك (مثلاً: Duhok)",search:"بحث",myLocation:"موقعي",
     adhanText:"نص الآذان",notFound:"لم نجد هذه المدينة، جرّب اسماً آخر.",yourLoc:"موقعك الحالي",
@@ -528,6 +535,7 @@ function applyLang(){
   document.getElementById("langFlag").src = flagSrc(lang);
   document.querySelectorAll("[data-i]").forEach(el => el.textContent = t[el.dataset.i]);
   document.getElementById("cityInput").placeholder = t.cityPh;
+  document.getElementById("setCityInput").placeholder = t.cityPh;
   document.getElementById("settingsBtn").setAttribute("aria-label", t.settings);
   document.getElementById("closeSettings").setAttribute("aria-label", t.close);
   renderAdhan();
@@ -777,6 +785,14 @@ document.getElementById("citySelect").addEventListener("change", e=>{
   if(v === "here") useLocation();
   else byCity(v.slice(2));
 });
+function settingsSearch(){
+  const inp = document.getElementById("setCityInput"), v = inp.value.trim();
+  if(!v) return;
+  locState = null; showHelp = false; renderNotice();
+  byCity(v).then(()=>{ inp.value = ""; });
+}
+document.getElementById("setCityBtn").addEventListener("click", settingsSearch);
+document.getElementById("setCityInput").addEventListener("keydown", e=>{ if(e.key === "Enter") settingsSearch(); });
 document.getElementById("methodSelect").addEventListener("change", e=>{
   methodChoice = e.target.value; store.set("method", methodChoice); refetch();
 });
