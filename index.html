@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>آذان كرد | AzanKurd</title>
-<meta name="description" content="آذان كرد — الآذان ومواقيت الصلاة للعالم.">
+<meta name="description" content="AzanKurd — Adhan & prayer times for every place on earth.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Noto+Kufi+Arabic:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Noto+Kufi+Arabic:wght@400;600&family=Noto+Sans:wght@400;600&display=swap" rel="stylesheet">
 <style>
   :root{
     --bg:#0e1a17; --card:#14241f; --line:#25403a;
@@ -16,11 +16,17 @@
   *{box-sizing:border-box;margin:0;padding:0}
   body{
     background:var(--bg); color:var(--text);
-    font-family:'Noto Kufi Arabic',sans-serif; line-height:1.8;
+    font-family:'Noto Kufi Arabic','Noto Sans',sans-serif; line-height:1.8;
     background-image:radial-gradient(circle at 50% 0%, #1d3a31 0%, transparent 60%);
     min-height:100vh;
   }
-  header{text-align:center;padding:56px 16px 28px}
+  html[dir=ltr] body{font-family:'Noto Sans','Noto Kufi Arabic',sans-serif}
+  .topbar{max-width:720px;margin:0 auto;padding:16px 16px 0;display:flex;justify-content:flex-end}
+  .topbar select{
+    background:var(--card);color:var(--text);border:1px solid var(--line);
+    border-radius:10px;padding:6px 12px;font-family:inherit;font-size:.9rem;cursor:pointer
+  }
+  header{text-align:center;padding:32px 16px 28px}
   .logo{font-family:'Amiri',serif;font-size:3rem;color:var(--gold);font-weight:700;letter-spacing:1px}
   .sub{color:var(--muted);font-size:.95rem;margin-top:4px}
   main{max-width:720px;margin:0 auto;padding:0 16px 48px}
@@ -29,13 +35,14 @@
     padding:28px 22px;margin-bottom:24px;
   }
   h2{font-size:1.15rem;color:var(--gold);margin-bottom:18px;text-align:center;font-weight:600}
-  .azan{font-family:'Amiri',serif;text-align:center;font-size:1.65rem;line-height:2.3}
-  .azan p{margin:2px 0}
-  .azan .note{font-family:'Noto Kufi Arabic',sans-serif;font-size:.85rem;color:var(--muted);margin-top:16px;line-height:1.7}
+  .azan{text-align:center}
+  .azan .ar{font-family:'Amiri',serif;font-size:1.65rem;line-height:2.3;direction:rtl}
+  .azan .tr{color:var(--muted);font-size:.95rem;margin-top:4px}
+  .azan .note{font-size:.85rem;color:var(--muted);margin-top:16px;line-height:1.7}
   .divider{width:60px;height:2px;background:var(--gold);margin:18px auto;opacity:.6}
   .next{text-align:center;margin-bottom:18px}
   .next .name{font-size:1.4rem;color:var(--gold);font-weight:600}
-  .next .count{font-size:2rem;font-variant-numeric:tabular-nums;letter-spacing:2px}
+  .next .count{font-size:2rem;font-variant-numeric:tabular-nums;letter-spacing:2px;direction:ltr}
   .times{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:10px}
   .t{background:#0f1d19;border:1px solid var(--line);border-radius:12px;padding:12px 6px;text-align:center}
   .t.active{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold) inset}
@@ -51,75 +58,173 @@
 </style>
 </head>
 <body>
+<div class="topbar">
+  <select id="langSelect" aria-label="Language"></select>
+</div>
+
 <header>
-  <div class="logo">آذان كرد</div>
-  <div class="sub">الآذان ومواقيت الصلاة لكل مكان في العالم</div>
+  <div class="logo" id="logo">آذان كرد</div>
+  <div class="sub" data-i="tagline"></div>
 </header>
 
 <main>
   <section>
-    <h2>مواقيت الصلاة اليوم</h2>
+    <h2 data-i="todayTimes"></h2>
     <div class="next">
-      <div class="sub">الصلاة القادمة</div>
+      <div class="sub" data-i="nextPrayer"></div>
       <div class="name" id="nextName">—</div>
       <div class="count" id="countdown">--:--:--</div>
     </div>
     <div class="times" id="times"></div>
-    <div class="loc" id="locText">جارٍ تحديد الموقع…</div>
+    <div class="loc" id="locText"></div>
     <div class="row">
-      <input id="cityInput" placeholder="اكتب مدينتك (مثلاً: Duhok)">
-      <button onclick="searchCity()">بحث</button>
-      <button class="ghost" onclick="useLocation()">موقعي</button>
+      <input id="cityInput">
+      <button onclick="searchCity()" data-i="search"></button>
+      <button class="ghost" onclick="useLocation()" data-i="myLocation"></button>
     </div>
   </section>
 
   <section>
-    <h2>نص الآذان</h2>
-    <div class="azan">
-      <p>اللهُ أكبرُ، اللهُ أكبرُ</p>
-      <p>اللهُ أكبرُ، اللهُ أكبرُ</p>
-      <div class="divider"></div>
-      <p>أشهدُ أن لا إلهَ إلا الله</p>
-      <p>أشهدُ أن لا إلهَ إلا الله</p>
-      <div class="divider"></div>
-      <p>أشهدُ أنَّ محمداً رسولُ الله</p>
-      <p>أشهدُ أنَّ محمداً رسولُ الله</p>
-      <div class="divider"></div>
-      <p>حيَّ على الصلاة، حيَّ على الصلاة</p>
-      <p>حيَّ على الفلاح، حيَّ على الفلاح</p>
-      <div class="divider"></div>
-      <p>اللهُ أكبرُ، اللهُ أكبرُ</p>
-      <p>لا إلهَ إلا الله</p>
-      <p class="note">ويُزاد في أذان الفجر بعد «حيَّ على الفلاح»:<br>«الصلاةُ خيرٌ من النوم» مرتين</p>
-    </div>
+    <h2 data-i="adhanText"></h2>
+    <div class="azan" id="azan"></div>
   </section>
 </main>
 
 <footer>© <span id="year"></span> azankurd.com</footer>
 
 <script>
-const NAMES = {Fajr:'الفجر',Sunrise:'الشروق',Dhuhr:'الظهر',Asr:'العصر',Maghrib:'المغرب',Isha:'العشاء'};
+/* ---------- الترجمات ---------- */
+const I18N = {
+  ar:{dir:'rtl',label:'العربية',logo:'آذان كرد',
+    tagline:'الآذان ومواقيت الصلاة لكل مكان في العالم',todayTimes:'مواقيت الصلاة اليوم',nextPrayer:'الصلاة القادمة',
+    locating:'جارٍ تحديد الموقع…',cityPh:'اكتب مدينتك (مثلاً: Duhok)',search:'بحث',myLocation:'موقعي',
+    adhanText:'نص الآذان',notFound:'لم نجد هذه المدينة، جرّب اسماً آخر.',yourLoc:'موقعك الحالي',
+    fajrNote:'ويُزاد في أذان الفجر بعد «حيَّ على الفلاح» مرتين:',hijri:'هـ',
+    names:{Fajr:'الفجر',Sunrise:'الشروق',Dhuhr:'الظهر',Asr:'العصر',Maghrib:'المغرب',Isha:'العشاء'},
+    adhan:null},
+  ckb:{dir:'rtl',label:'کوردی (سۆرانی)',logo:'بانگی کورد',
+    tagline:'بانگ و کاتەکانی نوێژ بۆ هەموو شوێنێکی جیهان',todayTimes:'کاتەکانی نوێژی ئەمڕۆ',nextPrayer:'نوێژی داهاتوو',
+    locating:'دیاریکردنی شوێن…',cityPh:'ناوی شارەکەت بنووسە (بۆ نموونە: Duhok)',search:'گەڕان',myLocation:'شوێنی من',
+    adhanText:'دەقی بانگ',notFound:'شارەکە نەدۆزرایەوە، ناوێکی تر تاقی بکەرەوە.',yourLoc:'شوێنی ئێستات',
+    fajrNote:'لە بانگی بەیانیدا دوای «حی علی الفلاح» دوو جار زیاد دەکرێت:',hijri:'ک',
+    names:{Fajr:'بەیانی',Sunrise:'خۆرهەڵاتن',Dhuhr:'نیوەڕۆ',Asr:'عەسر',Maghrib:'ئێوارە',Isha:'خەوتنان'},
+    adhan:{akbar:'خودا گەورەترە',shahada1:'شایەتی دەدەم کە هیچ پەرستراوێک نییە جگە لە خودا',shahada2:'شایەتی دەدەم کە محەممەد پێغەمبەری خودایە',salah:'وەرن بۆ نوێژ',falah:'وەرن بۆ سەرفرازی',tawhid:'هیچ پەرستراوێک نییە جگە لە خودا',sleep:'نوێژ لە خەو باشترە'}},
+  kmr:{dir:'rtl',label:'کوردی (بەهدینی)',logo:'بانگا کورد',
+    tagline:'بانگ و دەمێن نڤێژێ بۆ هەمی جهێن جیهانێ',todayTimes:'دەمێن نڤێژێ ئەڤرۆ',nextPrayer:'نڤێژا بێت',
+    locating:'دیارکرنا جهی…',cityPh:'ناڤێ باژێرێ خۆ بنڤیسە (بۆ نموونە: Duhok)',search:'لێگەڕیان',myLocation:'جهێ من',
+    adhanText:'دەقێ بانگێ',notFound:'باژێر نەهاتە دیتن، ناڤەکێ دی تاقی بکە.',yourLoc:'جهێ تە یێ نوکە',
+    fajrNote:'د بانگا سپێدێ دا پشتی «حی علی الفلاح» دو جاران زێدە دبیت:',hijri:'ک',
+    names:{Fajr:'سپێدە',Sunrise:'رۆژهەلات',Dhuhr:'نیڤرۆ',Asr:'عەسر',Maghrib:'مەغرب',Isha:'عیشا'},
+    adhan:{akbar:'خودێ مەزنترە',shahada1:'ئەز شاهدیێ ددەم کو چ پەرستی نینە ژبلی خودێ',shahada2:'ئەز شاهدیێ ددەم کو محەمەد پێغەمبەرێ خودێیە',salah:'وەرن بۆ نڤێژێ',falah:'وەرن بۆ سەرفەرازیێ',tawhid:'چ پەرستی نینە ژبلی خودێ',sleep:'نڤێژ ژ خەوێ چێترە'}},
+  en:{dir:'ltr',label:'English',logo:'AzanKurd',
+    tagline:'The call to prayer and prayer times for every place on earth',todayTimes:"Today's Prayer Times",nextPrayer:'Next prayer',
+    locating:'Locating…',cityPh:'Enter your city (e.g. Duhok)',search:'Search',myLocation:'My location',
+    adhanText:'The Adhan',notFound:'City not found, please try another name.',yourLoc:'Your current location',
+    fajrNote:'In the Fajr adhan, after “Come to success”, this is added twice:',hijri:'AH',
+    names:{Fajr:'Fajr',Sunrise:'Sunrise',Dhuhr:'Dhuhr',Asr:'Asr',Maghrib:'Maghrib',Isha:'Isha'},
+    adhan:{akbar:'Allah is the Greatest',shahada1:'I bear witness that there is no god but Allah',shahada2:'I bear witness that Muhammad is the Messenger of Allah',salah:'Come to prayer',falah:'Come to success',tawhid:'There is no god but Allah',sleep:'Prayer is better than sleep'}},
+  de:{dir:'ltr',label:'Deutsch',logo:'AzanKurd',
+    tagline:'Gebetsruf und Gebetszeiten für jeden Ort der Welt',todayTimes:'Gebetszeiten heute',nextPrayer:'Nächstes Gebet',
+    locating:'Standort wird ermittelt…',cityPh:'Stadt eingeben (z. B. Duhok)',search:'Suchen',myLocation:'Mein Standort',
+    adhanText:'Der Adhan',notFound:'Stadt nicht gefunden, bitte einen anderen Namen versuchen.',yourLoc:'Ihr aktueller Standort',
+    fajrNote:'Beim Fajr-Adhan wird nach „Kommt zum Erfolg“ zweimal hinzugefügt:',hijri:'n. H.',
+    names:{Fajr:'Fadschr',Sunrise:'Sonnenaufgang',Dhuhr:'Dhuhr',Asr:'Asr',Maghrib:'Maghrib',Isha:'Ischa'},
+    adhan:{akbar:'Allah ist der Größte',shahada1:'Ich bezeuge, dass es keinen Gott gibt außer Allah',shahada2:'Ich bezeuge, dass Muhammad der Gesandte Allahs ist',salah:'Kommt zum Gebet',falah:'Kommt zum Erfolg',tawhid:'Es gibt keinen Gott außer Allah',sleep:'Das Gebet ist besser als der Schlaf'}},
+  tr:{dir:'ltr',label:'Türkçe',logo:'AzanKurd',
+    tagline:'Dünyanın her yeri için ezan ve namaz vakitleri',todayTimes:'Bugünün Namaz Vakitleri',nextPrayer:'Sıradaki namaz',
+    locating:'Konum belirleniyor…',cityPh:'Şehrinizi yazın (ör. Duhok)',search:'Ara',myLocation:'Konumum',
+    adhanText:'Ezan',notFound:'Şehir bulunamadı, başka bir isim deneyin.',yourLoc:'Mevcut konumunuz',
+    fajrNote:'Sabah ezanında «Haydin kurtuluşa» sonrasında iki kez eklenir:',hijri:'H',
+    names:{Fajr:'Sabah',Sunrise:'Güneş',Dhuhr:'Öğle',Asr:'İkindi',Maghrib:'Akşam',Isha:'Yatsı'},
+    adhan:{akbar:'Allah en büyüktür',shahada1:"Şahitlik ederim ki Allah'tan başka ilah yoktur",shahada2:"Şahitlik ederim ki Muhammed Allah'ın elçisidir",salah:'Haydin namaza',falah:'Haydin kurtuluşa',tawhid:"Allah'tan başka ilah yoktur",sleep:'Namaz uykudan hayırlıdır'}},
+  fa:{dir:'rtl',label:'فارسی',logo:'اذان کرد',
+    tagline:'اذان و اوقات شرعی برای همه جای جهان',todayTimes:'اوقات نماز امروز',nextPrayer:'نماز بعدی',
+    locating:'در حال تعیین موقعیت…',cityPh:'نام شهر خود را بنویسید (مثلاً: Duhok)',search:'جستجو',myLocation:'موقعیت من',
+    adhanText:'متن اذان',notFound:'شهر پیدا نشد، نام دیگری را امتحان کنید.',yourLoc:'موقعیت فعلی شما',
+    fajrNote:'در اذان صبح پس از «حی علی الفلاح» دو بار افزوده می‌شود:',hijri:'ق',
+    names:{Fajr:'صبح',Sunrise:'طلوع آفتاب',Dhuhr:'ظهر',Asr:'عصر',Maghrib:'مغرب',Isha:'عشا'},
+    adhan:{akbar:'خدا بزرگ‌تر است',shahada1:'گواهی می‌دهم که معبودی جز خدا نیست',shahada2:'گواهی می‌دهم که محمد فرستاده خداست',salah:'بشتابید به سوی نماز',falah:'بشتابید به سوی رستگاری',tawhid:'معبودی جز خدا نیست',sleep:'نماز از خواب بهتر است'}},
+  fr:{dir:'ltr',label:'Français',logo:'AzanKurd',
+    tagline:"L'appel à la prière et les horaires de prière pour chaque lieu du monde",todayTimes:'Horaires de prière du jour',nextPrayer:'Prochaine prière',
+    locating:'Localisation en cours…',cityPh:'Entrez votre ville (ex. Duhok)',search:'Rechercher',myLocation:'Ma position',
+    adhanText:"L'Adhan",notFound:'Ville introuvable, essayez un autre nom.',yourLoc:'Votre position actuelle',
+    fajrNote:"Dans l'adhan du Fajr, après « Venez à la réussite », on ajoute deux fois :",hijri:'H',
+    names:{Fajr:'Fajr',Sunrise:'Lever du soleil',Dhuhr:'Dhuhr',Asr:'Asr',Maghrib:'Maghrib',Isha:'Icha'},
+    adhan:{akbar:'Allah est le plus Grand',shahada1:"J'atteste qu'il n'y a de divinité qu'Allah",shahada2:"J'atteste que Muhammad est le Messager d'Allah",salah:'Venez à la prière',falah:'Venez à la réussite',tawhid:"Il n'y a de divinité qu'Allah",sleep:'La prière est meilleure que le sommeil'}}
+};
+
+/* ---------- نص الآذان (يبقى بالعربية دائماً) ---------- */
+const ADHAN = [
+  [['اللهُ أكبرُ، اللهُ أكبرُ','akbar'],['اللهُ أكبرُ، اللهُ أكبرُ','akbar']],
+  [['أشهدُ أن لا إلهَ إلا الله','shahada1'],['أشهدُ أن لا إلهَ إلا الله','shahada1']],
+  [['أشهدُ أنَّ محمداً رسولُ الله','shahada2'],['أشهدُ أنَّ محمداً رسولُ الله','shahada2']],
+  [['حيَّ على الصلاة، حيَّ على الصلاة','salah'],['حيَّ على الفلاح، حيَّ على الفلاح','falah']],
+  [['اللهُ أكبرُ، اللهُ أكبرُ','akbar'],['لا إلهَ إلا الله','tawhid']]
+];
 const ORDER = ['Fajr','Sunrise','Dhuhr','Asr','Maghrib','Isha'];
-let timings = null, tz = null, timer = null;
 
-document.getElementById('year').textContent = new Date().getFullYear();
+let lang = 'ar', timings = null, tz = null, timer = null, lastData = null, lastLabel = null;
+const L = () => I18N[lang];
 
+function pickLang(){
+  const q = new URLSearchParams(location.search).get('lang');
+  if(q && I18N[q]) return q;
+  try{ const s = localStorage.getItem('lang'); if(s && I18N[s]) return s; }catch(e){}
+  for(const n of (navigator.languages || [navigator.language || 'ar'])){
+    const c = n.toLowerCase();
+    if(c.startsWith('ckb')) return 'ckb';
+    if(c.startsWith('ku') || c.startsWith('kmr')) return 'kmr';
+    const p = c.slice(0,2); if(I18N[p]) return p;
+  }
+  return 'ar';
+}
+
+function applyLang(){
+  const t = L();
+  document.documentElement.lang = lang;
+  document.documentElement.dir = t.dir;
+  document.title = t.logo + ' | AzanKurd';
+  document.getElementById('logo').textContent = t.logo;
+  document.querySelectorAll('[data-i]').forEach(el => el.textContent = t[el.dataset.i]);
+  document.getElementById('cityInput').placeholder = t.cityPh;
+  renderAdhan();
+  if(lastData) render(lastData, lastLabel); else document.getElementById('locText').textContent = t.locating;
+}
+
+function renderAdhan(){
+  const t = L(), box = document.getElementById('azan'); box.innerHTML = '';
+  ADHAN.forEach((group,i)=>{
+    if(i) box.insertAdjacentHTML('beforeend','<div class="divider"></div>');
+    group.forEach(([ar])=> box.insertAdjacentHTML('beforeend',`<p class="ar">${ar}</p>`));
+    if(t.adhan){
+      [...new Set(group.map(g=>g[1]))].forEach(k=>
+        box.insertAdjacentHTML('beforeend',`<p class="tr">${t.adhan[k]}</p>`));
+    }
+  });
+  box.insertAdjacentHTML('beforeend',
+    `<div class="divider"></div><p class="note">${t.fajrNote}</p><p class="ar">الصلاةُ خيرٌ من النوم</p>` +
+    (t.adhan ? `<p class="tr">${t.adhan.sleep}</p>` : ''));
+}
+
+/* ---------- المواقيت ---------- */
 function render(data, label){
+  lastData = data; lastLabel = label;
+  const t = L();
   timings = data.timings; tz = data.meta.timezone;
   const box = document.getElementById('times'); box.innerHTML = '';
   ORDER.forEach(k=>{
     const d = document.createElement('div'); d.className='t'; d.id='t-'+k;
-    d.innerHTML = `<span>${NAMES[k]}</span><b>${timings[k].slice(0,5)}</b>`;
+    d.innerHTML = `<span>${t.names[k]}</span><b>${timings[k].slice(0,5)}</b>`;
     box.appendChild(d);
   });
-  document.getElementById('locText').textContent = label + ' — ' + data.date.hijri.day + ' ' + data.date.hijri.month.ar + ' ' + data.date.hijri.year + 'هـ';
+  const h = data.date.hijri;
+  const month = (t.dir==='rtl') ? h.month.ar : h.month.en;
+  const place = label === '@here' ? t.yourLoc : label;
+  document.getElementById('locText').textContent = `${place} — ${h.day} ${month} ${h.year} ${t.hijri}`;
   clearInterval(timer); tick(); timer = setInterval(tick, 1000);
 }
 
-function nowInTz(){
-  const s = new Date().toLocaleString('en-US',{timeZone:tz,hour12:false});
-  return new Date(s);
-}
+function nowInTz(){ return new Date(new Date().toLocaleString('en-US',{timeZone:tz,hour12:false})); }
 
 function tick(){
   if(!timings) return;
@@ -136,18 +241,16 @@ function tick(){
     nextDate = new Date(now); nextDate.setDate(now.getDate()+1); nextDate.setHours(h,m,0,0); next='Fajr';
   }
   const diff = Math.max(0, Math.floor((nextDate-now)/1000));
-  const hh = String(Math.floor(diff/3600)).padStart(2,'0');
-  const mm = String(Math.floor(diff%3600/60)).padStart(2,'0');
-  const ss = String(diff%60).padStart(2,'0');
-  document.getElementById('nextName').textContent = NAMES[next];
-  document.getElementById('countdown').textContent = `${hh}:${mm}:${ss}`;
+  const p = n => String(n).padStart(2,'0');
+  document.getElementById('nextName').textContent = L().names[next];
+  document.getElementById('countdown').textContent = `${p(Math.floor(diff/3600))}:${p(Math.floor(diff%3600/60))}:${p(diff%60)}`;
   ORDER.forEach(k=>document.getElementById('t-'+k).classList.toggle('active', k===next));
 }
 
 async function byCoords(lat, lng){
   try{
     const r = await fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lng}&method=3`);
-    const j = await r.json(); render(j.data, 'موقعك الحالي');
+    const j = await r.json(); render(j.data, '@here');
   }catch(e){ fallback(); }
 }
 
@@ -157,26 +260,30 @@ async function byCity(city){
     const j = await r.json();
     if(j.code!==200) throw 0;
     render(j.data, city);
-  }catch(e){ document.getElementById('locText').textContent = 'لم نجد هذه المدينة، جرّب اسماً آخر.'; }
+  }catch(e){ document.getElementById('locText').textContent = L().notFound; }
 }
 
-function searchCity(){
-  const v = document.getElementById('cityInput').value.trim();
-  if(v) byCity(v);
-}
-document.getElementById('cityInput').addEventListener('keydown',e=>{ if(e.key==='Enter') searchCity(); });
-
+function searchCity(){ const v = document.getElementById('cityInput').value.trim(); if(v) byCity(v); }
 function fallback(){ byCity('Mecca'); }
-
 function useLocation(){
   if(!navigator.geolocation) return fallback();
   navigator.geolocation.getCurrentPosition(
-    p=>byCoords(p.coords.latitude, p.coords.longitude),
-    ()=>fallback(),
-    {timeout:8000}
-  );
+    p=>byCoords(p.coords.latitude, p.coords.longitude), ()=>fallback(), {timeout:8000});
 }
 
+/* ---------- التشغيل ---------- */
+const sel = document.getElementById('langSelect');
+Object.entries(I18N).forEach(([code,t])=> sel.insertAdjacentHTML('beforeend',`<option value="${code}">${t.label}</option>`));
+sel.addEventListener('change',()=>{
+  lang = sel.value;
+  try{ localStorage.setItem('lang', lang); }catch(e){}
+  applyLang();
+});
+document.getElementById('cityInput').addEventListener('keydown',e=>{ if(e.key==='Enter') searchCity(); });
+document.getElementById('year').textContent = new Date().getFullYear();
+
+lang = pickLang(); sel.value = lang;
+applyLang();
 useLocation();
 </script>
 </body>
