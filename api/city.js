@@ -50,7 +50,7 @@ function countryName(cc, lang){
   return cc;
 }
 
-const KU_WD = ["یەکشەمب","دووشەمب","سێشەمب","چارشەمب","پێنجشەمب","ئەینی","شەمبی"];
+const KU_WD = ["ئێکشەمب","دووشەمب","سێشەمب","چارشەمب","پێنجشەمب","ئەینی","شەمبی"];
 function weekday(y, m, d, lang){
   const dt = new Date(Date.UTC(y, m - 1, d, 12));
   if(lang === "ku") return KU_WD[dt.getUTCDay()];
@@ -62,8 +62,10 @@ function hijri(y, m, d, lang, opts){
   try{ return new Intl.DateTimeFormat(loc, { timeZone:"UTC", ...opts }).format(dt); }
   catch(e){ return new Intl.DateTimeFormat("en-u-ca-islamic-umalqura-nu-latn", { timeZone:"UTC", ...opts }).format(dt); }
 }
-const monthName = (y, m, lang) => new Intl.DateTimeFormat(intlLoc(lang) + "-u-ca-gregory-nu-latn", { month:"long", year:"numeric", timeZone:"UTC" }).format(new Date(Date.UTC(y, m - 1, 15)));
-const longDate = (y, m, d, lang) => new Intl.DateTimeFormat(intlLoc(lang) + "-u-ca-gregory-nu-latn", { day:"numeric", month:"long", year:"numeric", timeZone:"UTC" }).format(new Date(Date.UTC(y, m - 1, d, 12)));
+// أسماء الأشهر الميلادية بالبهدينانية (Intl يعطيها بالسورانية)
+const KU_MONTHS = ["کانوونا دووێ","شوبات","ئادار","نیسان","گولان","حزیران","تیرمەھ","تەباخ","ئەیلوول","چریا ئێکێ","چریا دووێ","کانوونا ئێکێ"];
+const monthName = (y, m, lang) => lang === "ku" ? `${KU_MONTHS[m - 1]} ${y}` : new Intl.DateTimeFormat(intlLoc(lang) + "-u-ca-gregory-nu-latn", { month:"long", year:"numeric", timeZone:"UTC" }).format(new Date(Date.UTC(y, m - 1, 15)));
+const longDate = (y, m, d, lang) => lang === "ku" ? `${d} ${KU_MONTHS[m - 1]} ${y}` : new Intl.DateTimeFormat(intlLoc(lang) + "-u-ca-gregory-nu-latn", { day:"numeric", month:"long", year:"numeric", timeZone:"UTC" }).format(new Date(Date.UTC(y, m - 1, d, 12)));
 
 const IC = {
  fajr:'<svg viewBox="0 0 24 24"><path d="M14 4a6.5 6.5 0 1 0 6 9 5 5 0 0 1-6-9z"/><path d="M19 3v3M17.5 4.5h3"/></svg>',
