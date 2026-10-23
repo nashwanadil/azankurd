@@ -335,6 +335,9 @@ footer a{color:var(--gold)}
   * {-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
 </style>
+<!-- إحصاءات Vercel للزوار (بلا ملفات تعريف ارتباط) -->
+<script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
+<script defer src="/_vercel/insights/script.js"></script>
 </head>
 <body>
 <div class="wrap">
