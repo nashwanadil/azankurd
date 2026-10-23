@@ -1551,9 +1551,9 @@ async function syncSave(makeNew){
   }catch(e){ syncMsg(x.err, false); }
 }
 const SYNC_X = {
-  ar:{ empty:"اكتب الرمز أولًا في الخانة", format:"الرمز يتكون من 5 أحرف", dlgTitle:"اختر ما تستعيده", dlgHint:"المدن تُدمج من الجهازين إن اخترت الاثنين. وفي البقية اختر واحدًا.", dlgApply:"تطبيق", dlgCancel:"إلغاء", colOld:"القديم (المحفوظ)", colCur:"الحالي (هذا الجهاز)", grp:{ cities:"المدن المبحوث عنها والمدينة الحالية", calc:"طريقة الحساب والعصر", notify:"التنبيهات", look:"المظهر وصيغة الوقت" } },
-  ku:{ empty:"سەرەتا کودی بنڤیسە", format:"کود ژ 5 پیتان پێکدهێت", dlgTitle:"هەلبژێرە چی بڤەگەرینی", dlgHint:"ئەگەر هەردووکان هەلبژێری، باژێر ژ هەردوو ئامێران تێکەل دبن. بۆ یێن دی یەکێ هەلبژێرە.", dlgApply:"پەسەندە", dlgCancel:"هەڵوەشاندن", colOld:"کۆن (هاتیە هەلگرتن)", colCur:"ئێستا (ئەڤ ئامێرە)", grp:{ cities:"باژێرێن هاتینە لێگەڕان و باژێرێ ئێستا", calc:"ڕێبازا حیسابکرنێ و ئێڤار", notify:"ئاگەهدارکرن", look:"ڕووکار و شێوازێ دەمی" } },
-  en:{ empty:"Type the code in the box first", format:"The code has 5 characters", dlgTitle:"Choose what to restore", dlgHint:"Cities are merged from both devices if you pick both. For the rest, pick one.", dlgApply:"Apply", dlgCancel:"Cancel", colOld:"Saved", colCur:"This device", grp:{ cities:"Searched cities and current city", calc:"Calculation method and Asr", notify:"Notifications", look:"Appearance and time format" } }
+  ar:{ same:"هذا رمز هذا الجهاز، وإعداداته متزامنة معه", empty:"اكتب الرمز أولًا في الخانة", format:"الرمز يتكون من 5 أحرف", dlgTitle:"اختر ما تستعيده", dlgHint:"المدن تُدمج من الجهازين إن اخترت الاثنين. وفي البقية اختر واحدًا.", dlgApply:"تطبيق", dlgCancel:"إلغاء", colOld:"القديم (المحفوظ)", colCur:"الحالي (هذا الجهاز)", grp:{ cities:"المدن المبحوث عنها والمدينة الحالية", calc:"طريقة الحساب والعصر", notify:"التنبيهات", look:"المظهر وصيغة الوقت" } },
+  ku:{ same:"ئەڤە کودێ ئەڤ ئامێرێیە، ڕێکخستن ب ڕاستی هاوکارن", empty:"سەرەتا کودی بنڤیسە", format:"کود ژ 5 پیتان پێکدهێت", dlgTitle:"هەلبژێرە چی بڤەگەرینی", dlgHint:"ئەگەر هەردووکان هەلبژێری، باژێر ژ هەردوو ئامێران تێکەل دبن. بۆ یێن دی یەکێ هەلبژێرە.", dlgApply:"پەسەندە", dlgCancel:"هەڵوەشاندن", colOld:"کۆن (هاتیە هەلگرتن)", colCur:"ئێستا (ئەڤ ئامێرە)", grp:{ cities:"باژێرێن هاتینە لێگەڕان و باژێرێ ئێستا", calc:"ڕێبازا حیسابکرنێ و ئێڤار", notify:"ئاگەهدارکرن", look:"ڕووکار و شێوازێ دەمی" } },
+  en:{ same:"This is this device's own code, settings are already in sync", empty:"Type the code in the box first", format:"The code has 5 characters", dlgTitle:"Choose what to restore", dlgHint:"Cities are merged from both devices if you pick both. For the rest, pick one.", dlgApply:"Apply", dlgCancel:"Cancel", colOld:"Saved", colCur:"This device", grp:{ cities:"Searched cities and current city", calc:"Calculation method and Asr", notify:"Notifications", look:"Appearance and time format" } }
 };
 Object.keys(SYNC_T).forEach(l => Object.assign(SYNC_T[l], SYNC_X[l]));
 
@@ -1631,6 +1631,7 @@ async function syncRestore(){
   const x = syncT(), code = document.getElementById("syncIn").value.trim().toLowerCase();
   if(!code) return syncMsg(x.empty, false);
   if(!/^[a-z2-9]{5}$/.test(code)) return syncMsg(x.format, false);
+  if(code === store.get("syncCode", "")) return syncMsg(x.same, true);
   try{
     const { status, j } = await syncCall("GET", null, "?code=" + encodeURIComponent(code));
     if(status === 200 && j.ok){
