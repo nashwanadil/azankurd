@@ -307,7 +307,7 @@ footer a{color:var(--gold)}
   .ph .bs{font-size:7.5pt;color:#7a6a60;letter-spacing:.3pt}
   .ph .city{text-align:end}
   .ph .city b{display:block;font-size:15pt;line-height:1.25}
-  .ph .city span{font-size:9pt;color:#7a6a60}
+  .ph .city span{font-size:11pt;color:#a8802f;font-weight:700}
   .ph .b[hidden]{display:none}
   .ph .mqb{gap:4mm;max-width:62%}
   .ph .mqb .ro{width:15mm;height:15mm;flex:none}
@@ -401,7 +401,7 @@ footer a{color:var(--gold)}
     <div class="ph">
       <div class="b" id="pBrand"><img src="/icon-192.png" alt=""><div><div class="bn">${esc(t.logo)}</div><div class="bs">AZANKURD.COM · ${esc(t.tagline)}</div></div></div>
       <div class="b mqb" id="pMq" hidden>${ROSETTE}<div class="mqt"><div class="mqn" id="pMosqueName"></div>${FLOURISH}<div class="bs">AZANKURD.COM · ${esc(t.tagline)}</div></div></div>
-      <div class="city"><b>${esc(fill(t.title, V))}</b><span>${esc(country)}</span></div>
+      <div class="city"><b>${esc(t.prayerTimes)}</b><span>${esc(country)} – ${esc(cityName)}</span></div>
     </div>
     <div class="pm"><span>${esc(t.printHead)}</span><b>${esc(mTitle)}</b><span>${esc(hijRange)}</span></div>
     <table class="pt"><thead><tr>${pth}</tr></thead><tbody>${ptrs}</tbody></table>
