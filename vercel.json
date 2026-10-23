@@ -1,0 +1,8 @@
+{
+  "cleanUrls": false,
+  "rewrites": [
+    { "source": "/sitemap-cities.xml", "destination": "/api/sitemap" },
+    { "source": "/sitemap-cities-:n.xml", "destination": "/api/sitemap?part=:n" },
+    { "source": "/:lang(ar|ku|en|de|tr|fa|ur|fr|es|it|nl|da|sv|ru|bs|id|ms)/:slug", "destination": "/api/city?lang=:lang&slug=:slug" }
+  ]
+}

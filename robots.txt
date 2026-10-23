@@ -2,3 +2,4 @@ User-agent: *
 Allow: /
 
 Sitemap: https://azankurd.com/sitemap.xml
+Sitemap: https://azankurd.com/sitemap-cities.xml
