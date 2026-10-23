@@ -200,7 +200,8 @@ html[dir=ltr] .brandmini{font-family:'Noto Sans',sans-serif;font-size:1.25rem}
 h1{font-size:1.9rem;line-height:1.35;font-weight:700;margin-bottom:6px;color:var(--title)}
 h1 em{font-style:normal;color:var(--green)}
 html[data-mode=dark] h1 em{color:var(--gold)}
-.meta{color:var(--muted);font-size:.9rem;display:flex;flex-wrap:wrap;gap:4px 14px;margin-bottom:18px}
+.hero h1{text-align:center}
+.meta{color:var(--muted);font-size:.9rem;display:flex;flex-wrap:wrap;justify-content:center;gap:4px 14px;margin-bottom:18px}
 .meta b{color:var(--text);font-weight:600}
 .next{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--green);color:#fff;border-radius:16px;padding:16px 20px}
 .next small{opacity:.85;font-size:.8rem;display:block}
