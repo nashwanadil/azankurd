@@ -115,6 +115,7 @@ applyTheme();
   }
   .pill:hover,.pill[aria-expanded=true]{background:var(--hover);border-color:var(--gold)}
   .pill svg.ic{stroke:var(--gold)}
+  .topbar .pill{border-color:var(--gold);color:var(--gold)}
   .pill.round svg.ic{width:20px;height:20px}
   .pill .chev{width:14px;height:14px;opacity:.7;transition:transform .2s}
   .pill[aria-expanded=true] .chev{transform:rotate(180deg)}
@@ -1425,6 +1426,11 @@ applyLang();
   if(saved.type === "coords" && await permState() === "granted") useLocation();
   else getTimes(saved).catch(()=>{});
 })();
+// قادم من زر الإعدادات في صفحة أخرى: نفتح الإعدادات مباشرة
+if(new URLSearchParams(location.search).get("settings") === "1"){
+  history.replaceState(null, "", location.pathname + "?lang=" + lang);
+  setTimeout(()=> openSettings(), 150);
+}
 
 /* ---------- تثبيت التطبيق ---------- */
 let deferredPrompt = null;
