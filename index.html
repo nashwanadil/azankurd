@@ -476,6 +476,17 @@ applyTheme();
   </div>
 </div>
 
+<div class="overlay" id="syncDlg" hidden>
+  <div style="background:var(--card);color:var(--text);border:1px solid var(--line);border-radius:16px;padding:18px;max-width:420px;width:100%;max-height:85vh;overflow:auto">
+    <h3 id="syncDlgTitle" style="margin:0 0 6px;color:var(--gold);font-size:1.05rem"></h3>
+    <p id="syncDlgHint" style="font-size:.85rem;color:var(--muted);margin:0 0 6px;line-height:1.7"></p>
+    <div id="syncRows"></div>
+    <div style="display:flex;gap:8px;margin-top:14px">
+      <button class="btn" type="button" id="syncDlgCancel" style="flex:1"></button>
+      <button class="btn" type="button" id="syncDlgApply" style="flex:1"></button>
+    </div>
+  </div>
+</div>
 <div class="overlay install" id="installOverlay" hidden>
   <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="installTitle">
     <img src="/icon-192.png" alt="">
@@ -981,7 +992,7 @@ function addRecent(q){
   if(old) q = betterName(q, old);
   list = list.filter(x => !samePlace(x, q));
   list.unshift(q);
-  store.set("recent", JSON.stringify(list.slice(0,5)));
+  store.set("recent", JSON.stringify(list.slice(0,10)));
 }
 
 // البحث عن المدن بقاعدة GeoNames عبر Open-Meteo (تدعم الأسماء بلغات كثيرة)
@@ -1537,21 +1548,110 @@ async function syncSave(makeNew){
     else syncMsg(x.err, false);
   }catch(e){ syncMsg(x.err, false); }
 }
+const SYNC_X = {
+  ar:{ dlgTitle:"اختر ما تستعيده", dlgHint:"المدن تُدمج من الجهازين إن اخترت الاثنين. وفي البقية اختر واحدًا.", dlgApply:"تطبيق", dlgCancel:"إلغاء", colOld:"القديم (المحفوظ)", colCur:"الحالي (هذا الجهاز)", grp:{ cities:"المدن المبحوث عنها والمدينة الحالية", calc:"طريقة الحساب والعصر", notify:"التنبيهات", look:"المظهر وصيغة الوقت" } },
+  ku:{ dlgTitle:"هەلبژێرە چی بڤەگەرینی", dlgHint:"ئەگەر هەردووکان هەلبژێری، باژێر ژ هەردوو ئامێران تێکەل دبن. بۆ یێن دی یەکێ هەلبژێرە.", dlgApply:"پەسەندە", dlgCancel:"هەڵوەشاندن", colOld:"کۆن (هاتیە هەلگرتن)", colCur:"ئێستا (ئەڤ ئامێرە)", grp:{ cities:"باژێرێن هاتینە لێگەڕان و باژێرێ ئێستا", calc:"ڕێبازا حیسابکرنێ و ئێڤار", notify:"ئاگەهدارکرن", look:"ڕووکار و شێوازێ دەمی" } },
+  en:{ dlgTitle:"Choose what to restore", dlgHint:"Cities are merged from both devices if you pick both. For the rest, pick one.", dlgApply:"Apply", dlgCancel:"Cancel", colOld:"Saved", colCur:"This device", grp:{ cities:"Searched cities and current city", calc:"Calculation method and Asr", notify:"Notifications", look:"Appearance and time format" } }
+};
+Object.keys(SYNC_T).forEach(l => Object.assign(SYNC_T[l], SYNC_X[l]));
+
+const SYNC_GROUPS = [
+  { id:"cities", keys:["recent","lastQuery","myPlace"], both:true },
+  { id:"calc", keys:["method","asr"] },
+  { id:"notify", keys:["notifyPrefs"] },
+  { id:"look", keys:["theme","mode","fmt"] }
+];
+let syncRemote = null, syncCodeTry = "";
+
+// دمج قائمتي المدن (نصّان بصيغة JSON) بلا تكرار، والأحدث أولًا، بحد 10
+function mergeRecent(localRaw, remoteRaw){
+  const toArr = v => { try{ const a = JSON.parse(v || "[]"); return Array.isArray(a) ? a : []; }catch(e){ return []; } };
+  const isC = x => x && typeof x === "object" && x.type === "coords";
+  const out = toArr(localRaw).filter(isC);
+  toArr(remoteRaw).filter(isC).forEach(q => {
+    const i = out.findIndex(x => samePlace(x, q));
+    if(i < 0) out.push(q); else out[i] = betterName(out[i], q);
+  });
+  return JSON.stringify(out.slice(0, 10));
+}
+
+function syncDlgOpen(){
+  const x = syncT(), box = document.getElementById("syncRows");
+  document.getElementById("syncDlgTitle").textContent = x.dlgTitle;
+  document.getElementById("syncDlgHint").textContent = x.dlgHint;
+  document.getElementById("syncDlgCancel").textContent = x.dlgCancel;
+  document.getElementById("syncDlgApply").textContent = x.dlgApply;
+  box.innerHTML = "";
+  SYNC_GROUPS.forEach(g => {
+    const hasOld = g.keys.some(k => syncRemote[k] !== undefined);
+    const row = document.createElement("div");
+    row.style.cssText = "border-bottom:1px solid var(--line);padding:10px 0";
+    row.innerHTML = `<div style="margin-bottom:6px;font-weight:600">${x.grp[g.id]}</div>` +
+      `<label style="margin-inline-end:18px;${hasOld ? "" : "opacity:.4"}"><input type="checkbox" data-g="${g.id}" data-c="old" ${hasOld ? "" : "disabled"} ${g.both && hasOld ? "checked" : ""}> ${x.colOld}</label>` +
+      `<label><input type="checkbox" data-g="${g.id}" data-c="cur" checked> ${x.colCur}</label>`;
+    box.appendChild(row);
+  });
+  // في المجموعات غير المدن: اختيار واحد فقط
+  box.onchange = e => {
+    const i = e.target; if(!i.dataset || !i.dataset.g) return;
+    const g = SYNC_GROUPS.find(z => z.id === i.dataset.g);
+    if(!g.both && i.checked) box.querySelectorAll(`input[data-g="${g.id}"]`).forEach(o => { if(o !== i) o.checked = false; });
+    if(!box.querySelector(`input[data-g="${g.id}"]:checked`)) i.checked = true;
+  };
+  document.getElementById("syncDlg").hidden = false;
+}
+function syncDlgClose(){ document.getElementById("syncDlg").hidden = true; syncRemote = null; }
+
+function syncBuild(){
+  const box = document.getElementById("syncRows"), out = {};
+  const sel = id => ({
+    old: !!box.querySelector(`input[data-g="${id}"][data-c="old"]:checked`),
+    cur: !!box.querySelector(`input[data-g="${id}"][data-c="cur"]:checked`)
+  });
+  SYNC_GROUPS.forEach(g => {
+    const s = sel(g.id);
+    g.keys.forEach(k => {
+      const localRaw = store.get(k, null);
+      if(k === "recent"){
+        if(s.old && s.cur) out.recent = mergeRecent(localRaw, syncRemote.recent);
+        else if(s.old && syncRemote.recent !== undefined) out.recent = mergeRecent(null, syncRemote.recent);
+        else out.recent = localRaw;
+        return;
+      }
+      const useOld = s.old && !s.cur && syncRemote[k] !== undefined;
+      out[k] = useOld ? String(syncRemote[k]) : localRaw;
+    });
+  });
+  return out;
+}
+
 async function syncRestore(){
   const x = syncT(), code = document.getElementById("syncIn").value.trim();
   if(!/^[A-Za-z0-9]{12}$/.test(code)) return syncMsg(x.notFound, false);
   try{
     const { status, j } = await syncCall("GET", null, "?code=" + encodeURIComponent(code));
     if(status === 200 && j.ok){
-      SYNC_KEYS.forEach(k => { if(j.data[k] !== undefined) store.set(k, String(j.data[k])); });
-      store.set("syncCode", code); syncMsg(x.restored, true);
-      setTimeout(() => location.reload(), 600);
+      syncRemote = j.data || {}; syncCodeTry = code;
+      syncMsg("", true);
+      syncDlgOpen();
     } else syncMsg(x.notFound, false);
   }catch(e){ syncMsg(x.err, false); }
+}
+async function syncApply(){
+  const x = syncT(), merged = syncBuild();
+  Object.keys(merged).forEach(k => { if(merged[k] !== null && merged[k] !== undefined) store.set(k, String(merged[k])); });
+  try{
+    const { status, j } = await syncCall("POST", { code: syncCodeTry, data: syncCollect() });
+    if(status === 200 && j.ok) store.set("syncCode", syncCodeTry);
+  }catch(e){}
+  syncDlgClose();
+  location.reload();
 }
 document.getElementById("syncNew").addEventListener("click", () => syncSave(true));
 document.getElementById("syncSave").addEventListener("click", () => syncSave(false));
 document.getElementById("syncApply").addEventListener("click", syncRestore);
+document.getElementById("syncDlgApply").addEventListener("click", syncApply);
+document.getElementById("syncDlgCancel").addEventListener("click", syncDlgClose);
 syncLabels();
 
 document.getElementById("installFromSettings").addEventListener("click", ()=>{ closeSettings(); openInstall(); });
