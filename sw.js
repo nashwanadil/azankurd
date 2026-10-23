@@ -1,5 +1,5 @@
 // AzanKurd service worker: يجعل الموقع قابلاً للتثبيت ويعمل دون إنترنت
-const CACHE = 'azankurd-v2';
+const CACHE = 'azankurd-v3';
 const CORE = ['/', '/index.html', '/manifest.json', '/icon-192.png', '/icon-512.png'];
 
 self.addEventListener('install', e => {
@@ -25,4 +25,28 @@ self.addEventListener('fetch', e => {
       return res;
     }).catch(() => caches.match(e.request).then(r => r || caches.match('/')))
   );
+});
+
+// تنبيه وقت الصلاة: يصل من الخادم حتى والتطبيق مغلق
+self.addEventListener('push', e => {
+  let d = {};
+  try { d = e.data ? e.data.json() : {}; } catch (err) {}
+  e.waitUntil(self.registration.showNotification(d.title || 'AzanKurd', {
+    body: d.body || '',
+    icon: '/icon-192.png',
+    badge: '/icon-192.png',
+    tag: d.tag || 'prayer',
+    renotify: true,
+    data: { url: d.url || '/' }
+  }));
+});
+
+// عند الضغط على الإشعار نفتح الموقع (أو ننتقل إليه إن كان مفتوحًا)
+self.addEventListener('notificationclick', e => {
+  e.notification.close();
+  const url = (e.notification.data && e.notification.data.url) || '/';
+  e.waitUntil(clients.matchAll({ type: 'window', includeUncontrolled: true }).then(list => {
+    for (const c of list) if ('focus' in c) return c.focus();
+    return clients.openWindow(url);
+  }));
 });
