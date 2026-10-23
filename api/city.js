@@ -187,7 +187,7 @@ a{color:inherit;text-decoration:none}
 .wrap{max-width:980px;margin:0 auto;padding:0 16px}
 svg.ic{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
 .top{display:flex;justify-content:space-between;align-items:center;padding:16px 0}
-.brandmini{display:flex;align-items:center;gap:10px;font-family:'Amiri',serif;font-size:1.6rem;font-weight:700;color:var(--title);word-spacing:-.2em}
+.brandmini{display:flex;align-items:center;gap:10px;font-family:'Amiri',serif;font-size:1.6rem;font-weight:700;color:var(--title);word-spacing:-.32em}
 html[dir=ltr] .brandmini{font-family:'Noto Sans',sans-serif;font-size:1.25rem}
 .brandmini img{width:38px;height:38px;border-radius:10px}
 ${NAV.css}
@@ -307,7 +307,7 @@ footer a{color:var(--gold)}
   .ph{display:flex;align-items:center;justify-content:space-between;border-bottom:2.2pt solid #8f2a39;padding-bottom:4mm;margin-bottom:4mm}
   .ph .b{display:flex;align-items:center;gap:3.5mm}
   .ph img{width:15mm;height:15mm;border-radius:3.5mm}
-  .ph .bn{font-family:'Amiri',serif;font-size:22pt;font-weight:700;line-height:1;word-spacing:-.2em}
+  .ph .bn{font-family:'Amiri',serif;font-size:22pt;font-weight:700;line-height:1;word-spacing:-.32em}
   html[dir=ltr] .ph .bn{font-family:'Noto Sans',sans-serif;font-size:17pt}
   .ph .bs{font-size:7.5pt;color:#7a6a60;letter-spacing:.3pt}
   .ph .city{text-align:end}

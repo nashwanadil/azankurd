@@ -6,7 +6,7 @@ const I = require("./_info.js");
 const CSS = `
 .prose p{margin-bottom:14px;font-size:1.02rem;line-height:2}
 .prose h2{font-size:1.05rem;color:var(--gold);margin:18px 0 6px}
-.prose b.nm{font-family:'Amiri',serif;font-size:1.3em;font-weight:700;color:#b08a3e;padding:0 .1em}
+.prose b.nm{font-family:'Amiri',serif;font-size:1.3em;font-weight:700;color:#b08a3e;padding:0 .1em;word-spacing:-.12em}
 html[data-mode=dark] .prose b.nm{color:#e0b860}
 .sign{margin-top:22px;text-align:end;font-family:'Amiri',serif;font-size:1.5rem;font-weight:700;color:var(--title)}
 html[dir=ltr] .sign{font-family:'Noto Sans',sans-serif;font-size:1.15rem}

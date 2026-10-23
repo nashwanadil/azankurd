@@ -22,12 +22,13 @@ const css = `
 .navm summary{list-style:none;display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;background:var(--card);border:1px solid var(--line);border-radius:999px;cursor:pointer}
 .navm summary::-webkit-details-marker{display:none}
 .navm[open] summary{border-color:var(--gold)}
-.navm summary svg{width:19px;height:19px;stroke:var(--text);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.navm summary svg{width:20px;height:20px;stroke:var(--gold);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .navm .menu{position:absolute;inset-inline-end:0;top:calc(100% + 8px);z-index:21;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:6px;width:230px;max-height:70vh;overflow:auto;box-shadow:0 14px 40px rgba(0,0,0,.2)}
 .navm .menu a{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:9px;font-size:.92rem}
 .navm .menu a:hover{background:var(--hover)}
 .navm .menu a[hidden]{display:none}
 .navm .menu hr{border:0;border-top:1px solid var(--line);margin:5px 6px}
+.langs summary .chev{stroke:var(--gold);opacity:1}
 .navm .ni{width:17px;height:17px;flex:none;stroke:var(--gold);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}`;
 
 function html(lang){
