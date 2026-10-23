@@ -100,6 +100,24 @@ function todayIn(tz){
   const g = t => +p.find(x => x.type === t).value;
   return { y:g("year"), m:g("month"), d:g("day") };
 }
+// الصلاة القادمة بعد لحظة معينة (للإشعارات): تبحث في اليوم الحالي والتالي بمنطقة المكان الزمنية
+const NOTIFY_KEYS = ["fajr","dhuhr","asr","maghrib","isha"];
+function nextPrayer(lat, lng, tz, method, school, after){
+  const p = paramsFor(method);
+  if(school === 0 || school === 1) p.madhab = school === 1 ? adhan.Madhab.Hanafi : adhan.Madhab.Shafi;
+  const base = new Date(after.getTime() - 86400000);
+  for(let i = 0; i < 3; i++){
+    const day = new Date(base.getTime() + i * 86400000);
+    const ds = new Intl.DateTimeFormat("en-CA", { timeZone:tz, year:"numeric", month:"2-digit", day:"2-digit" }).formatToParts(day);
+    const g = t => +ds.find(x => x.type === t).value;
+    const t = new adhan.PrayerTimes(new adhan.Coordinates(lat, lng), new Date(g("year"), g("month") - 1, g("day")), p);
+    for(const k of NOTIFY_KEYS){
+      const at = t[k];
+      if(at instanceof Date && !isNaN(at) && at > after) return { key:k, at, hm:hm(at, tz) };
+    }
+  }
+  return null;
+}
 const qibla = city => Math.round(adhan.Qibla(new adhan.Coordinates(city.lat, city.lng)));
 
-module.exports = { LANGS, SITE, CITIES, findCity, nearest, nearby, METHODS, autoMethod, dayTimes, todayIn, qibla, KEYS, cityAt };
+module.exports = { LANGS, SITE, CITIES, findCity, nearest, nearby, METHODS, autoMethod, dayTimes, todayIn, qibla, KEYS, cityAt, nextPrayer, NOTIFY_KEYS };
