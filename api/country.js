@@ -1,6 +1,6 @@
 // صفحة البلد: /ar/country/iq      وصفحة كل البلدان: /ar/countries
 const { LANGS, SITE, CITIES, cityAt, autoMethod, dayTimes, todayIn, KEYS } = require("./_core.js");
-const { T, esc, fill, countryFlag, localName, countryName, page, send } = require("./_layout.js");
+const { T, esc, fill, countryFlag, localName, countryName, REGIONS, nCitiesText, page, send } = require("./_layout.js");
 
 const NAMEKEY = { fajr:"Fajr", sunrise:"Sunrise", dhuhr:"Dhuhr", asr:"Asr", maghrib:"Maghrib", isha:"Isha" };
 const IC = {
@@ -16,6 +16,7 @@ const SEARCH_IC = '<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path
 // عدد المدن في كل بلد
 const COUNT = {};
 CITIES.forEach(c => COUNT[c[2]] = (COUNT[c[2]] || 0) + 1);
+for(const r in REGIONS) COUNT[r] = CITIES.filter(c => REGIONS[r].slugs.includes(c[0])).length;
 
 const CSS_COUNTRY = `
 .chead{display:flex;align-items:center;gap:16px;margin-bottom:6px}
@@ -48,7 +49,8 @@ const CSS_ALL = `
 async function countryPage(res, lang, cc){
   const t = T[lang];
   const list = [];
-  CITIES.forEach((c, i) => { if(c[2] === cc) list.push(cityAt(i)); });
+  const inRegion = REGIONS[cc] ? c => REGIONS[cc].slugs.includes(c[0]) : c => c[2] === cc;
+  CITIES.forEach((c, i) => { if(inRegion(c)) list.push(cityAt(i)); });
   if(!list.length){ res.statusCode = 404; return send(res, page({ lang, title:t.notFound, desc:"", path:`/country/${cc.toLowerCase()}`, body:`<div class="hcard" style="text-align:center"><p>${esc(t.notFound)}</p><p><a href="/${lang}/countries" style="color:var(--gold)">${esc(t.allCountries)}</a></p></div>` }), 404); }
   list.sort((a, b) => b.pop - a.pop);
   const country = countryName(cc, lang);
@@ -77,7 +79,7 @@ async function countryPage(res, lang, cc){
     <div class="big">${cards}</div>
   </section>
   <section class="hcard">
-    <div class="sub2" style="margin-bottom:12px"><h2>${esc(fill(t.citiesIn, V))}</h2><span class="count">${esc(fill(t.nCities, { n:list.length.toLocaleString("en") }))}</span></div>
+    <div class="sub2" style="margin-bottom:12px"><h2>${esc(fill(t.citiesIn, V))}</h2><span class="count">${esc(nCitiesText(lang, list.length))}</span></div>
     <label class="search">${SEARCH_IC}<input id="q" type="search" placeholder="${esc(t.filterPh)}" autocomplete="off"></label>
     <div class="grid">${links}</div>
     <p class="empty" id="empty">${esc(t.noMatch)}</p>
@@ -97,7 +99,7 @@ function allPage(res, lang){
     <h1>${esc(t.allTitle)}</h1>
     <p class="lead" style="margin-bottom:16px">${esc(t.allDesc)}</p>
     <label class="search">${SEARCH_IC}<input id="q" type="search" placeholder="${esc(t.findCountry)}" autocomplete="off"></label>
-    <div class="cgrid">${list.map(c => `<a href="/${lang}/country/${c.cc.toLowerCase()}" data-n="${esc(c.name + " " + c.en + " " + c.cc)}"><img src="${countryFlag(c.cc)}" alt="" loading="lazy"><span><b>${esc(c.name)}</b><small>${esc(fill(t.nCities, { n:c.n.toLocaleString("en") }))}</small></span></a>`).join("")}</div>
+    <div class="cgrid">${list.map(c => `<a href="/${lang}/country/${c.cc.toLowerCase()}" data-n="${esc(c.name + " " + c.en + " " + c.cc)}"><img src="${countryFlag(c.cc)}" alt="" loading="lazy"><span><b>${esc(c.name)}</b><small>${esc(nCitiesText(lang, c.n))}</small></span></a>`).join("")}</div>
     <p class="empty" id="empty">${esc(t.noMatch)}</p>
   </section>`;
   send(res, page({ lang, title, desc:t.allDesc, path:"/countries", body, css:CSS_ALL }));

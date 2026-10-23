@@ -39,7 +39,9 @@ async function localName(city, lang){
   }
   return null;
 }
+const { PS_NAMES } = require("./_layout.js");
 function countryName(cc, lang){
+  if(cc === "PS" && PS_NAMES[lang]) return PS_NAMES[lang];
   for(const l of [intlLoc(lang), lang === "ku" ? "ar" : "en"]){
     try{ const n = new Intl.DisplayNames([l], { type:"region" }).of(cc); if(n && n !== cc) return n; }catch(e){}
   }
@@ -110,7 +112,7 @@ module.exports = async (req, res) => {
 
   const loc = await localName(city, lang);
   const cityName = loc?.name || city.name;
-  const country = loc?.country || countryName(city.cc, lang);
+  const country = city.cc === "PS" ? countryName("PS", lang) : (loc?.country || countryName(city.cc, lang));
   const V = { city:cityName, country, method:methodName, ...tt };
 
   const hFirst = hijri(y, m, 1, lang, { month:"long" }), hLast = hijri(y, m, days, lang, { month:"long", year:"numeric" });

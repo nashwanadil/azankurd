@@ -7,7 +7,17 @@ const { LANGS, SITE } = require("./_core.js");
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const fill = (s, v) => s.replace(/\{(\w+)\}/g, (_, k) => v[k] ?? "");
 const flagSrc = l => "data:image/svg+xml;charset=utf-8," + encodeURIComponent(FLAGS[l] || "");
-const countryFlag = cc => `https://cdn.jsdelivr.net/npm/flag-icons@7.6.0/flags/4x3/${cc.toLowerCase()}.svg`;
+// إقليم كردستان: صفحة خاصة بالعلم الكردي (رمزها KRD) تضم مدن الإقليم، إلى جانب صفحة العراق
+const REGIONS = {
+  KRD: {
+    slugs:["erbil","sulaymaniyah","duhok","sinah","soran","zakho","chamchamal","halabja","koya","amedi","ranya","kalar","shaqlawa","simele","baynjiwayn","batifa","akre"],
+    names:{ ar:"إقليم كردستان", ku:"هەرێما کوردستانێ", en:"Kurdistan Region", de:"Region Kurdistan", tr:"Kürdistan Bölgesi",
+      fa:"اقلیم کردستان", ur:"اقلیمِ کردستان", fr:"Région du Kurdistan", es:"Región del Kurdistán", it:"Regione del Kurdistan",
+      nl:"Koerdistan-regio", da:"Kurdistan-regionen", sv:"Kurdistanregionen", ru:"Регион Курдистан", bs:"Regija Kurdistan",
+      id:"Wilayah Kurdistan", ms:"Wilayah Kurdistan" }
+  }
+};
+const countryFlag = cc => REGIONS[cc] ? flagSrc("ku") : `https://cdn.jsdelivr.net/npm/flag-icons@7.6.0/flags/4x3/${cc.toLowerCase()}.svg`;
 
 // اسم المدينة والبلد بلغة الصفحة برقم GeoNames الثابت
 async function getJSON(u){
@@ -26,7 +36,31 @@ async function localName(city, lang){
   for(const lg of ["ku","ckb","ar"]){ const r = await nameIn(city, lg); if(r && hasAr(r.name)) return r; }
   return null;
 }
+// فلسطين باسمها في كل اللغات (بدل «الأراضي الفلسطينية» الذي تعطيه المتصفحات وقواعد الأسماء)
+const PS_NAMES = { ar:"فلسطين", ku:"فەلەستین", en:"Palestine", de:"Palästina", tr:"Filistin", fa:"فلسطین", ur:"فلسطین",
+  fr:"Palestine", es:"Palestina", it:"Palestina", nl:"Palestina", da:"Palæstina", sv:"Palestina", ru:"Палестина",
+  bs:"Palestina", id:"Palestina", ms:"Palestin" };
+
+// عدد المدن بصيغة الجمع الصحيحة لكل لغة (مدينة واحدة، مدينتان، 3 مدن، 11 مدينة…)
+const CITY_FORMS = {
+  ar:{ one:"مدينة واحدة", two:"مدينتان", few:"{n} مدن", many:"{n} مدينة", other:"{n} مدينة", zero:"{n} مدينة" },
+  en:{ one:"{n} city", other:"{n} cities" }, de:{ one:"{n} Stadt", other:"{n} Städte" },
+  fr:{ one:"{n} ville", other:"{n} villes" }, es:{ one:"{n} ciudad", other:"{n} ciudades" },
+  it:{ one:"{n} città", other:"{n} città" }, nl:{ one:"{n} stad", other:"{n} steden" },
+  da:{ one:"{n} by", other:"{n} byer" }, sv:{ one:"{n} stad", other:"{n} städer" },
+  ru:{ one:"{n} город", few:"{n} города", many:"{n} городов", other:"{n} города" },
+  bs:{ one:"{n} grad", few:"{n} grada", other:"{n} gradova" }
+};
+function nCitiesText(lang, n){
+  const f = CITY_FORMS[lang], num = n.toLocaleString("en");
+  if(!f) return fill(T[lang].nCities, { n:num });
+  let c = "other"; try{ c = new Intl.PluralRules(lang).select(n); }catch(e){}
+  return (f[c] || f.other).replace("{n}", num);
+}
+
 function countryName(cc, lang){
+  if(REGIONS[cc]) return REGIONS[cc].names[lang] || REGIONS[cc].names.en;
+  if(cc === "PS" && PS_NAMES[lang]) return PS_NAMES[lang];
   for(const l of [lang === "ku" ? "ckb" : lang, lang === "ku" ? "ar" : "en"]){
     try{ const n = new Intl.DisplayNames([l], { type:"region" }).of(cc); if(n && n !== cc) return n; }catch(e){}
   }
@@ -143,4 +177,4 @@ function send(res, html, status = 200){
   res.end(html);
 }
 
-module.exports = { T, esc, fill, flagSrc, countryFlag, localName, countryName, page, send };
+module.exports = { T, esc, fill, flagSrc, countryFlag, localName, countryName, PS_NAMES, REGIONS, nCitiesText, page, send };
