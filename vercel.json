@@ -30,6 +30,10 @@
       "destination": "/api/zakat?lang=:lang"
     },
     {
+      "source": "/:lang(ar|ku|en|de|tr|fa|ur|fr|es|it|nl|da|sv|ru|bs|id|ms|bn|ps|ha|sw)/azkar",
+      "destination": "/api/azkar?lang=:lang"
+    },
+    {
       "source": "/:lang(ar|ku|en|de|tr|fa|ur|fr|es|it|nl|da|sv|ru|bs|id|ms|bn|ps|ha|sw)/:slug",
       "destination": "/api/city?lang=:lang&slug=:slug"
     }
