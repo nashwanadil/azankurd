@@ -174,6 +174,7 @@ ${body}
 ${NAV.js(lang)}
 ${js}
 </script>
+<!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "bfceae96a7da49f1a6906ba6c7586176"}'></script><!-- End Cloudflare Web Analytics -->
 </body>
 </html>`;
 }
