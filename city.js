@@ -2,27 +2,39 @@
 const QR = require("qrcode");
 const T = require("./_i18n.js");
 const THEME_JS = require("./_theme.js");
+const FLAGS = require("./_flags.js");
+const flagSrc = l => "data:image/svg+xml;charset=utf-8," + encodeURIComponent(FLAGS[l] || "");
 const { LANGS, SITE, findCity, nearby, METHODS, autoMethod, dayTimes, todayIn, qibla, KEYS } = require("./_core.js");
 
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const fill = (s, v) => s.replace(/\{(\w+)\}/g, (_, k) => v[k] ?? "");
 const intlLoc = l => l === "ku" ? "ckb" : l;
 
-// اسم المدينة والبلد بلغة الصفحة (من قاعدة GeoNames عبر Open-Meteo)
+// اسم المدينة والبلد بلغة الصفحة: نبحث برقم المدينة الثابت في GeoNames (عبر Open-Meteo)
+async function getJSON(u){
+  const ctl = new AbortController(); const tm = setTimeout(() => ctl.abort(), 2500);
+  try{ const r = await fetch(u, { signal:ctl.signal }); return r.ok ? await r.json() : null; }
+  catch(e){ return null; } finally { clearTimeout(tm); }
+}
+const OM = "https://geocoding-api.open-meteo.com/v1/";
+const hasAr = s => /[؀-ۿ]/.test(s || "");
+async function nameIn(city, lg){
+  if(city.gid){
+    const j = await getJSON(`${OM}get?id=${city.gid}&language=${lg}`);
+    return j && j.name ? { name:j.name, country:j.country || "" } : null;
+  }
+  const j = await getJSON(`${OM}search?name=${encodeURIComponent(city.name)}&count=10&language=${lg}&format=json`);
+  const hit = (j?.results || []).filter(x => Math.abs(x.latitude - city.lat) < .3 && Math.abs(x.longitude - city.lng) < .3)[0];
+  return hit ? { name:hit.name, country:hit.country || "" } : null;
+}
 async function localName(city, lang){
-  const tryLang = async lg => {
-    const ctl = new AbortController(); const tm = setTimeout(() => ctl.abort(), 2500);
-    try{
-      const r = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city.name)}&count=10&language=${lg}&format=json`, { signal:ctl.signal });
-      const j = await r.json();
-      const hit = (j.results || []).filter(x => Math.abs(x.latitude - city.lat) < .3 && Math.abs(x.longitude - city.lng) < .3)[0];
-      return hit ? { name:hit.name, country:hit.country } : null;
-    }catch(e){ return null; } finally { clearTimeout(tm); }
-  };
-  if(lang === "en") return null;
-  let r = await tryLang(lang);
-  if(lang === "ku" && (!r || !/[\u0600-\u06FF]/.test(r.name))) r = (await tryLang("ckb")) || r;
-  return r;
+  if(lang !== "ku") return nameIn(city, lang);
+  // الكوردية: نفضّل الكتابة بالحروف العربية، ثم العربية إن لم تتوفر
+  for(const lg of ["ku","ckb","ar"]){
+    const r = await nameIn(city, lg);
+    if(r && hasAr(r.name)) return r;
+  }
+  return null;
 }
 function countryName(cc, lang){
   for(const l of [intlLoc(lang), lang === "ku" ? "ar" : "en"]){
@@ -110,6 +122,7 @@ module.exports = async (req, res) => {
   const asrName = method === 1 ? t.hanafi : t.standard;
   const qrSvg = await QR.toString(SITE + path, { type:"svg", margin:0, color:{ dark:"#2a1c17", light:"#0000" } });
   const near = nearby(city);
+  const nearNames = await Promise.all(near.map(c => localName(c, lang).then(r => r?.name || c.name)));
   const sep = t.dir === "rtl" ? "، " : ", ";
   const coordTxt = `${Math.abs(city.lat).toFixed(2)}°${city.lat >= 0 ? "N" : "S"}, ${Math.abs(city.lng).toFixed(2)}°${city.lng >= 0 ? "E" : "W"}`;
 
@@ -126,7 +139,7 @@ module.exports = async (req, res) => {
   const ptrs = rows.map(r => `<tr class="${r.fri ? "fri" : ""}"><td class="d"><b>${r.d}</b>${esc(r.wd)}</td><td class="h">${esc(r.hij)}</td>${KEYS.map(k => `<td class="${k === "fajr" || k === "maghrib" ? "em" : ""}" data-t="${r[k]}">${r[k]}</td>`).join("")}</tr>`).join("");
   const pth = `<th>${esc(t.dayCol)}</th><th>${esc(t.hijriCol)}</th>` + KEYS.map(k => `<th>${esc(t.names[NAMEKEY[k]])}</th>`).join("");
   const todayCards = KEYS.map(k => `<div class="tt" id="tt-${k}">${IC[k]}<span>${esc(t.names[NAMEKEY[k]])}</span><b data-t="${tt[k]}">${tt[k]}</b></div>`).join("");
-  const langMenu = LANGS.map(l => `<a href="/${l}/${city.slug}${isCurrent ? "" : `?m=${y}-${String(m).padStart(2,"0")}`}" hreflang="${l}" ${l === lang ? 'aria-current="true"' : ""}>${esc(FLAG_LABEL(l))}</a>`).join("");
+  const langMenu = LANGS.map(l => `<a href="/${l}/${city.slug}${isCurrent ? "" : `?m=${y}-${String(m).padStart(2,"0")}`}" hreflang="${l}" ${l === lang ? 'aria-current="true"' : ""}><img class="flag" alt="" src="${flagSrc(l)}"><span dir="${T[l].dir}">${esc(FLAG_LABEL(l))}</span><svg class="chk" viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></svg></a>`).join("");
   const alts = LANGS.map(l => `<link rel="alternate" hreflang="${l}" href="${SITE}/${l}/${city.slug}">`).join("\n") + `\n<link rel="alternate" hreflang="x-default" href="${SITE}/en/${city.slug}">`;
 
   const html = `<!DOCTYPE html>
@@ -170,7 +183,13 @@ html[dir=ltr] .brandmini{font-family:'Noto Sans',sans-serif;font-size:1.25rem}
 .langs summary{list-style:none;display:inline-flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-size:.88rem;cursor:pointer}
 .langs summary::-webkit-details-marker{display:none}
 .langs .menu{position:absolute;inset-inline-end:0;top:calc(100% + 8px);z-index:20;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:6px;width:210px;max-height:60vh;overflow:auto;box-shadow:0 14px 40px rgba(0,0,0,.2)}
-.langs .menu a{display:block;padding:7px 12px;border-radius:9px;font-size:.92rem}
+.langs .menu a{display:flex;align-items:center;gap:10px;padding:7px 12px;border-radius:9px;font-size:.92rem}
+.flag{width:22px;height:16px;border-radius:3px;object-fit:cover;flex:none;box-shadow:0 0 0 1px rgba(0,0,0,.18)}
+.langs .chk{margin-inline-start:auto;width:16px;height:16px;stroke:var(--gold);fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;visibility:hidden}
+.langs .menu a[aria-current] .chk{visibility:visible}
+.langs .chev{width:14px;height:14px;opacity:.7;transition:transform .2s}
+.langs[open] .chev{transform:rotate(180deg)}
+.langs[open] summary{border-color:var(--gold)}
 .langs .menu a:hover{background:var(--hover)}
 .langs .menu a[aria-current]{color:var(--gold);font-weight:600}
 .crumbs{font-size:.82rem;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 10px}
@@ -287,7 +306,7 @@ footer a{color:var(--gold)}
 <div class="wrap">
   <div class="top">
     <a class="brandmini" href="/?lang=${lang}"><img src="/icon-192.png" alt="" width="38" height="38">${esc(t.logo)}</a>
-    <details class="langs"><summary><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/></svg>${esc(t.label)}</summary><div class="menu">${langMenu}</div></details>
+    <details class="langs"><summary><img class="flag" alt="" src="${flagSrc(lang)}">${esc(t.label)}<svg class="ic chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></summary><div class="menu">${langMenu}</div></details>
   </div>
   <nav class="crumbs"><a href="/?lang=${lang}">${esc(t.home)}</a><span>›</span><span style="opacity:1">${esc(country)}</span><span>›</span><b>${esc(cityName)}</b></nav>
 
@@ -323,7 +342,7 @@ footer a{color:var(--gold)}
     </div>
     <div class="hcard info">
       <h3>${esc(t.nearby)}</h3>
-      <div class="chips">${near.map(c => `<a href="/${lang}/${c.slug}">${esc(c.name)}</a>`).join("")}</div>
+      <div class="chips">${near.map((c, i) => `<a href="/${lang}/${c.slug}">${esc(nearNames[i])}</a>`).join("")}</div>
     </div>
   </section>
 
@@ -348,6 +367,11 @@ footer a{color:var(--gold)}
   </div>
 </div>
 <script>
+(function(){
+  var dl=document.querySelector(".langs");
+  document.addEventListener("click",function(e){ if(dl.open && !dl.contains(e.target)) dl.open=false; });
+  document.addEventListener("keydown",function(e){ if(e.key==="Escape" && dl.open){ dl.open=false; dl.querySelector("summary").focus(); } });
+})();
 (function(){
   var TZ=${JSON.stringify(city.tz)}, TODAY=${JSON.stringify(tt)}, TMFAJR=${JSON.stringify(tmFajr)}, CUR=${isCurrent ? today.d : 0};
   var NAMES=${JSON.stringify(t.names)}, NK=${JSON.stringify(NAMEKEY)}, ORDER=["fajr","dhuhr","asr","maghrib","isha"];
