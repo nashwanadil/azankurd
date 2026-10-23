@@ -119,13 +119,13 @@ function nextPrayer(lat, lng, tz, method, school, after){
   return null;
 }
 // كل تنبيهات المشترك حسب اختياراته المتقدمة، ثم أقربها بعد لحظة معينة
-// prefs: { p:[الصلوات المختارة], b:دقائق قبل الصلاة, i:دقائق الإقامة بعد الأذان, fe:قبل نهاية الفجر, j:الجمعة, q:قيام الليل }
-const DEF_PREFS = { p:NOTIFY_KEYS, b:0, i:0, fe:0, j:0, q:0 };
+// prefs: { p:[الصلوات المختارة], a:التنبيه عند دخول الوقت, b:دقائق قبل الصلاة, i:دقائق الإقامة بعد الأذان, fe:قبل نهاية الفجر, j:الجمعة, q:قيام الليل }
+// (a مستقل عن b و i: يمكن الاكتفاء بالتذكير قبل الصلاة دون تنبيه عند دخولها)
 function cleanPrefs(x){
   x = x && typeof x === "object" ? x : {};
   const num = (v, ok) => ok.includes(Number(v)) ? Number(v) : 0;
   const p = Array.isArray(x.p) ? NOTIFY_KEYS.filter(k => x.p.includes(k)) : NOTIFY_KEYS;
-  return { p, b:num(x.b, [0,5,10,15,20,30]), i:num(x.i, [0,5,10,15,20]), fe:x.fe ? 1 : 0, j:x.j ? 1 : 0, q:x.q ? 1 : 0 };
+  return { p, a:x.a === 0 ? 0 : 1, b:num(x.b, [0,5,10,15,20,30]), i:num(x.i, [0,5,10,15,20]), fe:x.fe ? 1 : 0, j:x.j ? 1 : 0, q:x.q ? 1 : 0 };
 }
 function dayEvents(lat, lng, tz, params, y, m, d, prefs){
   const t = new adhan.PrayerTimes(new adhan.Coordinates(lat, lng), new Date(y, m - 1, d), params);
@@ -133,7 +133,7 @@ function dayEvents(lat, lng, tz, params, y, m, d, prefs){
   for(const k of prefs.p){
     const at = t[k]; if(!ok(at)) continue;
     const hmv = hm(at, tz);
-    ev.push({ type:"adhan", key:k, at, hm:hmv });
+    if(prefs.a) ev.push({ type:"adhan", key:k, at, hm:hmv });
     if(prefs.b) ev.push({ type:"before", key:k, at:new Date(at - prefs.b * M), hm:hmv });
     if(prefs.i) ev.push({ type:"iqama", key:k, at:new Date(+at + prefs.i * M), hm:hmv });
   }
