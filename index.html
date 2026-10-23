@@ -114,6 +114,8 @@ applyTheme();
     transition:background .15s,border-color .15s
   }
   .pill:hover,.pill[aria-expanded=true]{background:var(--hover);border-color:var(--gold)}
+  .pill svg.ic{stroke:var(--gold)}
+  .pill.round svg.ic{width:20px;height:20px}
   .pill .chev{width:14px;height:14px;opacity:.7;transition:transform .2s}
   .pill[aria-expanded=true] .chev{transform:rotate(180deg)}
   .langwrap{position:relative}
@@ -147,7 +149,7 @@ applyTheme();
   header{text-align:center;padding:32px 16px 28px}
   .brand{display:flex;align-items:center;justify-content:center;gap:14px}
   .brand img{width:60px;height:60px;border-radius:15px;box-shadow:0 6px 18px rgba(0,0,0,.35)}
-  .logo{font-family:'Amiri',serif;font-size:3rem;color:var(--title);font-weight:700;letter-spacing:1px;word-spacing:-.2em}
+  .logo{font-family:'Amiri',serif;font-size:3rem;color:var(--title);font-weight:700;letter-spacing:1px;word-spacing:-.32em}
   html[dir=rtl] .logo{letter-spacing:0}
   .sub{color:var(--muted);font-size:.95rem;margin-top:4px}
   main{max-width:720px;margin:0 auto;padding:0 16px 48px}
@@ -1016,7 +1018,11 @@ async function placeFromText(text){
 }
 
 async function getTimes(q, opts = {}){
-  let method = methodChoice === "auto" ? 3 : Number(methodChoice);
+  // نخمّن طريقة الحساب من المنطقة الزمنية للجهاز (أو المحفوظة) فنتجنب طلبًا ثانيًا في الغالب
+  let guessTz = ""; try{ guessTz = (q.type === "coords" && !q.mecca && !q.country) ? Intl.DateTimeFormat().resolvedOptions().timeZone : ""; }catch(e){}
+  const prev = readJSON("cache");
+  if(prev && prev.data && prev.data.meta && samePlace(prev.q, q)) guessTz = prev.data.meta.timezone;
+  let method = methodChoice === "auto" ? (guessTz ? autoMethod(guessTz) : 3) : Number(methodChoice);
   let j = await (await fetch(apiUrl(q, method))).json();
   if(j.code !== 200) throw 0;
   if(methodChoice === "auto"){
@@ -1042,8 +1048,18 @@ async function getTimes(q, opts = {}){
 async function byCoords(lat, lng){
   const r = n => Math.round(n*100)/100;
   const q = {type:"coords", lat:r(lat), lng:r(lng)};
-  Object.assign(q, await reverseName(q.lat, q.lng));
-  try{ await getTimes(q); }catch(e){ fallback(); }
+  // اسم المدينة يُطلب بالتوازي مع المواقيت، لا قبلها، فتظهر المواقيت أسرع
+  const naming = reverseName(q.lat, q.lng);
+  const saved = readJSON("lastQuery");
+  if(saved && saved.type === "coords" && saved.name && Math.abs(saved.lat - q.lat) < .05 && Math.abs(saved.lng - q.lng) < .05){ q.name = saved.name; q.country = saved.country; }
+  try{ await getTimes(q); }catch(e){ fallback(); return; }
+  const nm = await naming;
+  if(nm.name && (nm.name !== q.name || nm.country !== q.country) && lastQuery === q){
+    Object.assign(q, nm);
+    store.set("lastQuery", JSON.stringify(q));
+    const c = readJSON("cache"); if(c){ c.q = q; store.set("cache", JSON.stringify(c)); }
+    if(lastData) render(lastData, q);
+  }
 }
 
 // بحث موحّد: نص أو مكان مختار من الاقتراحات
@@ -1123,7 +1139,8 @@ function useLocation(){
       locState = (err.code === 1 && await permState() === "denied") ? "denied" : "unknown";
       fallback();
     },
-    {timeout:10000});
+    // يكفينا موقع على مستوى المدينة: نقبل موقعًا معروفًا من آخر 15 دقيقة فيأتي فورًا، ولا نطلب دقة GPS العالية
+    {enableHighAccuracy:false, maximumAge:15*60*1000, timeout:8000});
 }
 function renderNotice(){
   const box = document.getElementById("locNotice"), t = L();
