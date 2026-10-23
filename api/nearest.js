@@ -6,5 +6,5 @@ module.exports = (req, res) => {
   if(!isFinite(lat) || !isFinite(lng)){ res.statusCode = 400; return res.end("{}"); }
   const c = nearest(lat, lng);
   res.setHeader("Cache-Control", "public, s-maxage=2592000");
-  res.end(JSON.stringify(c ? { slug:c.slug, name:c.name } : {}));
+  res.end(JSON.stringify(c ? { slug:c.slug, name:c.name, cc:c.cc } : {}));
 };

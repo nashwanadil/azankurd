@@ -4,6 +4,7 @@ const T = require("./_i18n.js");
 const THEME_JS = require("./_theme.js");
 const FLAGS = require("./_flags.js");
 const INFO = require("./_info.js");
+const NAV = require("./_nav.js");
 const flagSrc = l => "data:image/svg+xml;charset=utf-8," + encodeURIComponent(FLAGS[l] || "");
 const { LANGS, SITE, findCity, nearby, METHODS, autoMethod, dayTimes, todayIn, qibla, KEYS } = require("./_core.js");
 
@@ -189,6 +190,7 @@ svg.ic{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;str
 .brandmini{display:flex;align-items:center;gap:10px;font-family:'Amiri',serif;font-size:1.6rem;font-weight:700;color:var(--title);word-spacing:-.2em}
 html[dir=ltr] .brandmini{font-family:'Noto Sans',sans-serif;font-size:1.25rem}
 .brandmini img{width:38px;height:38px;border-radius:10px}
+${NAV.css}
 .langs{position:relative}
 .langs summary{list-style:none;display:inline-flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-size:.88rem;cursor:pointer}
 .langs summary::-webkit-details-marker{display:none}
@@ -344,7 +346,7 @@ footer a{color:var(--gold)}
 <div class="wrap">
   <div class="top">
     <a class="brandmini" href="/?lang=${lang}"><img src="/icon-192.png" alt="" width="38" height="38">${esc(t.logo)}</a>
-    <details class="langs"><summary><img class="flag" alt="" src="${flagSrc(lang)}">${esc(t.label)}<svg class="ic chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></summary><div class="menu">${langMenu}</div></details>
+    <div class="tr">${NAV.html(lang)}<details class="langs"><summary><img class="flag" alt="" src="${flagSrc(lang)}">${esc(t.label)}<svg class="ic chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></summary><div class="menu">${langMenu}</div></details></div>
   </div>
   <nav class="crumbs"><a href="/?lang=${lang}">${esc(t.home)}</a><span>›</span><a href="/${lang}/country/${city.cc.toLowerCase()}">${esc(country)}</a><span>›</span><b>${esc(cityName)}</b></nav>
 
@@ -418,6 +420,7 @@ footer a{color:var(--gold)}
   </div>
 </div>
 <script>
+${NAV.js(lang)}
 (function(){
   var dl=document.querySelector(".langs");
   document.addEventListener("click",function(e){ if(dl.open && !dl.contains(e.target)) dl.open=false; });

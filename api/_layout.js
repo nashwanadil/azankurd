@@ -3,6 +3,7 @@ const T = require("./_i18n.js");
 const THEME_JS = require("./_theme.js");
 const FLAGS = require("./_flags.js");
 const INFO = require("./_info.js");
+const NAV = require("./_nav.js");
 const { LANGS, SITE } = require("./_core.js");
 
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -138,6 +139,7 @@ html[data-mode=dark] h1 em{color:var(--gold)}
 footer{text-align:center;color:var(--muted);font-size:.8rem;padding:10px 0 32px}
 footer a{color:var(--gold)}
 @media (max-width:760px){ h1{font-size:1.5rem} .hcard{padding:18px} }
+${NAV.css}
 ${css}
 </style>
 <!-- إحصاءات Vercel للزوار (بلا ملفات تعريف ارتباط) -->
@@ -148,7 +150,7 @@ ${css}
 <div class="wrap">
   <div class="top">
     <a class="brandmini" href="/?lang=${lang}"><img src="/icon-192.png" alt="" width="38" height="38">${esc(t.logo)}</a>
-    <details class="langs"><summary><img class="flag" alt="" src="${flagSrc(lang)}">${esc(t.label)}<svg class="ic chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></summary><div class="menu">${langMenu}</div></details>
+    <div class="tr">${NAV.html(lang)}<details class="langs"><summary><img class="flag" alt="" src="${flagSrc(lang)}">${esc(t.label)}<svg class="ic chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></summary><div class="menu">${langMenu}</div></details></div>
   </div>
 ${body}
   <footer>© ${new Date().getUTCFullYear()} <a href="/?lang=${lang}">azankurd.com</a> · <a href="/${lang}/countries">${esc(t.allCountries)}</a> · <a href="/${lang}/about">${esc(INFO[lang].cAbout)}</a> · <a href="/${lang}/privacy">${esc(INFO[lang].cPrivacy)}</a> · <a href="/${lang}/contact">${esc(INFO[lang].cContact)}</a></footer>
@@ -169,6 +171,7 @@ ${body}
     });
   }
 })();
+${NAV.js(lang)}
 ${js}
 </script>
 </body>
