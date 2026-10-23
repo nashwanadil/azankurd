@@ -7,7 +7,7 @@ const crypto = require("crypto");
 const { redis, ready } = require("./_redis.js");
 
 const ALLOWED = ["lang","theme","mode","fmt","asr","method","lastQuery","myPlace","notifyPrefs","recent"];
-const CODE = /^[A-Za-z0-9]{12}$/;
+const CODE = /^[a-z2-9]{5}$/;
 const YEAR2 = 60 * 60 * 24 * 365 * 2;
 
 function out(res, code, obj){
@@ -22,10 +22,10 @@ async function body(req){
   let raw = ""; for await (const ch of req){ raw += ch; if(raw.length > 20000) throw new Error("big"); }
   return JSON.parse(raw || "{}");
 }
-// رمز من 12 حرفًا وأرقامًا، بلا أحرف ملتبسة
+// رمز من 5 أحرف، بلا أحرف ملتبسة
 const ALPH = "abcdefghjkmnpqrstuvwxyz23456789";
 function newCode(){
-  const b = crypto.randomBytes(12); let s = "";
+  const b = crypto.randomBytes(5); let s = "";
   for(const x of b) s += ALPH[x % ALPH.length];
   return s;
 }
@@ -38,6 +38,11 @@ function clean(d){
 module.exports = async (req, res) => {
   if(!ready()) return out(res, 503, { ok:false, error:"config" });
   try{
+    // حدّ 60 طلبًا في الساعة لكل جهاز، حتى لا يُجرَّب التخمين بكثرة
+    const ip = String(req.headers["x-forwarded-for"] || "").split(",")[0].trim() || "x";
+    const rk = "sy:" + ip, hits = await redis(["INCR", rk]);
+    if(hits === 1) await redis(["EXPIRE", rk, "3600"]);
+    if(hits > 60) return out(res, 429, { ok:false });
     if(req.method === "GET"){
       const u = new URL(req.url, "https://azankurd.com");
       const code = String(u.searchParams.get("code") || "");
