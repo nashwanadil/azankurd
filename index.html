@@ -456,6 +456,23 @@ applyTheme();
     <div class="field" id="installField" hidden>
       <button class="btn wide" type="button" id="installFromSettings" data-i="installApp"></button>
     </div>
+    <div class="field">
+      <details class="fold" id="syncBox">
+        <summary><span id="syncTitle"></span><svg class="chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div style="padding:6px 12px 12px">
+          <p id="syncHelp" style="font-size:.85rem;line-height:1.8;color:var(--muted);margin:4px 0 10px"></p>
+          <button class="btn wide" type="button" id="syncNew"></button>
+          <button class="btn wide" type="button" id="syncSave" hidden style="margin-top:8px"></button>
+          <div id="syncCodeBox" hidden style="margin-top:10px;font-size:.9rem">
+            <span id="syncCodeLbl"></span> <b id="syncCode" dir="ltr" style="font-family:monospace;letter-spacing:.08em"></b>
+          </div>
+          <label id="syncInLbl" for="syncIn" style="display:block;font-size:.85rem;color:var(--muted);margin:14px 0 6px"></label>
+          <input id="syncIn" dir="ltr" maxlength="12" autocomplete="off" spellcheck="false" style="width:100%;padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--text);font-family:monospace;font-size:1rem">
+          <button class="btn wide" type="button" id="syncApply" style="margin-top:8px"></button>
+          <div id="syncMsg" role="status" style="margin-top:10px;font-size:.9rem;min-height:1.4em"></div>
+        </div>
+      </details>
+    </div>
   </div>
 </div>
 
@@ -759,6 +776,7 @@ function applyLang(){
   document.getElementById("closeSettings").setAttribute("aria-label", t.close);
   renderAdhan();
   fillSettings();
+  try{ syncLabels(); }catch(e){}
   if(typeof renderNotice === 'function') renderNotice();
   if(lastData) render(lastData, lastLabel); else document.getElementById("locText").textContent = t.locating;
 }
@@ -1477,6 +1495,65 @@ document.getElementById("installNo").addEventListener("click", ()=>{
 document.getElementById("installOverlay").addEventListener("click", e=>{
   if(e.target.id === "installOverlay"){ store.set("installDismissed","1"); closeInstall(); }
 });
+/* ---------- مزامنة الإعدادات برمز (بلا حساب) ---------- */
+const SYNC_KEYS = ["lang","theme","mode","fmt","asr","method","lastQuery","myPlace","notifyPrefs","recent"];
+const SYNC_T = {
+  ar:{ title:"مزامنة الإعدادات", help:"أنشئ رمزًا واحفظه، فتعود إعداداتك ومدنك على أي جهاز بإدخال الرمز. الرمز لا يحمل بريدًا ولا اسمًا، لكن من يملكه يرى إعداداتك، فلا تشاركه.", newBtn:"إنشاء رمز جديد", saveBtn:"حفظ إعداداتي على رمزي", codeLbl:"رمزك:", inLbl:"لديّ رمز، أدخله هنا:", applyBtn:"استعادة الإعدادات", ok:"تم الحفظ. احتفظ بالرمز.", restored:"تمت الاستعادة", err:"تعذّر الاتصال، حاول لاحقًا", notFound:"الرمز غير صحيح أو منتهي" },
+  ku:{ title:"هاوکاریکرنا ڕێکخستنان", help:"کودەکێ دروست بکە و هەلگرە، پاشان ب ڕێکا وێ ڕێکخستن و باژێرێن خۆ ل ههر ئامێرەکێ ڤەبگەرینە. کود ئیمەیل یان ناڤ تێدا نینە، لێ هەر کەسەکێ کودی هەبیت دشێت ڕێکخستنێن تە ببینیت، ڤێ بۆ کەسان نەنیشان بدە.", newBtn:"کودەکا نوو دروست بکە", saveBtn:"ڕێکخستنێن خۆ ل سەر کودا خۆ هەلگرە", codeLbl:"کودێ تە:", inLbl:"کودەک هەیە؟ لێرە بنڤیسە:", applyBtn:"ڕێکخستنان ڤەگەرینە", ok:"هاتە هەلگرتن. کودی هەلگرە.", restored:"ڤەگەڕا", err:"پەیوەندی نەچوو، دووبارە هەوڵ بدە", notFound:"کود دروست نینە یان بەسەرچوویە" },
+  en:{ title:"Sync settings", help:"Create a code and keep it. Enter it on any device to restore your settings and cities. The code holds no email or name, but anyone with it can see your settings, so keep it private.", newBtn:"Create a new code", saveBtn:"Save my settings to my code", codeLbl:"Your code:", inLbl:"Have a code? Enter it here:", applyBtn:"Restore settings", ok:"Saved. Keep your code.", restored:"Restored", err:"Connection failed, try later", notFound:"Code is invalid or expired" }
+};
+const syncT = () => SYNC_T[lang] || SYNC_T.en;
+function syncRefresh(){
+  const c = store.get("syncCode", "");
+  document.getElementById("syncSave").hidden = !c;
+  document.getElementById("syncCodeBox").hidden = !c;
+  document.getElementById("syncCode").textContent = c;
+}
+function syncLabels(){
+  const x = syncT();
+  document.getElementById("syncTitle").textContent = x.title;
+  document.getElementById("syncHelp").textContent = x.help;
+  document.getElementById("syncNew").textContent = x.newBtn;
+  document.getElementById("syncSave").textContent = x.saveBtn;
+  document.getElementById("syncCodeLbl").textContent = x.codeLbl;
+  document.getElementById("syncInLbl").textContent = x.inLbl;
+  document.getElementById("syncApply").textContent = x.applyBtn;
+  syncRefresh();
+}
+function syncMsg(t, ok){ const m = document.getElementById("syncMsg"); m.textContent = t; m.style.color = ok ? "#2e9d5b" : "#d0443c"; }
+function syncCollect(){ const d = {}; SYNC_KEYS.forEach(k => { const v = store.get(k, null); if(v !== null) d[k] = v; }); return d; }
+async function syncCall(method, body, qs){
+  const r = await fetch("/api/sync" + (qs || ""), { method, headers:{ "Content-Type":"application/json" }, body: body ? JSON.stringify(body) : undefined });
+  const j = await r.json().catch(() => ({}));
+  return { status:r.status, j };
+}
+async function syncSave(makeNew){
+  const x = syncT(), body = { data: syncCollect() }, cur = store.get("syncCode", "");
+  if(!makeNew && cur) body.code = cur;
+  try{
+    const { status, j } = await syncCall("POST", body);
+    if(status === 200 && j.ok){ store.set("syncCode", j.code); syncRefresh(); syncMsg(x.ok, true); }
+    else if(status === 404){ store.set("syncCode", ""); syncRefresh(); syncMsg(x.notFound, false); }
+    else syncMsg(x.err, false);
+  }catch(e){ syncMsg(x.err, false); }
+}
+async function syncRestore(){
+  const x = syncT(), code = document.getElementById("syncIn").value.trim();
+  if(!/^[A-Za-z0-9]{12}$/.test(code)) return syncMsg(x.notFound, false);
+  try{
+    const { status, j } = await syncCall("GET", null, "?code=" + encodeURIComponent(code));
+    if(status === 200 && j.ok){
+      SYNC_KEYS.forEach(k => { if(j.data[k] !== undefined) store.set(k, String(j.data[k])); });
+      store.set("syncCode", code); syncMsg(x.restored, true);
+      setTimeout(() => location.reload(), 600);
+    } else syncMsg(x.notFound, false);
+  }catch(e){ syncMsg(x.err, false); }
+}
+document.getElementById("syncNew").addEventListener("click", () => syncSave(true));
+document.getElementById("syncSave").addEventListener("click", () => syncSave(false));
+document.getElementById("syncApply").addEventListener("click", syncRestore);
+syncLabels();
+
 document.getElementById("installFromSettings").addEventListener("click", ()=>{ closeSettings(); openInstall(); });
 updateInstallUI();
 if(isIOS) maybeShowInstall();
