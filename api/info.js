@@ -24,7 +24,10 @@ html[dir=ltr] .sign{font-family:'Noto Sans',sans-serif;font-size:1.15rem}
 .form .st.err{color:#d0443c}`;
 const ORN = '<svg class="orn" viewBox="0 0 240 24" aria-hidden="true"><path d="M4 12H92M148 12h88" stroke-width="1.4"/><path d="M96 12l5-5 5 5-5 5zM134 12l5-5 5 5-5 5z"/><path d="M120 2l3.4 6.6L130 12l-6.6 3.4L120 22l-3.4-6.6L110 12l6.6-3.4z"/></svg>';
 
+// أدوات (التاريخ والزكاة والأذكار) تُخدم من هذه الدالة نفسها، لأن خطة Vercel المجانية تسمح بـ12 دالة فقط
+const TOOLS = { hijri:"./_hijri.js", zakat:"./_zakat.js", azkar:"./_azkar.js" };
 module.exports = (req, res) => {
+  { const pg = new URL(req.url, "https://azankurd.com").searchParams.get("page"); if(TOOLS[pg]) return require(TOOLS[pg])(req, res); }
   const u = new URL(req.url, "https://azankurd.com");
   const lang = LANGS.includes(u.searchParams.get("lang")) ? u.searchParams.get("lang") : "ar";
   const which = ["about","privacy","contact"].includes(u.searchParams.get("page")) ? u.searchParams.get("page") : "about";

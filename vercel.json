@@ -18,20 +18,8 @@
       "destination": "/api/country?lang=:lang&cc=:cc"
     },
     {
-      "source": "/:lang(ar|ku|en|de|tr|fa|ur|fr|es|it|nl|da|sv|ru|bs|id|ms|bn|ps|ha|sw)/:page(about|privacy|contact)",
+      "source": "/:lang(ar|ku|en|de|tr|fa|ur|fr|es|it|nl|da|sv|ru|bs|id|ms|bn|ps|ha|sw)/:page(about|privacy|contact|hijri|zakat|azkar)",
       "destination": "/api/info?lang=:lang&page=:page"
-    },
-    {
-      "source": "/:lang(ar|ku|en|de|tr|fa|ur|fr|es|it|nl|da|sv|ru|bs|id|ms|bn|ps|ha|sw)/hijri",
-      "destination": "/api/hijri?lang=:lang"
-    },
-    {
-      "source": "/:lang(ar|ku|en|de|tr|fa|ur|fr|es|it|nl|da|sv|ru|bs|id|ms|bn|ps|ha|sw)/zakat",
-      "destination": "/api/zakat?lang=:lang"
-    },
-    {
-      "source": "/:lang(ar|ku|en|de|tr|fa|ur|fr|es|it|nl|da|sv|ru|bs|id|ms|bn|ps|ha|sw)/azkar",
-      "destination": "/api/azkar?lang=:lang"
     },
     {
       "source": "/:lang(ar|ku|en|de|tr|fa|ur|fr|es|it|nl|da|sv|ru|bs|id|ms|bn|ps|ha|sw)/:slug",
