@@ -1,4 +1,4 @@
-// المنبّه: تطلبه خدمة cron-job.org كل دقيقة: /api/notify?key=CRON_SECRET
+// المنبّه: تطلبه خدمة cron-job.org كل دقيقة: /api/notify?key=NOTIFY_SECRET
 // يسأل القاعدة سؤالًا واحدًا: من حان وقت صلاته الآن؟ فيرسل لهم الإشعار، ثم يحدد موعد صلاتهم التالية
 const webpush = require("web-push");
 const { nextEvent } = require("./_core.js");
@@ -17,7 +17,7 @@ module.exports = async (req, res) => {
   const u = new URL(req.url, "https://azankurd.com");
   res.setHeader("Content-Type", "application/json; charset=utf-8");
   res.setHeader("Cache-Control", "no-store");
-  if(!process.env.CRON_SECRET || u.searchParams.get("key") !== process.env.CRON_SECRET){ res.statusCode = 401; return res.end("{}"); }
+  if(!process.env.NOTIFY_SECRET || u.searchParams.get("key") !== process.env.NOTIFY_SECRET){ res.statusCode = 401; return res.end("{}"); }
   if(!ready() || !process.env.VAPID_PUBLIC_KEY || !process.env.VAPID_PRIVATE_KEY){ res.statusCode = 503; return res.end('{"error":"config"}'); }
   webpush.setVapidDetails("https://azankurd.com", process.env.VAPID_PUBLIC_KEY, process.env.VAPID_PRIVATE_KEY);
 
