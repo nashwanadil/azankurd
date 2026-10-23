@@ -14,9 +14,11 @@ const I = {
   privacy:'<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/>',
   contact:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/>',
   cal:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M8 14h2M14 14h2M8 17.5h2"/>',
+  zakat:'<path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.4 0-8-3.6-8-8s3.6-8 8-8 8 3.6 8 8-3.6 8-8 8z"/><path d="M12 6v6M9 12h6"/><circle cx="12" cy="12" r="1"/>',
   gear:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 0 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 0 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 0 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 0 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>'
 };
 const CALLBL = { ar:"تحويل التاريخ", ku:"گوهۆڕینا بەروارێ", en:"Date converter" };
+const ZAKATBL = { ar:"حاسبة الزكاة", ku:"حاسبەری زەکات", en:"Zakat Calculator" };
 const ic = k => `<svg class="ni" viewBox="0 0 24 24">${I[k]}</svg>`;
 
 const css = `
@@ -55,7 +57,7 @@ function html(lang){
 <a href="/${lang}/about">${ic("about")}<span>${esc(x.cAbout)}</span></a>
 <a href="/${lang}/privacy">${ic("privacy")}<span>${esc(x.cPrivacy)}</span></a>
 <a href="/${lang}/contact">${ic("contact")}<span>${esc(x.cContact)}</span></a>
-</div></details><a class="navcal" href="/${lang}/hijri" aria-label="${esc(CALLBL[lang] || CALLBL.en)}" title="${esc(CALLBL[lang] || CALLBL.en)}"><svg viewBox="0 0 24 24">${I.cal}</svg></a>`;
+</div></details><a class="navcal" href="/${lang}/hijri" aria-label="${esc(CALLBL[lang] || CALLBL.en)}" title="${esc(CALLBL[lang] || CALLBL.en)}"><svg viewBox="0 0 24 24">${I.cal}</svg></a><a class="navcal" href="/${lang}/zakat" aria-label="${esc(ZAKATBL[lang] || ZAKATBL.en)}" title="${esc(ZAKATBL[lang] || ZAKATBL.en)}"><svg viewBox="0 0 24 24">${I.zakat}</svg></a>`;
 }
 
 // زر الإعدادات: يفتح الإعدادات في الصفحة الرئيسية
