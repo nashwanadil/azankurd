@@ -10,15 +10,15 @@
       "destination": "/api/sitemap?part=:n"
     },
     {
-      "source": "/:lang(ar|ku|en|de|tr|fa|ur|fr|es|it|nl|da|sv|ru|bs|id|ms)/countries",
+      "source": "/:lang(ar|ku|en|de|tr|fa|ur|fr|es|it|nl|da|sv|ru|bs|id|ms|bn|ps|ha|sw)/countries",
       "destination": "/api/country?lang=:lang"
     },
     {
-      "source": "/:lang(ar|ku|en|de|tr|fa|ur|fr|es|it|nl|da|sv|ru|bs|id|ms)/country/:cc",
+      "source": "/:lang(ar|ku|en|de|tr|fa|ur|fr|es|it|nl|da|sv|ru|bs|id|ms|bn|ps|ha|sw)/country/:cc",
       "destination": "/api/country?lang=:lang&cc=:cc"
     },
     {
-      "source": "/:lang(ar|ku|en|de|tr|fa|ur|fr|es|it|nl|da|sv|ru|bs|id|ms)/:slug",
+      "source": "/:lang(ar|ku|en|de|tr|fa|ur|fr|es|it|nl|da|sv|ru|bs|id|ms|bn|ps|ha|sw)/:slug",
       "destination": "/api/city?lang=:lang&slug=:slug"
     }
   ]
