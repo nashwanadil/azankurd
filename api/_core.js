@@ -10,7 +10,7 @@ const CITIES = DATA.c;
 const BY_SLUG = new Map(CITIES.map((c, i) => [c[0], i]));
 const cityAt = i => {
   const c = CITIES[i];
-  return { slug:c[0], name:c[1], cc:c[2], lat:c[3], lng:c[4], tz:DATA.tz[c[5]], pop:c[6] };
+  return { slug:c[0], name:c[1], cc:c[2], lat:c[3], lng:c[4], tz:DATA.tz[c[5]], pop:c[6], gid:c[7] || 0 };
 };
 const findCity = slug => BY_SLUG.has(slug) ? cityAt(BY_SLUG.get(slug)) : null;
 

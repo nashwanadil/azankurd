@@ -8,21 +8,31 @@ const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt
 const fill = (s, v) => s.replace(/\{(\w+)\}/g, (_, k) => v[k] ?? "");
 const intlLoc = l => l === "ku" ? "ckb" : l;
 
-// اسم المدينة والبلد بلغة الصفحة (من قاعدة GeoNames عبر Open-Meteo)
+// اسم المدينة والبلد بلغة الصفحة: نبحث برقم المدينة الثابت في GeoNames (عبر Open-Meteo)
+async function getJSON(u){
+  const ctl = new AbortController(); const tm = setTimeout(() => ctl.abort(), 2500);
+  try{ const r = await fetch(u, { signal:ctl.signal }); return r.ok ? await r.json() : null; }
+  catch(e){ return null; } finally { clearTimeout(tm); }
+}
+const OM = "https://geocoding-api.open-meteo.com/v1/";
+const hasAr = s => /[؀-ۿ]/.test(s || "");
+async function nameIn(city, lg){
+  if(city.gid){
+    const j = await getJSON(`${OM}get?id=${city.gid}&language=${lg}`);
+    return j && j.name ? { name:j.name, country:j.country || "" } : null;
+  }
+  const j = await getJSON(`${OM}search?name=${encodeURIComponent(city.name)}&count=10&language=${lg}&format=json`);
+  const hit = (j?.results || []).filter(x => Math.abs(x.latitude - city.lat) < .3 && Math.abs(x.longitude - city.lng) < .3)[0];
+  return hit ? { name:hit.name, country:hit.country || "" } : null;
+}
 async function localName(city, lang){
-  const tryLang = async lg => {
-    const ctl = new AbortController(); const tm = setTimeout(() => ctl.abort(), 2500);
-    try{
-      const r = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city.name)}&count=10&language=${lg}&format=json`, { signal:ctl.signal });
-      const j = await r.json();
-      const hit = (j.results || []).filter(x => Math.abs(x.latitude - city.lat) < .3 && Math.abs(x.longitude - city.lng) < .3)[0];
-      return hit ? { name:hit.name, country:hit.country } : null;
-    }catch(e){ return null; } finally { clearTimeout(tm); }
-  };
-  if(lang === "en") return null;
-  let r = await tryLang(lang);
-  if(lang === "ku" && (!r || !/[\u0600-\u06FF]/.test(r.name))) r = (await tryLang("ckb")) || r;
-  return r;
+  if(lang !== "ku") return nameIn(city, lang);
+  // الكوردية: نفضّل الكتابة بالحروف العربية، ثم العربية إن لم تتوفر
+  for(const lg of ["ku","ckb","ar"]){
+    const r = await nameIn(city, lg);
+    if(r && hasAr(r.name)) return r;
+  }
+  return null;
 }
 function countryName(cc, lang){
   for(const l of [intlLoc(lang), lang === "ku" ? "ar" : "en"]){
@@ -110,6 +120,7 @@ module.exports = async (req, res) => {
   const asrName = method === 1 ? t.hanafi : t.standard;
   const qrSvg = await QR.toString(SITE + path, { type:"svg", margin:0, color:{ dark:"#2a1c17", light:"#0000" } });
   const near = nearby(city);
+  const nearNames = await Promise.all(near.map(c => localName(c, lang).then(r => r?.name || c.name)));
   const sep = t.dir === "rtl" ? "، " : ", ";
   const coordTxt = `${Math.abs(city.lat).toFixed(2)}°${city.lat >= 0 ? "N" : "S"}, ${Math.abs(city.lng).toFixed(2)}°${city.lng >= 0 ? "E" : "W"}`;
 
@@ -323,7 +334,7 @@ footer a{color:var(--gold)}
     </div>
     <div class="hcard info">
       <h3>${esc(t.nearby)}</h3>
-      <div class="chips">${near.map(c => `<a href="/${lang}/${c.slug}">${esc(c.name)}</a>`).join("")}</div>
+      <div class="chips">${near.map((c, i) => `<a href="/${lang}/${c.slug}">${esc(nearNames[i])}</a>`).join("")}</div>
     </div>
   </section>
 
