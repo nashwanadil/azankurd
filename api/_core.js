@@ -2,7 +2,7 @@
 const adhan = require("adhan");
 const DATA = require("./_cities.json");
 
-const LANGS = ["ar","ku","en","de","tr","fa","ur","fr","es","it","nl","da","sv","ru","bs","id","ms"];
+const LANGS = ["ar","ku","fa","de","nl","da","en","fr","tr","ur","bs","id","ms","bn","ps","ha","sw","es","it","sv","ru"];   // بترتيب قائمة اللغات
 const SITE = "https://azankurd.com";
 
 // المدن: [slug, name, cc, lat, lng, tzIndex, pop]

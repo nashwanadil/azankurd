@@ -14,7 +14,7 @@ const REGIONS = {
     names:{ ar:"إقليم كردستان", ku:"هەرێما کوردستانێ", en:"Kurdistan Region", de:"Region Kurdistan", tr:"Kürdistan Bölgesi",
       fa:"اقلیم کردستان", ur:"اقلیمِ کردستان", fr:"Région du Kurdistan", es:"Región del Kurdistán", it:"Regione del Kurdistan",
       nl:"Koerdistan-regio", da:"Kurdistan-regionen", sv:"Kurdistanregionen", ru:"Регион Курдистан", bs:"Regija Kurdistan",
-      id:"Wilayah Kurdistan", ms:"Wilayah Kurdistan" }
+      id:"Wilayah Kurdistan", ms:"Wilayah Kurdistan", bn:"কুর্দিস্তান অঞ্চল", ps:"د کردستان سیمه", ha:"Yankin Kurdistan", sw:"Eneo la Kurdistan" }
   }
 };
 const countryFlag = cc => REGIONS[cc] ? flagSrc("ku") : `https://cdn.jsdelivr.net/npm/flag-icons@7.6.0/flags/4x3/${cc.toLowerCase()}.svg`;
@@ -39,7 +39,7 @@ async function localName(city, lang){
 // فلسطين باسمها في كل اللغات (بدل «الأراضي الفلسطينية» الذي تعطيه المتصفحات وقواعد الأسماء)
 const PS_NAMES = { ar:"فلسطين", ku:"فەلەستین", en:"Palestine", de:"Palästina", tr:"Filistin", fa:"فلسطین", ur:"فلسطین",
   fr:"Palestine", es:"Palestina", it:"Palestina", nl:"Palestina", da:"Palæstina", sv:"Palestina", ru:"Палестина",
-  bs:"Palestina", id:"Palestina", ms:"Palestin" };
+  bs:"Palestina", id:"Palestina", ms:"Palestin", bn:"ফিলিস্তিন", ps:"فلسطین", ha:"Falasdinu", sw:"Palestina" };
 
 // عدد المدن بصيغة الجمع الصحيحة لكل لغة (مدينة واحدة، مدينتان، 3 مدن، 11 مدينة…)
 const CITY_FORMS = {
@@ -49,7 +49,8 @@ const CITY_FORMS = {
   it:{ one:"{n} città", other:"{n} città" }, nl:{ one:"{n} stad", other:"{n} steden" },
   da:{ one:"{n} by", other:"{n} byer" }, sv:{ one:"{n} stad", other:"{n} städer" },
   ru:{ one:"{n} город", few:"{n} города", many:"{n} городов", other:"{n} города" },
-  bs:{ one:"{n} grad", few:"{n} grada", other:"{n} gradova" }
+  bs:{ one:"{n} grad", few:"{n} grada", other:"{n} gradova" },
+  ps:{ one:"{n} ښار", other:"{n} ښارونه" }, ha:{ one:"gari {n}", other:"garuruwa {n}" }, sw:{ one:"mji {n}", other:"miji {n}" }
 };
 function nCitiesText(lang, n){
   const f = CITY_FORMS[lang], num = n.toLocaleString("en");
@@ -103,7 +104,7 @@ a{color:inherit;text-decoration:none}
 .wrap{max-width:980px;margin:0 auto;padding:0 16px}
 svg.ic{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
 .top{display:flex;justify-content:space-between;align-items:center;padding:16px 0}
-.brandmini{display:flex;align-items:center;gap:10px;font-family:'Amiri',serif;font-size:1.6rem;font-weight:700;color:var(--title)}
+.brandmini{display:flex;align-items:center;gap:10px;font-family:'Amiri',serif;font-size:1.6rem;font-weight:700;color:var(--title);word-spacing:-.2em}
 html[dir=ltr] .brandmini{font-family:'Noto Sans',sans-serif;font-size:1.25rem}
 .brandmini img{width:38px;height:38px;border-radius:10px}
 .flag{width:22px;height:16px;border-radius:3px;object-fit:cover;flex:none;box-shadow:0 0 0 1px rgba(0,0,0,.18)}

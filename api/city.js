@@ -52,16 +52,16 @@ const KU_WD = ["یەکشەمب","دووشەمب","سێشەمب","چارشەمب"
 function weekday(y, m, d, lang){
   const dt = new Date(Date.UTC(y, m - 1, d, 12));
   if(lang === "ku") return KU_WD[dt.getUTCDay()];
-  return new Intl.DateTimeFormat(intlLoc(lang) + "-u-nu-latn", { weekday:"long", timeZone:"UTC" }).format(dt);
+  return new Intl.DateTimeFormat(intlLoc(lang) + "-u-ca-gregory-nu-latn", { weekday:"long", timeZone:"UTC" }).format(dt);
 }
 function hijri(y, m, d, lang, opts){
-  const loc = (["ar","ku"].includes(lang) ? "ar" : intlLoc(lang)) + "-u-ca-islamic-umalqura-nu-latn";
+  const loc = (["ar","ku","ps"].includes(lang) ? "ar" : intlLoc(lang)) + "-u-ca-islamic-umalqura-nu-latn";
   const dt = new Date(Date.UTC(y, m - 1, d, 12));
   try{ return new Intl.DateTimeFormat(loc, { timeZone:"UTC", ...opts }).format(dt); }
   catch(e){ return new Intl.DateTimeFormat("en-u-ca-islamic-umalqura-nu-latn", { timeZone:"UTC", ...opts }).format(dt); }
 }
-const monthName = (y, m, lang) => new Intl.DateTimeFormat(intlLoc(lang) + "-u-nu-latn", { month:"long", year:"numeric", timeZone:"UTC" }).format(new Date(Date.UTC(y, m - 1, 15)));
-const longDate = (y, m, d, lang) => new Intl.DateTimeFormat(intlLoc(lang) + "-u-nu-latn", { day:"numeric", month:"long", year:"numeric", timeZone:"UTC" }).format(new Date(Date.UTC(y, m - 1, d, 12)));
+const monthName = (y, m, lang) => new Intl.DateTimeFormat(intlLoc(lang) + "-u-ca-gregory-nu-latn", { month:"long", year:"numeric", timeZone:"UTC" }).format(new Date(Date.UTC(y, m - 1, 15)));
+const longDate = (y, m, d, lang) => new Intl.DateTimeFormat(intlLoc(lang) + "-u-ca-gregory-nu-latn", { day:"numeric", month:"long", year:"numeric", timeZone:"UTC" }).format(new Date(Date.UTC(y, m - 1, d, 12)));
 
 const IC = {
  fajr:'<svg viewBox="0 0 24 24"><path d="M14 4a6.5 6.5 0 1 0 6 9 5 5 0 0 1-6-9z"/><path d="M19 3v3M17.5 4.5h3"/></svg>',
@@ -142,7 +142,7 @@ module.exports = async (req, res) => {
 
   const th = `<th class="dcol">${esc(t.dayCol)}</th><th class="hijcol">${esc(t.hijriCol)}</th>` + KEYS.map(k => `<th>${IC[k]}${esc(t.names[NAMEKEY[k]])}</th>`).join("");
   // اليوم والشهر الميلاديان معًا (22/10) بصيغة لغة الصفحة، كما في جدول الأسبوع بالصفحة الرئيسية
-  const dmFmt = (() => { try{ return new Intl.DateTimeFormat((lang === "ku" ? "ar" : lang) + "-u-nu-latn", { day:"numeric", month:"numeric", timeZone:"UTC" }); }catch(e){ return null; } })();
+  const dmFmt = (() => { try{ return new Intl.DateTimeFormat((lang === "ku" ? "ar" : lang) + "-u-ca-gregory-nu-latn", { day:"numeric", month:"numeric", timeZone:"UTC" }); }catch(e){ return null; } })();
   const dm = d => dmFmt ? dmFmt.format(new Date(Date.UTC(y, m - 1, d))) : `${d}/${m}`;
   const trs = rows.map(r => `<tr class="${r.fri ? "fri" : ""}" data-d="${r.d}"><td class="day"><b>${esc(dm(r.d))}</b> <i>${esc(r.wd)}</i><small>${esc(r.hij)}</small></td><td class="hij hijcol">${esc(r.hij)}</td>${KEYS.map(k => `<td data-t="${r[k]}">${r[k]}</td>`).join("")}</tr>`).join("");
   const ptrs = rows.map(r => `<tr class="${r.fri ? "fri" : ""}"><td class="d"><b>${esc(dm(r.d))}</b>${esc(r.wd)}</td><td class="h">${esc(r.hij)}</td>${KEYS.map(k => `<td class="${k === "fajr" || k === "maghrib" ? "em" : ""}" data-t="${r[k]}">${r[k]}</td>`).join("")}</tr>`).join("");
@@ -185,7 +185,7 @@ a{color:inherit;text-decoration:none}
 .wrap{max-width:980px;margin:0 auto;padding:0 16px}
 svg.ic{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
 .top{display:flex;justify-content:space-between;align-items:center;padding:16px 0}
-.brandmini{display:flex;align-items:center;gap:10px;font-family:'Amiri',serif;font-size:1.6rem;font-weight:700;color:var(--title)}
+.brandmini{display:flex;align-items:center;gap:10px;font-family:'Amiri',serif;font-size:1.6rem;font-weight:700;color:var(--title);word-spacing:-.2em}
 html[dir=ltr] .brandmini{font-family:'Noto Sans',sans-serif;font-size:1.25rem}
 .brandmini img{width:38px;height:38px;border-radius:10px}
 .langs{position:relative}
@@ -304,7 +304,7 @@ footer a{color:var(--gold)}
   .ph{display:flex;align-items:center;justify-content:space-between;border-bottom:2.2pt solid #8f2a39;padding-bottom:4mm;margin-bottom:4mm}
   .ph .b{display:flex;align-items:center;gap:3.5mm}
   .ph img{width:15mm;height:15mm;border-radius:3.5mm}
-  .ph .bn{font-family:'Amiri',serif;font-size:22pt;font-weight:700;line-height:1}
+  .ph .bn{font-family:'Amiri',serif;font-size:22pt;font-weight:700;line-height:1;word-spacing:-.2em}
   html[dir=ltr] .ph .bn{font-family:'Noto Sans',sans-serif;font-size:17pt}
   .ph .bs{font-size:7.5pt;color:#7a6a60;letter-spacing:.3pt}
   .ph .city{text-align:end}
