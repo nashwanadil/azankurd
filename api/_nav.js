@@ -13,8 +13,10 @@ const I = {
   about:'<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/>',
   privacy:'<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/>',
   contact:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/>',
+  cal:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M8 14h2M14 14h2M8 17.5h2"/>',
   gear:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 0 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 0 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 0 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 0 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>'
 };
+const CALLBL = { ar:"تحويل التاريخ", ku:"گوهۆڕینا بەروارێ", en:"Date converter" };
 const ic = k => `<svg class="ni" viewBox="0 0 24 24">${I[k]}</svg>`;
 
 const css = `
@@ -24,6 +26,8 @@ const css = `
 .navm summary::-webkit-details-marker{display:none}
 .navm[open] summary{border-color:var(--gold)}
 .navm summary svg{width:19px;height:19px;stroke:var(--gold);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.navcal{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;background:var(--card);border:1px solid var(--gold);border-radius:999px;margin-inline-start:6px;flex:none}
+.navcal svg{width:19px;height:19px;stroke:var(--gold);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .navm .menu{position:absolute;inset-inline-start:0;top:calc(100% + 8px);z-index:21;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:6px;width:230px;max-height:70vh;overflow:auto;box-shadow:0 14px 40px rgba(0,0,0,.2)}
 .navm .menu a{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:9px;font-size:.92rem}
 .navm .menu a:hover{background:var(--hover)}
@@ -51,7 +55,7 @@ function html(lang){
 <a href="/${lang}/about">${ic("about")}<span>${esc(x.cAbout)}</span></a>
 <a href="/${lang}/privacy">${ic("privacy")}<span>${esc(x.cPrivacy)}</span></a>
 <a href="/${lang}/contact">${ic("contact")}<span>${esc(x.cContact)}</span></a>
-</div></details>`;
+</div></details><a class="navcal" href="/${lang}/hijri" aria-label="${esc(CALLBL[lang] || CALLBL.en)}" title="${esc(CALLBL[lang] || CALLBL.en)}"><svg viewBox="0 0 24 24">${I.cal}</svg></a>`;
 }
 
 // زر الإعدادات: يفتح الإعدادات في الصفحة الرئيسية
