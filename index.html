@@ -1412,6 +1412,17 @@ document.getElementById("year").textContent = new Date().getFullYear();
 /* ---------- التشغيل ---------- */
 lang = pickLang();
 applyLang();
+// الزائر من إقليم كوردستان: يُفتح الموقع له بالكوردية، ما لم يختر لغة بنفسه
+// لا نسأل إلا من منطقته الزمنية منطقة العراق، فلا يتأثر غيرهم
+(async ()=>{
+  try{
+    if(lang === "ku" || new URLSearchParams(location.search).get("lang") || store.get("lang", null)) return;
+    if(Intl.DateTimeFormat().resolvedOptions().timeZone !== "Asia/Baghdad") return;
+    let k = sessionStorage.getItem("krd");
+    if(k === null){ const r = await fetch("/api/geo"); k = (await r.json()).krd ? "1" : "0"; sessionStorage.setItem("krd", k); }
+    if(k === "1" && !store.get("lang", null)){ lang = "ku"; applyLang(); }
+  }catch(e){}
+})();
 (async ()=>{
   const saved = readJSON("lastQuery"), cache = readJSON("cache");
   if(!saved){ useLocation(); return; }
