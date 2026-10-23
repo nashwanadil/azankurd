@@ -3,6 +3,8 @@ const { LANGS, SITE, CITIES } = require("./_core.js");
 const PER = 40000;
 const BIG = CITIES.filter(c => c[6] >= 50000).map(c => c[0]);   // المدن التي يزيد سكانها على 50 ألفًا
 const URLS = [];
+const CCS = [...new Set(CITIES.map(c => c[2]))];
+for(const l of LANGS){ URLS.push(`${SITE}/${l}/countries`); for(const cc of CCS) URLS.push(`${SITE}/${l}/country/${cc.toLowerCase()}`); }
 for(const slug of BIG) for(const l of LANGS) URLS.push(`${SITE}/${l}/${slug}`);
 const PARTS = Math.ceil(URLS.length / PER);
 

@@ -1,4 +1,4 @@
-// نصوص صفحات المدن بـ17 لغة
+// نصوص صفحات المدن والبلدان بـ17 لغة
 module.exports = {
 "ar": {
 "dir": "rtl",
@@ -46,7 +46,18 @@ module.exports = {
 "dayCol": "اليوم",
 "hijriCol": "الهجري",
 "notFound": "لم نجد هذه المدينة.",
-"backHome": "العودة إلى الصفحة الرئيسية"
+"backHome": "العودة إلى الصفحة الرئيسية",
+"allCountries": "كل البلدان",
+"citiesIn": "مدن {country}",
+"filterPh": "ابحث في المدن…",
+"nCities": "{n} مدينة",
+"countryDesc": "مواقيت الصلاة اليوم في كل مدن {country}: الفجر والظهر والعصر والمغرب والعشاء، مع جدول شهري قابل للطباعة لكل مدينة.",
+"allTitle": "مواقيت الصلاة في كل بلدان العالم",
+"allDesc": "اختر بلدك ثم مدينتك لمعرفة مواقيت الصلاة الدقيقة والجدول الشهري، لأكثر من 24 ألف مدينة حول العالم.",
+"todayIn": "مواقيت اليوم في {city}",
+"monthlyBtn": "الجدول الشهري",
+"noMatch": "لا توجد مدينة بهذا الاسم.",
+"findCountry": "ابحث عن بلدك…"
 },
 "ku": {
 "dir": "rtl",
@@ -94,7 +105,18 @@ module.exports = {
 "dayCol": "رۆژ",
 "hijriCol": "کۆچی",
 "notFound": "ئەڤ باژێرە نەهاتە دیتن.",
-"backHome": "زڤرین بۆ پەڕێ سەرەکی"
+"backHome": "زڤرین بۆ پەڕێ سەرەکی",
+"allCountries": "هەمی وەلات",
+"citiesIn": "باژێرێن {country}",
+"filterPh": "ل باژێران بگەڕە…",
+"nCities": "{n} باژێر",
+"countryDesc": "دەمێن نڤێژێ یێن ئەڤرۆ ل هەمی باژێرێن {country}: سپێدە، نیڤرۆ، عەسر، مەغرب و عیشا، دگەل خشتەیەکا مەهانە بۆ چاپکرنێ بۆ هەر باژێرەکی.",
+"allTitle": "دەمێن نڤێژێ ل هەمی وەلاتێن جیهانێ",
+"allDesc": "وەلاتێ خۆ و پاشان باژێرێ خۆ هەلبژێرە بۆ زانینا دەمێن نڤێژێ یێن دروست و خشتەیا مەهانە، بۆ زێدەتر ژ 24 هزار باژێران ل سەرانسەری جیهانێ.",
+"todayIn": "دەمێن ئەڤرۆ ل {city}",
+"monthlyBtn": "خشتەیا مەهانە",
+"noMatch": "چ باژێر ب ڤی ناڤی نینن.",
+"findCountry": "ل وەلاتێ خۆ بگەڕە…"
 },
 "en": {
 "dir": "ltr",
@@ -142,7 +164,18 @@ module.exports = {
 "dayCol": "Day",
 "hijriCol": "Hijri",
 "notFound": "City not found.",
-"backHome": "Back to home page"
+"backHome": "Back to home page",
+"allCountries": "All countries",
+"citiesIn": "Cities in {country}",
+"filterPh": "Search cities…",
+"nCities": "{n} cities",
+"countryDesc": "Today's prayer times in every city of {country}: Fajr, Dhuhr, Asr, Maghrib and Isha, with a printable monthly timetable for each city.",
+"allTitle": "Prayer Times in Every Country",
+"allDesc": "Choose your country, then your city, for accurate prayer times and a monthly timetable — more than 24,000 cities worldwide.",
+"todayIn": "Today's times in {city}",
+"monthlyBtn": "Monthly timetable",
+"noMatch": "No city matches that name.",
+"findCountry": "Find your country…"
 },
 "de": {
 "dir": "ltr",
@@ -190,7 +223,18 @@ module.exports = {
 "dayCol": "Tag",
 "hijriCol": "Hidschri",
 "notFound": "Stadt nicht gefunden.",
-"backHome": "Zurück zur Startseite"
+"backHome": "Zurück zur Startseite",
+"allCountries": "Alle Länder",
+"citiesIn": "Städte in {country}",
+"filterPh": "Städte durchsuchen…",
+"nCities": "{n} Städte",
+"countryDesc": "Gebetszeiten heute in allen Städten von {country}: Fadschr, Dhuhr, Asr, Maghrib und Ischa, mit druckbarem Monatsplan für jede Stadt.",
+"allTitle": "Gebetszeiten in allen Ländern der Welt",
+"allDesc": "Wählen Sie Ihr Land und Ihre Stadt für genaue Gebetszeiten und einen Monatsplan – über 24.000 Städte weltweit.",
+"todayIn": "Heutige Zeiten in {city}",
+"monthlyBtn": "Monatsplan",
+"noMatch": "Keine Stadt mit diesem Namen.",
+"findCountry": "Land suchen…"
 },
 "tr": {
 "dir": "ltr",
@@ -238,7 +282,18 @@ module.exports = {
 "dayCol": "Gün",
 "hijriCol": "Hicri",
 "notFound": "Şehir bulunamadı.",
-"backHome": "Ana sayfaya dön"
+"backHome": "Ana sayfaya dön",
+"allCountries": "Tüm ülkeler",
+"citiesIn": "{country} şehirleri",
+"filterPh": "Şehir ara…",
+"nCities": "{n} şehir",
+"countryDesc": "{country} genelindeki tüm şehirler için bugünkü namaz vakitleri: Sabah, Öğle, İkindi, Akşam ve Yatsı; her şehir için yazdırılabilir aylık imsakiye.",
+"allTitle": "Dünyanın Tüm Ülkelerinde Namaz Vakitleri",
+"allDesc": "Doğru namaz vakitleri ve aylık imsakiye için ülkenizi, ardından şehrinizi seçin; dünya genelinde 24.000'den fazla şehir.",
+"todayIn": "{city} için bugünkü vakitler",
+"monthlyBtn": "Aylık vakitler",
+"noMatch": "Bu adla bir şehir yok.",
+"findCountry": "Ülkeni ara…"
 },
 "fa": {
 "dir": "rtl",
@@ -286,7 +341,18 @@ module.exports = {
 "dayCol": "روز",
 "hijriCol": "قمری",
 "notFound": "شهر پیدا نشد.",
-"backHome": "بازگشت به صفحهٔ اصلی"
+"backHome": "بازگشت به صفحهٔ اصلی",
+"allCountries": "همهٔ کشورها",
+"citiesIn": "شهرهای {country}",
+"filterPh": "جستجو در شهرها…",
+"nCities": "{n} شهر",
+"countryDesc": "اوقات شرعی امروز در همهٔ شهرهای {country}: صبح، ظهر، عصر، مغرب و عشا، همراه با جدول ماهانهٔ قابل چاپ برای هر شهر.",
+"allTitle": "اوقات شرعی در همهٔ کشورهای جهان",
+"allDesc": "کشور و سپس شهر خود را انتخاب کنید تا اوقات شرعی دقیق و جدول ماهانه را ببینید؛ بیش از 24 هزار شهر در سراسر جهان.",
+"todayIn": "اوقات امروز در {city}",
+"monthlyBtn": "جدول ماهانه",
+"noMatch": "شهری با این نام نیست.",
+"findCountry": "کشور خود را جستجو کنید…"
 },
 "ur": {
 "dir": "rtl",
@@ -334,7 +400,18 @@ module.exports = {
 "dayCol": "دن",
 "hijriCol": "ہجری",
 "notFound": "شہر نہیں ملا۔",
-"backHome": "صفحۂ اول پر واپس جائیں"
+"backHome": "صفحۂ اول پر واپس جائیں",
+"allCountries": "تمام ممالک",
+"citiesIn": "{country} کے شہر",
+"filterPh": "شہر تلاش کریں…",
+"nCities": "{n} شہر",
+"countryDesc": "{country} کے تمام شہروں میں آج نماز کے اوقات: فجر، ظہر، عصر، مغرب اور عشاء، ہر شہر کے لیے پرنٹ کے قابل ماہانہ نقشے کے ساتھ۔",
+"allTitle": "دنیا کے تمام ممالک میں نماز کے اوقات",
+"allDesc": "درست اوقاتِ نماز اور ماہانہ نقشے کے لیے پہلے اپنا ملک اور پھر شہر منتخب کریں — دنیا بھر کے 24 ہزار سے زائد شہر۔",
+"todayIn": "{city} میں آج کے اوقات",
+"monthlyBtn": "ماہانہ نقشہ",
+"noMatch": "اس نام کا کوئی شہر نہیں۔",
+"findCountry": "اپنا ملک تلاش کریں…"
 },
 "fr": {
 "dir": "ltr",
@@ -382,7 +459,18 @@ module.exports = {
 "dayCol": "Jour",
 "hijriCol": "Hégire",
 "notFound": "Ville introuvable.",
-"backHome": "Retour à l'accueil"
+"backHome": "Retour à l'accueil",
+"allCountries": "Tous les pays",
+"citiesIn": "Villes : {country}",
+"filterPh": "Rechercher une ville…",
+"nCities": "{n} villes",
+"countryDesc": "Horaires de prière du jour dans toutes les villes : {country}. Fajr, Dhuhr, Asr, Maghrib et Icha, avec un calendrier mensuel imprimable pour chaque ville.",
+"allTitle": "Horaires de prière dans tous les pays du monde",
+"allDesc": "Choisissez votre pays puis votre ville pour des horaires précis et un calendrier mensuel — plus de 24 000 villes dans le monde.",
+"todayIn": "Horaires du jour à {city}",
+"monthlyBtn": "Calendrier mensuel",
+"noMatch": "Aucune ville ne correspond.",
+"findCountry": "Rechercher un pays…"
 },
 "es": {
 "dir": "ltr",
@@ -430,7 +518,18 @@ module.exports = {
 "dayCol": "Día",
 "hijriCol": "Hégira",
 "notFound": "Ciudad no encontrada.",
-"backHome": "Volver al inicio"
+"backHome": "Volver al inicio",
+"allCountries": "Todos los países",
+"citiesIn": "Ciudades de {country}",
+"filterPh": "Buscar ciudades…",
+"nCities": "{n} ciudades",
+"countryDesc": "Horarios de oración de hoy en todas las ciudades de {country}: Fajr, Dhuhr, Asr, Magrib e Isha, con calendario mensual imprimible para cada ciudad.",
+"allTitle": "Horarios de oración en todos los países",
+"allDesc": "Elige tu país y luego tu ciudad para ver horarios precisos y el calendario mensual: más de 24.000 ciudades en todo el mundo.",
+"todayIn": "Horarios de hoy en {city}",
+"monthlyBtn": "Calendario mensual",
+"noMatch": "No hay ninguna ciudad con ese nombre.",
+"findCountry": "Busca tu país…"
 },
 "it": {
 "dir": "ltr",
@@ -478,7 +577,18 @@ module.exports = {
 "dayCol": "Giorno",
 "hijriCol": "Egira",
 "notFound": "Città non trovata.",
-"backHome": "Torna alla home"
+"backHome": "Torna alla home",
+"allCountries": "Tutti i paesi",
+"citiesIn": "Città: {country}",
+"filterPh": "Cerca città…",
+"nCities": "{n} città",
+"countryDesc": "Orari di preghiera di oggi in tutte le città: {country}. Fajr, Dhuhr, Asr, Maghrib e Isha, con calendario mensile stampabile per ogni città.",
+"allTitle": "Orari di preghiera in tutti i paesi del mondo",
+"allDesc": "Scegli il tuo paese e poi la tua città per orari precisi e un calendario mensile: oltre 24.000 città nel mondo.",
+"todayIn": "Orari di oggi a {city}",
+"monthlyBtn": "Calendario mensile",
+"noMatch": "Nessuna città con questo nome.",
+"findCountry": "Cerca il tuo paese…"
 },
 "nl": {
 "dir": "ltr",
@@ -526,7 +636,18 @@ module.exports = {
 "dayCol": "Dag",
 "hijriCol": "Hidjri",
 "notFound": "Stad niet gevonden.",
-"backHome": "Terug naar de startpagina"
+"backHome": "Terug naar de startpagina",
+"allCountries": "Alle landen",
+"citiesIn": "Steden in {country}",
+"filterPh": "Zoek steden…",
+"nCities": "{n} steden",
+"countryDesc": "Gebedstijden vandaag in alle steden van {country}: Fadjr, Dhoehr, Asr, Maghrib en Isha, met een afdrukbaar maandrooster voor elke stad.",
+"allTitle": "Gebedstijden in alle landen ter wereld",
+"allDesc": "Kies je land en daarna je stad voor nauwkeurige gebedstijden en een maandrooster — meer dan 24.000 steden wereldwijd.",
+"todayIn": "Tijden vandaag in {city}",
+"monthlyBtn": "Maandrooster",
+"noMatch": "Geen stad met deze naam.",
+"findCountry": "Zoek je land…"
 },
 "da": {
 "dir": "ltr",
@@ -574,7 +695,18 @@ module.exports = {
 "dayCol": "Dag",
 "hijriCol": "Hijri",
 "notFound": "Byen blev ikke fundet.",
-"backHome": "Tilbage til forsiden"
+"backHome": "Tilbage til forsiden",
+"allCountries": "Alle lande",
+"citiesIn": "Byer i {country}",
+"filterPh": "Søg i byer…",
+"nCities": "{n} byer",
+"countryDesc": "Dagens bønnetider i alle byer i {country}: Fajr, Dhuhr, Asr, Maghrib og Isha, med en månedsoversigt til udskrift for hver by.",
+"allTitle": "Bønnetider i alle verdens lande",
+"allDesc": "Vælg dit land og derefter din by for præcise bønnetider og en månedsoversigt – over 24.000 byer i hele verden.",
+"todayIn": "Dagens tider i {city}",
+"monthlyBtn": "Månedsoversigt",
+"noMatch": "Ingen by med det navn.",
+"findCountry": "Søg efter dit land…"
 },
 "sv": {
 "dir": "ltr",
@@ -622,7 +754,18 @@ module.exports = {
 "dayCol": "Dag",
 "hijriCol": "Hijri",
 "notFound": "Staden hittades inte.",
-"backHome": "Tillbaka till startsidan"
+"backHome": "Tillbaka till startsidan",
+"allCountries": "Alla länder",
+"citiesIn": "Städer i {country}",
+"filterPh": "Sök städer…",
+"nCities": "{n} städer",
+"countryDesc": "Dagens bönetider i alla städer i {country}: Fajr, Dhuhr, Asr, Maghrib och Isha, med ett utskrivbart månadsschema för varje stad.",
+"allTitle": "Bönetider i alla världens länder",
+"allDesc": "Välj ditt land och sedan din stad för exakta bönetider och ett månadsschema – över 24 000 städer i hela världen.",
+"todayIn": "Dagens tider i {city}",
+"monthlyBtn": "Månadsschema",
+"noMatch": "Ingen stad med det namnet.",
+"findCountry": "Sök ditt land…"
 },
 "ru": {
 "dir": "ltr",
@@ -670,7 +813,18 @@ module.exports = {
 "dayCol": "День",
 "hijriCol": "Хиджра",
 "notFound": "Город не найден.",
-"backHome": "Вернуться на главную"
+"backHome": "Вернуться на главную",
+"allCountries": "Все страны",
+"citiesIn": "Города: {country}",
+"filterPh": "Поиск городов…",
+"nCities": "Городов: {n}",
+"countryDesc": "Время намаза сегодня во всех городах: {country}. Фаджр, Зухр, Аср, Магриб и Иша, с расписанием на месяц для печати для каждого города.",
+"allTitle": "Время намаза во всех странах мира",
+"allDesc": "Выберите страну, затем город, чтобы узнать точное время намаза и расписание на месяц, — более 24 000 городов мира.",
+"todayIn": "Время на сегодня: {city}",
+"monthlyBtn": "Расписание на месяц",
+"noMatch": "Нет города с таким названием.",
+"findCountry": "Найти страну…"
 },
 "bs": {
 "dir": "ltr",
@@ -718,7 +872,18 @@ module.exports = {
 "dayCol": "Dan",
 "hijriCol": "Hidžretski",
 "notFound": "Grad nije pronađen.",
-"backHome": "Nazad na početnu"
+"backHome": "Nazad na početnu",
+"allCountries": "Sve države",
+"citiesIn": "Gradovi: {country}",
+"filterPh": "Pretraži gradove…",
+"nCities": "{n} gradova",
+"countryDesc": "Današnja vaktija za sve gradove: {country}. Zora, podne, ikindija, akšam i jacija, s mjesečnom vaktijom za štampu za svaki grad.",
+"allTitle": "Vaktija za sve države svijeta",
+"allDesc": "Odaberite državu, zatim grad za preciznu vaktiju i mjesečni raspored — više od 24.000 gradova širom svijeta.",
+"todayIn": "Današnja vaktija: {city}",
+"monthlyBtn": "Mjesečna vaktija",
+"noMatch": "Nema grada s tim imenom.",
+"findCountry": "Potražite državu…"
 },
 "id": {
 "dir": "ltr",
@@ -766,7 +931,18 @@ module.exports = {
 "dayCol": "Hari",
 "hijriCol": "Hijriah",
 "notFound": "Kota tidak ditemukan.",
-"backHome": "Kembali ke beranda"
+"backHome": "Kembali ke beranda",
+"allCountries": "Semua negara",
+"citiesIn": "Kota di {country}",
+"filterPh": "Cari kota…",
+"nCities": "{n} kota",
+"countryDesc": "Jadwal salat hari ini di semua kota di {country}: Subuh, Zuhur, Asar, Magrib, dan Isya, dengan jadwal bulanan yang bisa dicetak untuk setiap kota.",
+"allTitle": "Jadwal Salat di Semua Negara",
+"allDesc": "Pilih negara lalu kota Anda untuk jadwal salat akurat dan jadwal bulanan — lebih dari 24.000 kota di seluruh dunia.",
+"todayIn": "Jadwal hari ini di {city}",
+"monthlyBtn": "Jadwal bulanan",
+"noMatch": "Tidak ada kota dengan nama itu.",
+"findCountry": "Cari negara Anda…"
 },
 "ms": {
 "dir": "ltr",
@@ -814,6 +990,17 @@ module.exports = {
 "dayCol": "Hari",
 "hijriCol": "Hijrah",
 "notFound": "Bandar tidak ditemui.",
-"backHome": "Kembali ke laman utama"
+"backHome": "Kembali ke laman utama",
+"allCountries": "Semua negara",
+"citiesIn": "Bandar di {country}",
+"filterPh": "Cari bandar…",
+"nCities": "{n} bandar",
+"countryDesc": "Waktu solat hari ini di semua bandar di {country}: Subuh, Zohor, Asar, Maghrib dan Isyak, dengan jadual bulanan untuk dicetak bagi setiap bandar.",
+"allTitle": "Waktu Solat di Semua Negara",
+"allDesc": "Pilih negara dan kemudian bandar anda untuk waktu solat yang tepat dan jadual bulanan — lebih 24,000 bandar di seluruh dunia.",
+"todayIn": "Waktu hari ini di {city}",
+"monthlyBtn": "Jadual bulanan",
+"noMatch": "Tiada bandar dengan nama itu.",
+"findCountry": "Cari negara anda…"
 }
 };

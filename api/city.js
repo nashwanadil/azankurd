@@ -130,7 +130,8 @@ module.exports = async (req, res) => {
   const ld = [
     { "@context":"https://schema.org", "@type":"BreadcrumbList", itemListElement:[
       { "@type":"ListItem", position:1, name:t.home, item:`${SITE}/?lang=${lang}` },
-      { "@type":"ListItem", position:2, name:cityName, item:SITE + path } ] },
+      { "@type":"ListItem", position:2, name:country, item:`${SITE}/${lang}/country/${city.cc.toLowerCase()}` },
+      { "@type":"ListItem", position:3, name:cityName, item:SITE + path } ] },
     { "@context":"https://schema.org", "@type":"FAQPage", mainEntity: faq.map(([q, a]) => ({ "@type":"Question", name:q, acceptedAnswer:{ "@type":"Answer", text:a } })) }
   ];
 
@@ -253,6 +254,7 @@ html[dir=ltr] .info dd{text-align:start}
 .faq p{margin-top:6px}
 footer{text-align:center;color:var(--muted);font-size:.8rem;padding:10px 0 32px}
 footer a{color:var(--gold)}
+.crumbs a:hover{color:var(--gold)}
 .sheet-print{display:none}
 @media (max-width:760px){
   .hero,.grid2{grid-template-columns:1fr}
@@ -308,7 +310,7 @@ footer a{color:var(--gold)}
     <a class="brandmini" href="/?lang=${lang}"><img src="/icon-192.png" alt="" width="38" height="38">${esc(t.logo)}</a>
     <details class="langs"><summary><img class="flag" alt="" src="${flagSrc(lang)}">${esc(t.label)}<svg class="ic chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></summary><div class="menu">${langMenu}</div></details>
   </div>
-  <nav class="crumbs"><a href="/?lang=${lang}">${esc(t.home)}</a><span>›</span><span style="opacity:1">${esc(country)}</span><span>›</span><b>${esc(cityName)}</b></nav>
+  <nav class="crumbs"><a href="/?lang=${lang}">${esc(t.home)}</a><span>›</span><a href="/${lang}/country/${city.cc.toLowerCase()}">${esc(country)}</a><span>›</span><b>${esc(cityName)}</b></nav>
 
   <section class="hero">
     <div class="hcard">
@@ -351,7 +353,7 @@ footer a{color:var(--gold)}
     ${faq.map(([q, a], i) => `<details${i === 0 ? " open" : ""}><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join("")}
   </section>
 
-  <footer>© ${today.y} <a href="/?lang=${lang}">azankurd.com</a> · ${esc(t.tagline)}</footer>
+  <footer>© ${today.y} <a href="/?lang=${lang}">azankurd.com</a> · <a href="/${lang}/countries">${esc(t.allCountries)}</a> · ${esc(t.tagline)}</footer>
 
   <div class="sheet-print">
     <div class="ph">
