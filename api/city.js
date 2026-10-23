@@ -136,8 +136,11 @@ module.exports = async (req, res) => {
   ];
 
   const th = `<th class="dcol">${esc(t.dayCol)}</th><th class="hijcol">${esc(t.hijriCol)}</th>` + KEYS.map(k => `<th>${IC[k]}${esc(t.names[NAMEKEY[k]])}</th>`).join("");
-  const trs = rows.map(r => `<tr class="${r.fri ? "fri" : ""}" data-d="${r.d}"><td class="day"><b>${r.d}</b> <i>${esc(r.wd)}</i><small>${esc(r.hij)}</small></td><td class="hij hijcol">${esc(r.hij)}</td>${KEYS.map(k => `<td data-t="${r[k]}">${r[k]}</td>`).join("")}</tr>`).join("");
-  const ptrs = rows.map(r => `<tr class="${r.fri ? "fri" : ""}"><td class="d"><b>${r.d}</b>${esc(r.wd)}</td><td class="h">${esc(r.hij)}</td>${KEYS.map(k => `<td class="${k === "fajr" || k === "maghrib" ? "em" : ""}" data-t="${r[k]}">${r[k]}</td>`).join("")}</tr>`).join("");
+  // اليوم والشهر الميلاديان معًا (22/10) بصيغة لغة الصفحة، كما في جدول الأسبوع بالصفحة الرئيسية
+  const dmFmt = (() => { try{ return new Intl.DateTimeFormat((lang === "ku" ? "ar" : lang) + "-u-nu-latn", { day:"numeric", month:"numeric", timeZone:"UTC" }); }catch(e){ return null; } })();
+  const dm = d => dmFmt ? dmFmt.format(new Date(Date.UTC(y, m - 1, d))) : `${d}/${m}`;
+  const trs = rows.map(r => `<tr class="${r.fri ? "fri" : ""}" data-d="${r.d}"><td class="day"><b>${esc(dm(r.d))}</b> <i>${esc(r.wd)}</i><small>${esc(r.hij)}</small></td><td class="hij hijcol">${esc(r.hij)}</td>${KEYS.map(k => `<td data-t="${r[k]}">${r[k]}</td>`).join("")}</tr>`).join("");
+  const ptrs = rows.map(r => `<tr class="${r.fri ? "fri" : ""}"><td class="d"><b>${esc(dm(r.d))}</b>${esc(r.wd)}</td><td class="h">${esc(r.hij)}</td>${KEYS.map(k => `<td class="${k === "fajr" || k === "maghrib" ? "em" : ""}" data-t="${r[k]}">${r[k]}</td>`).join("")}</tr>`).join("");
   const pth = `<th>${esc(t.dayCol)}</th><th>${esc(t.hijriCol)}</th>` + KEYS.map(k => `<th>${esc(t.names[NAMEKEY[k]])}</th>`).join("");
   const todayCards = KEYS.map(k => `<div class="tt" id="tt-${k}">${IC[k]}<span>${esc(t.names[NAMEKEY[k]])}</span><b data-t="${tt[k]}">${tt[k]}</b></div>`).join("");
   const langMenu = LANGS.map(l => `<a href="/${l}/${city.slug}${isCurrent ? "" : `?m=${y}-${String(m).padStart(2,"0")}`}" hreflang="${l}" ${l === lang ? 'aria-current="true"' : ""}><img class="flag" alt="" src="${flagSrc(l)}"><span dir="${T[l].dir}">${esc(FLAG_LABEL(l))}</span><svg class="chk" viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></svg></a>`).join("");
@@ -163,7 +166,7 @@ ${alts}
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#2a1d17">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@700&family=Noto+Kufi+Arabic:wght@400;600;700&family=Noto+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@700&family=Aref+Ruqaa:wght@700&family=Noto+Kufi+Arabic:wght@400;600;700&family=Noto+Sans:wght@400;600;700&display=swap" rel="stylesheet">
 <script type="application/ld+json">${JSON.stringify(ld).replace(/</g, "\\u003c")}</script>
 <script>${THEME_JS}</script>
 <style>
@@ -216,6 +219,13 @@ html[data-mode=dark] h1 em{color:var(--gold)}
 .tt.on{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold) inset}
 .month{background:var(--card);border:1px solid var(--line);border-radius:22px;overflow:hidden;margin-bottom:22px}
 .mbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 20px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.hacts{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:16px}
+.hacts .btn{flex:1 1 150px;justify-content:center;font-size:.95rem;padding:11px 16px}
+.btn.ghost{background:transparent;color:var(--green);border-color:var(--green)}
+.mqedit{display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:12px;margin-top:12px;border:1px solid var(--line);border-radius:14px;background:var(--inner)}
+.mqedit[hidden]{display:none}
+.mqedit input{flex:1 1 220px;min-width:0;font:inherit;font-size:.95rem;padding:9px 12px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--text)}
+.mqedit small{flex-basis:100%;color:var(--muted);font-size:.8rem}
 .mnav{display:flex;align-items:center;gap:10px}
 .mnav a{width:38px;height:38px;border:1px solid var(--line);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem}
 .mnav a:hover{background:var(--hover)}
@@ -230,7 +240,7 @@ thead th svg{width:18px;height:18px;stroke:var(--gold);fill:none;stroke-width:1.
 th.dcol{text-align:start;padding-inline-start:20px}
 tbody td{padding:9px 6px;text-align:center;border-bottom:1px solid var(--line);font-size:.95rem}
 tbody td.day{text-align:start;padding-inline-start:20px;white-space:nowrap}
-tbody td.day b{display:inline-block;min-width:24px;font-weight:600}
+tbody td.day b{display:inline-block;min-width:44px;font-weight:600;font-variant-numeric:tabular-nums}
 tbody td.day i{font-style:normal;color:var(--muted);font-size:.82rem}
 tbody td.hij{color:var(--muted);font-size:.82rem;white-space:nowrap}
 tbody tr.fri td{background:var(--fri)}
@@ -285,13 +295,18 @@ footer a{color:var(--gold)}
   .ph .city{text-align:end}
   .ph .city b{display:block;font-size:15pt;line-height:1.25}
   .ph .city span{font-size:9pt;color:#7a6a60}
+  .ph .city span[hidden]{display:none}
+  .ph .city .mq{display:flex;align-items:center;justify-content:flex-end;gap:2.5mm;margin-top:1mm}
+  .ph .city .mq[hidden]{display:none}
+  .ph .city .mq span{font-family:'Aref Ruqaa','Amiri',serif;font-weight:700;font-size:17pt;color:#8f2a39;line-height:1.3}
+  .ph .city .mq svg{width:13mm;height:2.6mm;fill:#b08a3e;stroke:#b08a3e;stroke-width:1.1}
   .pm{display:flex;justify-content:space-between;align-items:center;background:#f6efe8;border-radius:2.5mm;padding:2.4mm 4mm;margin-bottom:3.5mm;font-size:9.5pt}
   .pm b{font-size:12pt;color:#8f2a39}
   table.pt{width:100%;border-collapse:collapse;font-size:9pt}
   .pt th{line-height:1.3;background:#2a1c17;color:#fff;font-weight:600;font-size:8.2pt;padding:1.8mm 1mm;text-align:center}
   .pt td{text-align:center;line-height:1.2;padding:.6mm 1mm;border-bottom:.4pt solid #e6dcd3;font-variant-numeric:tabular-nums}
   .pt td.d{text-align:start;padding-inline-start:3mm;white-space:nowrap}
-  .pt td.d b{display:inline-block;width:6mm}
+  .pt td.d b{display:inline-block;min-width:11mm;font-variant-numeric:tabular-nums}
   .pt td.h{color:#7a6a60;font-size:8.2pt;white-space:nowrap}
   .pt tr:nth-child(even) td{background:#fbf8f5}
   .pt tr.fri td{background:#f6ead2!important;font-weight:600}
@@ -318,6 +333,16 @@ footer a{color:var(--gold)}
       <h1>${esc(fill(t.title, { city:"\u0000" })).replace("\u0000", `<em>${esc(cityName)}</em>`)}</h1>
       <div class="meta"><span><b>${esc(country)}</b></span><span>${esc(weekday(today.y, today.m, today.d, lang))} ${esc(longDate(today.y, today.m, today.d, lang))}</span><span>${esc(hijri(today.y, today.m, today.d, lang, { day:"numeric", month:"long", year:"numeric" }))}</span></div>
       <div class="next"><div><small>${esc(t.nextPrayer)}</small><strong id="nextName">—</strong></div><div class="cd" id="cd">--:--:--</div></div>
+      <div class="hacts">
+        <button class="btn ghost" type="button" id="mqBtn" aria-expanded="false"><svg class="ic" viewBox="0 0 24 24"><path d="M5 21V11a7 7 0 0 1 14 0v10M3 21h18M12 4V2M9 21v-4a3 3 0 0 1 6 0v4"/></svg><span id="mqLbl">${esc(t.mosque)}</span></button>
+        <button class="btn" type="button" onclick="print()"><svg class="ic" viewBox="0 0 24 24"><path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v7H6z"/></svg>${esc(t.print)}</button>
+      </div>
+      <div class="mqedit" id="mqEdit" hidden>
+        <input id="mqIn" maxlength="60" autocomplete="off" placeholder="${esc(t.mosque)}" aria-label="${esc(t.mosque)}">
+        <button class="btn" type="button" id="mqSave">${esc(t.save)}</button>
+        <button class="btn ghost" type="button" id="mqDel">${esc(t.remove)}</button>
+        <small>${esc(t.mosquePh)}</small>
+      </div>
     </div>
     <div class="hcard">
       <h2>${esc(t.todayTimes)}</h2>
@@ -359,7 +384,7 @@ footer a{color:var(--gold)}
   <div class="sheet-print">
     <div class="ph">
       <div class="b"><img src="/icon-192.png" alt=""><div><div class="bn">${esc(t.logo)}</div><div class="bs">AZANKURD.COM · ${esc(t.tagline)}</div></div></div>
-      <div class="city"><b>${esc(fill(t.title, V))}</b><span>${esc(country)}</span></div>
+      <div class="city"><b>${esc(fill(t.title, V))}</b><span id="pCountry">${esc(country)}</span><div class="mq" id="pMosque" hidden><svg viewBox="0 0 60 12" aria-hidden="true"><path d="M0 6h40M44 6l4-4 4 4-4 4zM54 6h6" /><circle cx="48" cy="6" r="1.2"/></svg><span id="pMosqueName"></span><svg viewBox="0 0 60 12" aria-hidden="true" style="transform:scaleX(-1)"><path d="M0 6h40M44 6l4-4 4 4-4 4zM54 6h6" /><circle cx="48" cy="6" r="1.2"/></svg></div></div>
     </div>
     <div class="pm"><span>${esc(t.printHead)}</span><b>${esc(mTitle)}</b><span>${esc(hijRange)}</span></div>
     <table class="pt"><thead><tr>${pth}</tr></thead><tbody>${ptrs}</tbody></table>
@@ -401,6 +426,24 @@ footer a{color:var(--gold)}
     document.querySelectorAll(".tt").forEach(function(x){ x.classList.toggle("on", x.id==="tt-"+nk); });
   }
   tick(); setInterval(tick,1000);
+})();
+(function(){
+  var K="azk_mosque", btn=document.getElementById("mqBtn"), box=document.getElementById("mqEdit"), inp=document.getElementById("mqIn");
+  var lbl=document.getElementById("mqLbl"), base=lbl.textContent;
+  function get(){ try{ return localStorage.getItem(K) || ""; }catch(e){ return ""; } }
+  function put(v){ try{ if(v) localStorage.setItem(K,v); else localStorage.removeItem(K); }catch(e){} }
+  function show(){
+    var v=get();
+    document.getElementById("pMosqueName").textContent=v;
+    document.getElementById("pMosque").hidden=!v;
+    document.getElementById("pCountry").hidden=!!v;
+    lbl.textContent=v || base;
+  }
+  btn.addEventListener("click",function(){ box.hidden=!box.hidden; btn.setAttribute("aria-expanded",String(!box.hidden)); if(!box.hidden){ inp.value=get(); inp.focus(); } });
+  document.getElementById("mqSave").addEventListener("click",function(){ put(inp.value.trim()); show(); box.hidden=true; btn.setAttribute("aria-expanded","false"); });
+  inp.addEventListener("keydown",function(e){ if(e.key==="Enter") document.getElementById("mqSave").click(); });
+  document.getElementById("mqDel").addEventListener("click",function(){ put(""); inp.value=""; show(); box.hidden=true; btn.setAttribute("aria-expanded","false"); });
+  show();
 })();
 </script>
 </body>
