@@ -143,7 +143,26 @@ applyTheme();
   h2{font-size:1.15rem;color:var(--gold);margin-bottom:18px;text-align:center;font-weight:600}
 
   /* الأذان */
-  .azan{text-align:center}
+  .azan{text-align:center;padding-top:18px}
+  .azsec{padding:18px 22px}
+  .azsec summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
+  .azsec summary::-webkit-details-marker{display:none}
+  .azsec summary h2{margin:0}
+  .azsec .chev{width:20px;height:20px;stroke:var(--gold);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:transform .2s}
+  .azsec details[open] .chev{transform:rotate(180deg)}
+  .weekwrap{overflow-x:auto}
+  .week{width:100%;border-collapse:collapse;font-size:.8rem;font-variant-numeric:tabular-nums}
+  .week th{padding:4px 2px 8px;border-bottom:1px solid var(--line)}
+  .week th svg{width:20px;height:20px;stroke:var(--gold);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;display:block;margin:auto}
+  .week td{text-align:center;padding:7px 1px;border-bottom:1px solid var(--line);direction:ltr;white-space:nowrap}
+  .week td.day{text-align:start;direction:inherit;color:var(--muted);line-height:1.3;padding-inline-end:4px}
+  .week td.day small{display:block;font-size:.72rem}
+  .week td.day b{color:var(--text);font-weight:600;display:block}
+  .week tr.today td{background:var(--inner);color:var(--gold);font-weight:600}
+  .week tr.today td.day b{color:var(--gold)}
+  .week tr:last-child td{border-bottom:none}
+  @media (max-width:420px){#weekSec{padding:24px 12px}}
+  @media (min-width:600px){.week{font-size:.95rem}.week td{padding:10px 4px}}
   .azan .ar{font-family:'Amiri',serif;font-size:1.65rem;line-height:2.3;direction:rtl}
   .azan .tr{color:var(--muted);font-size:.95rem;margin-top:4px}
   .azan .note{font-size:.85rem;color:var(--muted);margin-top:16px;line-height:1.7}
@@ -159,6 +178,11 @@ applyTheme();
   .t.active{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold) inset}
   .t span{display:block;color:var(--muted);font-size:.85rem}
   .t b{font-size:1.3rem;font-variant-numeric:tabular-nums;direction:ltr;display:inline-block}
+  .t.qiyam{grid-column:1/-1;flex-direction:row;justify-content:center;gap:12px;padding:14px 12px;border-style:dashed}
+  .t.qiyam svg{margin:0}
+  .t.qiyam .lbl{text-align:start}
+  .t.qiyam .lbl span{font-size:.95rem;color:var(--text)}
+  .t.qiyam small{display:block;color:var(--muted);font-size:.78rem}
   .notice{display:flex;gap:12px;align-items:flex-start;background:var(--inner);border:1px dashed var(--gold);border-radius:14px;padding:14px 16px;margin-bottom:18px;font-size:.88rem;line-height:1.7}
   .notice[hidden]{display:none}
   .notice svg{width:22px;height:22px;flex:none;stroke:var(--gold);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;margin-top:2px}
@@ -284,15 +308,22 @@ applyTheme();
     <div class="times" id="times"></div>
     <div class="loc" id="locText"></div>
     <button class="methodline" id="methodLine" type="button"></button>
+  </section>
+
+  <section id="weekSec" hidden>
+    <h2 data-i="thisWeek"></h2>
+    <div class="weekwrap"><table class="week" id="week"></table></div>
     <a class="monthly" id="monthlyLink" href="#" hidden>
       <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M7 14h2M11 14h2M15 14h2M7 18h2M11 18h2"/></svg>
       <span data-i="monthly"></span>
     </a>
   </section>
 
-  <section>
-    <h2 data-i="adhanText"></h2>
-    <div class="azan" id="azan"></div>
+  <section class="azsec">
+    <details>
+      <summary><h2 data-i="adhanText"></h2><svg class="chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></summary>
+      <div class="azan" id="azan"></div>
+    </details>
   </section>
 </main>
 
@@ -364,158 +395,158 @@ applyTheme();
 <script>
 /* ---------- الترجمات ---------- */
 const I18N = {
-  ar:{dir:"rtl",allCountries:"كل البلدان",monthly:"الجدول الشهري والطباعة",done:"تم",searchYourCity:"ابحث عن مدينتك",installTitle:"ثبّت التطبيق على هاتفك",installText:"افتحه بلمسة من الشاشة الرئيسية كأي تطبيق، ويعمل حتى دون إنترنت.",installBtn:"تثبيت",noThanks:"لا، شكرًا",iosHelp:"اضغط زر المشاركة في Safari، ثم اختر «إضافة إلى الشاشة الرئيسية».",installApp:"تثبيت التطبيق",mecca:"مكة المكرمة",tryLatin:"لم نجد هذه المدينة. جرّب كتابة الاسم بالأحرف الإنجليزية، مثل Duhok.",searching:"جارٍ البحث…",updated:"تم تحديث المدينة",cityLabel:"المدينة",noteDenied:"الوصول إلى موقعك محجوب، لذلك تظهر مواقيت مكة المكرمة. ابحث عن مدينتك أو استعد الموقع.",noteUnknown:"لم يُحدَّد موقعك بعد، لذلك تظهر مواقيت مكة المكرمة. ابحث عن مدينتك أو فعّل الموقع.",btnRestore:"استعادة الموقع",btnEnable:"تفعيل الموقع",helpDenied:"المتصفح يمنع الموقع. اضغط على رمز القفل بجانب عنوان الصفحة، واسمح بالموقع، ثم أعد تحميل الصفحة.",appearance:"المظهر",light:"فاتح",dark:"داكن",color:"اللون",label:"العربية",logo:"أذان كُرد",
+  ar:{thisWeek:"مواقيت الأسبوع",dir:"rtl",allCountries:"كل البلدان",monthly:"الجدول الشهري والطباعة",done:"تم",searchYourCity:"ابحث عن مدينتك",installTitle:"ثبّت التطبيق على هاتفك",installText:"افتحه بلمسة من الشاشة الرئيسية كأي تطبيق، ويعمل حتى دون إنترنت.",installBtn:"تثبيت",noThanks:"لا، شكرًا",iosHelp:"اضغط زر المشاركة في Safari، ثم اختر «إضافة إلى الشاشة الرئيسية».",installApp:"تثبيت التطبيق",mecca:"مكة المكرمة",tryLatin:"لم نجد هذه المدينة. جرّب كتابة الاسم بالأحرف الإنجليزية، مثل Duhok.",searching:"جارٍ البحث…",updated:"تم تحديث المدينة",cityLabel:"المدينة",noteDenied:"الوصول إلى موقعك محجوب، لذلك تظهر مواقيت مكة المكرمة. ابحث عن مدينتك أو استعد الموقع.",noteUnknown:"لم يُحدَّد موقعك بعد، لذلك تظهر مواقيت مكة المكرمة. ابحث عن مدينتك أو فعّل الموقع.",btnRestore:"استعادة الموقع",btnEnable:"تفعيل الموقع",helpDenied:"المتصفح يمنع الموقع. اضغط على رمز القفل بجانب عنوان الصفحة، واسمح بالموقع، ثم أعد تحميل الصفحة.",appearance:"المظهر",light:"فاتح",dark:"داكن",color:"اللون",label:"العربية",logo:"أذان كُرد",
     tagline:"الأذان ومواقيت الصلاة لكل مكان في العالم",todayTimes:"مواقيت الصلاة اليوم",nextPrayer:"الصلاة القادمة",
     locating:"جارٍ تحديد الموقع…",cityPh:"اكتب مدينتك (مثلاً: Duhok)",search:"بحث",myLocation:"موقعي",
     adhanText:"نص الأذان",notFound:"لم نجد هذه المدينة، جرّب اسماً آخر.",yourLoc:"موقعك الحالي",
     fajrNote:"ويُزاد في أذان الفجر بعد «حيَّ على الفلاح» مرتين:",hijri:"هـ",
     settings:"الإعدادات",methodLabel:"طريقة الحساب",auto:"تلقائي حسب المدينة",asrLabel:"حساب العصر",
     standard:"الجمهور (الشافعي والمالكي والحنبلي)",hanafi:"الحنفي",timeFormat:"صيغة الوقت",close:"إغلاق",
-    names:{Fajr:"الفجر",Sunrise:"الشروق",Dhuhr:"الظهر",Asr:"العصر",Maghrib:"المغرب",Isha:"العشاء"},
+    names:{Fajr:"الفجر",Sunrise:"الشروق",Dhuhr:"الظهر",Asr:"العصر",Maghrib:"المغرب",Isha:"العشاء"},qiyam:"قيام الليل",qiyamSub:"الثلث الأخير من الليل",
     adhan:null},
-  ku:{dir:"rtl",allCountries:"هەمی وەلات",monthly:"خشتەیا مەهانە و چاپکرن",done:"تەواو",searchYourCity:"ل باژێرێ خۆ بگەڕە",installTitle:"ئەپێ ل سەر مۆبایلا خۆ دابمەزرینە",installText:"ب ئێک تکاندنێ ژ شاشا سەرەکی ڤەکە وەک هەر ئەپەکێ دی، و بێ ئینتەرنێتێ ژی کار دکەت.",installBtn:"دامەزراندن",noThanks:"نە، سوپاس",iosHelp:"ل Safari دوگمەیا هاوبەشکرنێ بکە، پاشان «Add to Home Screen» هەلبژێرە.",installApp:"دامەزراندنا ئەپی",mecca:"مەککە",tryLatin:"باژێر نەهاتە دیتن. هەوڵ بدە ناڤی ب پیتێن ئینگلیزی بنڤیسی، وەک Duhok.",searching:"لێگەڕیان…",updated:"باژێر هاتە نووکرن",cityLabel:"باژێر",noteDenied:"دەستگەهشتن ب جهێ تە هاتیە گرتن، لەوما دەمێن مەکەهێ دیار دبن. ل باژێرێ خۆ بگەڕە یان جهی ڤەگەڕینە.",noteUnknown:"جهێ تە هێشتا دیار نەبوویە، لەوما دەمێن مەکەهێ دیار دبن. ل باژێرێ خۆ بگەڕە یان جهی چالاک بکە.",btnRestore:"ڤەگەڕاندنا جهی",btnEnable:"چالاککرنا جهی",helpDenied:"وێبگەڕ جهی ڕادگریت. کلیک ل سەر نیشانا قفلێ بکە ل تەنیشت ناڤونیشانێ پەڕێ، ڕێ ب جهی بدە، پاشان پەڕێ نوو بکە.",appearance:"دیمەن",light:"ڕوون",dark:"تاری",color:"ڕەنگ",label:"کوردی",logo:"بانگێ کورد",
+  ku:{thisWeek:"دەمێن ڤێ حەفتیێ",dir:"rtl",allCountries:"هەمی وەلات",monthly:"خشتەیا مەهانە و چاپکرن",done:"تەواو",searchYourCity:"ل باژێرێ خۆ بگەڕە",installTitle:"ئەپێ ل سەر مۆبایلا خۆ دابمەزرینە",installText:"ب ئێک تکاندنێ ژ شاشا سەرەکی ڤەکە وەک هەر ئەپەکێ دی، و بێ ئینتەرنێتێ ژی کار دکەت.",installBtn:"دامەزراندن",noThanks:"نە، سوپاس",iosHelp:"ل Safari دوگمەیا هاوبەشکرنێ بکە، پاشان «Add to Home Screen» هەلبژێرە.",installApp:"دامەزراندنا ئەپی",mecca:"مەککە",tryLatin:"باژێر نەهاتە دیتن. هەوڵ بدە ناڤی ب پیتێن ئینگلیزی بنڤیسی، وەک Duhok.",searching:"لێگەڕیان…",updated:"باژێر هاتە نووکرن",cityLabel:"باژێر",noteDenied:"دەستگەهشتن ب جهێ تە هاتیە گرتن، لەوما دەمێن مەکەهێ دیار دبن. ل باژێرێ خۆ بگەڕە یان جهی ڤەگەڕینە.",noteUnknown:"جهێ تە هێشتا دیار نەبوویە، لەوما دەمێن مەکەهێ دیار دبن. ل باژێرێ خۆ بگەڕە یان جهی چالاک بکە.",btnRestore:"ڤەگەڕاندنا جهی",btnEnable:"چالاککرنا جهی",helpDenied:"وێبگەڕ جهی ڕادگریت. کلیک ل سەر نیشانا قفلێ بکە ل تەنیشت ناڤونیشانێ پەڕێ، ڕێ ب جهی بدە، پاشان پەڕێ نوو بکە.",appearance:"دیمەن",light:"ڕوون",dark:"تاری",color:"ڕەنگ",label:"کوردی",logo:"بانگێ کورد",
     tagline:"بانگ و دەمێن نڤێژێ بۆ هەمی جهێن جیهانێ",todayTimes:"دەمێن نڤێژێ ئەڤرۆ",nextPrayer:"نڤێژا بێت",
     locating:"دیارکرنا جهی…",cityPh:"ناڤێ باژێرێ خۆ بنڤیسە (بۆ نموونە: Duhok)",search:"لێگەڕیان",myLocation:"جهێ من",
     adhanText:"دەقێ بانگێ",notFound:"باژێر نەهاتە دیتن، ناڤەکێ دی تاقی بکە.",yourLoc:"جهێ تە یێ نوکە",
     fajrNote:"د بانگا سپێدێ دا پشتی «حی علی الفلاح» دو جاران زێدە دبیت:",hijri:"ک",
     settings:"ڕێکخستن",methodLabel:"رێکا هەژمارتنێ",auto:"خۆکار ل دویف باژێری",asrLabel:"هەژمارتنا عەسرێ",
     standard:"گشتی (شافعی، مالکی، حەنبەلی)",hanafi:"حەنەفی",timeFormat:"شێوێ دەمی",close:"گرتن",
-    names:{Fajr:"سپێدە",Sunrise:"رۆژهەلات",Dhuhr:"نیڤرۆ",Asr:"عەسر",Maghrib:"مەغرب",Isha:"عیشا"},
+    names:{Fajr:"سپێدە",Sunrise:"رۆژهەلات",Dhuhr:"نیڤرۆ",Asr:"عەسر",Maghrib:"مەغرب",Isha:"عیشا"},qiyam:"نڤێژا شەڤێ",qiyamSub:"سێیەکا دوماهیێ یا شەڤێ",
     adhan:{akbar:"خودێ مەزنترە",shahada1:"ئەز شاهدیێ ددەم کو چ پەرستی نینە ژبلی خودێ",shahada2:"ئەز شاهدیێ ددەم کو محەمەد پێغەمبەرێ خودێیە",salah:"وەرن بۆ نڤێژێ",falah:"وەرن بۆ سەرفەرازیێ",tawhid:"چ پەرستی نینە ژبلی خودێ",sleep:"نڤێژ ژ خەوێ چێترە"}},
-  en:{dir:"ltr",allCountries:"All countries",monthly:"Monthly timetable & print",done:"Done",searchYourCity:"Search your city",installTitle:"Install the app on your phone",installText:"Open it with one tap from your home screen like any app — it even works offline.",installBtn:"Install",noThanks:"No, thanks",iosHelp:"Tap the Share button in Safari, then choose “Add to Home Screen”.",installApp:"Install app",mecca:"Makkah",tryLatin:"City not found. Try writing the name in English letters, e.g. Duhok.",searching:"Searching…",updated:"City updated",cityLabel:"City",noteDenied:"Location access is blocked, so Makkah's times are shown. Search for your city or restore location.",noteUnknown:"Your location isn't set yet, so Makkah's times are shown. Search for your city or enable location.",btnRestore:"Restore location",btnEnable:"Enable location",helpDenied:"Your browser is blocking location. Click the lock icon next to the address bar, allow location, then reload the page.",appearance:"Appearance",light:"Light",dark:"Dark",color:"Color",label:"English",logo:"AzanKurd",
+  en:{thisWeek:"This Week",dir:"ltr",allCountries:"All countries",monthly:"Monthly timetable & print",done:"Done",searchYourCity:"Search your city",installTitle:"Install the app on your phone",installText:"Open it with one tap from your home screen like any app — it even works offline.",installBtn:"Install",noThanks:"No, thanks",iosHelp:"Tap the Share button in Safari, then choose “Add to Home Screen”.",installApp:"Install app",mecca:"Makkah",tryLatin:"City not found. Try writing the name in English letters, e.g. Duhok.",searching:"Searching…",updated:"City updated",cityLabel:"City",noteDenied:"Location access is blocked, so Makkah's times are shown. Search for your city or restore location.",noteUnknown:"Your location isn't set yet, so Makkah's times are shown. Search for your city or enable location.",btnRestore:"Restore location",btnEnable:"Enable location",helpDenied:"Your browser is blocking location. Click the lock icon next to the address bar, allow location, then reload the page.",appearance:"Appearance",light:"Light",dark:"Dark",color:"Color",label:"English",logo:"AzanKurd",
     tagline:"The call to prayer and prayer times for every place on earth",todayTimes:"Today's Prayer Times",nextPrayer:"Next prayer",
     locating:"Locating…",cityPh:"Enter your city (e.g. Duhok)",search:"Search",myLocation:"My location",
     adhanText:"The Adhan",notFound:"City not found, please try another name.",yourLoc:"Your current location",
     fajrNote:"In the Fajr adhan, after “Come to success”, this is added twice:",hijri:"AH",
     settings:"Settings",methodLabel:"Calculation method",auto:"Automatic (by city)",asrLabel:"Asr calculation",
     standard:"Standard (Shafi'i, Maliki, Hanbali)",hanafi:"Hanafi",timeFormat:"Time format",close:"Close",
-    names:{Fajr:"Fajr",Sunrise:"Sunrise",Dhuhr:"Dhuhr",Asr:"Asr",Maghrib:"Maghrib",Isha:"Isha"},
+    names:{Fajr:"Fajr",Sunrise:"Sunrise",Dhuhr:"Dhuhr",Asr:"Asr",Maghrib:"Maghrib",Isha:"Isha"},qiyam:"Night prayer (Qiyam)",qiyamSub:"Last third of the night",
     adhan:{akbar:"Allah is the Greatest",shahada1:"I bear witness that there is no god but Allah",shahada2:"I bear witness that Muhammad is the Messenger of Allah",salah:"Come to prayer",falah:"Come to success",tawhid:"There is no god but Allah",sleep:"Prayer is better than sleep"}},
-  de:{dir:"ltr",allCountries:"Alle Länder",monthly:"Monatsplan & Drucken",done:"Fertig",searchYourCity:"Stadt suchen",installTitle:"App auf dem Handy installieren",installText:"Öffnen Sie sie mit einem Tipp vom Startbildschirm – sie funktioniert sogar offline.",installBtn:"Installieren",noThanks:"Nein, danke",iosHelp:"Tippen Sie in Safari auf „Teilen“ und wählen Sie „Zum Home-Bildschirm“.",installApp:"App installieren",mecca:"Mekka",tryLatin:"Stadt nicht gefunden. Versuchen Sie den Namen in lateinischen Buchstaben, z. B. Duhok.",searching:"Suche läuft…",updated:"Stadt aktualisiert",cityLabel:"Stadt",noteDenied:"Der Standortzugriff ist blockiert, daher werden die Zeiten für Mekka angezeigt. Suchen Sie Ihre Stadt oder stellen Sie den Standort wieder her.",noteUnknown:"Ihr Standort ist noch nicht bekannt, daher werden die Zeiten für Mekka angezeigt. Suchen Sie Ihre Stadt oder aktivieren Sie den Standort.",btnRestore:"Standort wiederherstellen",btnEnable:"Standort aktivieren",helpDenied:"Ihr Browser blockiert den Standort. Klicken Sie auf das Schloss-Symbol neben der Adresszeile, erlauben Sie den Standort und laden Sie die Seite neu.",appearance:"Darstellung",light:"Hell",dark:"Dunkel",color:"Farbe",label:"Deutsch",logo:"AzanKurd",
+  de:{thisWeek:"Diese Woche",dir:"ltr",allCountries:"Alle Länder",monthly:"Monatsplan & Drucken",done:"Fertig",searchYourCity:"Stadt suchen",installTitle:"App auf dem Handy installieren",installText:"Öffnen Sie sie mit einem Tipp vom Startbildschirm – sie funktioniert sogar offline.",installBtn:"Installieren",noThanks:"Nein, danke",iosHelp:"Tippen Sie in Safari auf „Teilen“ und wählen Sie „Zum Home-Bildschirm“.",installApp:"App installieren",mecca:"Mekka",tryLatin:"Stadt nicht gefunden. Versuchen Sie den Namen in lateinischen Buchstaben, z. B. Duhok.",searching:"Suche läuft…",updated:"Stadt aktualisiert",cityLabel:"Stadt",noteDenied:"Der Standortzugriff ist blockiert, daher werden die Zeiten für Mekka angezeigt. Suchen Sie Ihre Stadt oder stellen Sie den Standort wieder her.",noteUnknown:"Ihr Standort ist noch nicht bekannt, daher werden die Zeiten für Mekka angezeigt. Suchen Sie Ihre Stadt oder aktivieren Sie den Standort.",btnRestore:"Standort wiederherstellen",btnEnable:"Standort aktivieren",helpDenied:"Ihr Browser blockiert den Standort. Klicken Sie auf das Schloss-Symbol neben der Adresszeile, erlauben Sie den Standort und laden Sie die Seite neu.",appearance:"Darstellung",light:"Hell",dark:"Dunkel",color:"Farbe",label:"Deutsch",logo:"AzanKurd",
     tagline:"Gebetsruf und Gebetszeiten für jeden Ort der Welt",todayTimes:"Gebetszeiten heute",nextPrayer:"Nächstes Gebet",
     locating:"Standort wird ermittelt…",cityPh:"Stadt eingeben (z. B. Duhok)",search:"Suchen",myLocation:"Mein Standort",
     adhanText:"Der Adhan",notFound:"Stadt nicht gefunden, bitte einen anderen Namen versuchen.",yourLoc:"Ihr aktueller Standort",
     fajrNote:"Beim Fajr-Adhan wird nach „Kommt zum Erfolg“ zweimal hinzugefügt:",hijri:"n. H.",
     settings:"Einstellungen",methodLabel:"Berechnungsmethode",auto:"Automatisch (nach Stadt)",asrLabel:"Asr-Berechnung",
     standard:"Standard (schafiitisch, malikitisch, hanbalitisch)",hanafi:"Hanafitisch",timeFormat:"Zeitformat",close:"Schließen",
-    names:{Fajr:"Fadschr",Sunrise:"Sonnenaufgang",Dhuhr:"Dhuhr",Asr:"Asr",Maghrib:"Maghrib",Isha:"Ischa"},
+    names:{Fajr:"Fadschr",Sunrise:"Sonnenaufgang",Dhuhr:"Dhuhr",Asr:"Asr",Maghrib:"Maghrib",Isha:"Ischa"},qiyam:"Nachtgebet (Qiyam)",qiyamSub:"Letztes Drittel der Nacht",
     adhan:{akbar:"Allah ist der Größte",shahada1:"Ich bezeuge, dass es keinen Gott gibt außer Allah",shahada2:"Ich bezeuge, dass Muhammad der Gesandte Allahs ist",salah:"Kommt zum Gebet",falah:"Kommt zum Erfolg",tawhid:"Es gibt keinen Gott außer Allah",sleep:"Das Gebet ist besser als der Schlaf"}},
-  tr:{dir:"ltr",allCountries:"Tüm ülkeler",monthly:"Aylık vakitler ve yazdır",done:"Tamam",searchYourCity:"Şehrini ara",installTitle:"Uygulamayı telefonunuza yükleyin",installText:"Ana ekrandan tek dokunuşla açın; internetsiz de çalışır.",installBtn:"Yükle",noThanks:"Hayır, teşekkürler",iosHelp:"Safari'de Paylaş düğmesine dokunun, ardından “Ana Ekrana Ekle”yi seçin.",installApp:"Uygulamayı yükle",mecca:"Mekke",tryLatin:"Şehir bulunamadı. Adı Latin harfleriyle yazmayı deneyin, ör. Duhok.",searching:"Aranıyor…",updated:"Şehir güncellendi",cityLabel:"Şehir",noteDenied:"Konum erişimi engellendi, bu yüzden Mekke vakitleri gösteriliyor. Şehrinizi arayın veya konumu geri yükleyin.",noteUnknown:"Konumunuz henüz belirlenmedi, bu yüzden Mekke vakitleri gösteriliyor. Şehrinizi arayın veya konumu etkinleştirin.",btnRestore:"Konumu geri yükle",btnEnable:"Konumu etkinleştir",helpDenied:"Tarayıcınız konumu engelliyor. Adres çubuğunun yanındaki kilit simgesine tıklayın, konuma izin verin ve sayfayı yenileyin.",appearance:"Görünüm",light:"Açık",dark:"Koyu",color:"Renk",label:"Türkçe",logo:"AzanKurd",
+  tr:{thisWeek:"Bu Hafta",dir:"ltr",allCountries:"Tüm ülkeler",monthly:"Aylık vakitler ve yazdır",done:"Tamam",searchYourCity:"Şehrini ara",installTitle:"Uygulamayı telefonunuza yükleyin",installText:"Ana ekrandan tek dokunuşla açın; internetsiz de çalışır.",installBtn:"Yükle",noThanks:"Hayır, teşekkürler",iosHelp:"Safari'de Paylaş düğmesine dokunun, ardından “Ana Ekrana Ekle”yi seçin.",installApp:"Uygulamayı yükle",mecca:"Mekke",tryLatin:"Şehir bulunamadı. Adı Latin harfleriyle yazmayı deneyin, ör. Duhok.",searching:"Aranıyor…",updated:"Şehir güncellendi",cityLabel:"Şehir",noteDenied:"Konum erişimi engellendi, bu yüzden Mekke vakitleri gösteriliyor. Şehrinizi arayın veya konumu geri yükleyin.",noteUnknown:"Konumunuz henüz belirlenmedi, bu yüzden Mekke vakitleri gösteriliyor. Şehrinizi arayın veya konumu etkinleştirin.",btnRestore:"Konumu geri yükle",btnEnable:"Konumu etkinleştir",helpDenied:"Tarayıcınız konumu engelliyor. Adres çubuğunun yanındaki kilit simgesine tıklayın, konuma izin verin ve sayfayı yenileyin.",appearance:"Görünüm",light:"Açık",dark:"Koyu",color:"Renk",label:"Türkçe",logo:"AzanKurd",
     tagline:"Dünyanın her yeri için ezan ve namaz vakitleri",todayTimes:"Bugünün Namaz Vakitleri",nextPrayer:"Sıradaki namaz",
     locating:"Konum belirleniyor…",cityPh:"Şehrinizi yazın (ör. Duhok)",search:"Ara",myLocation:"Konumum",
     adhanText:"Ezan",notFound:"Şehir bulunamadı, başka bir isim deneyin.",yourLoc:"Mevcut konumunuz",
     fajrNote:"Sabah ezanında «Haydin kurtuluşa» sonrasında iki kez eklenir:",hijri:"H",
     settings:"Ayarlar",methodLabel:"Hesaplama yöntemi",auto:"Otomatik (şehre göre)",asrLabel:"İkindi hesabı",
     standard:"Standart (Şâfiî, Mâlikî, Hanbelî)",hanafi:"Hanefî",timeFormat:"Saat biçimi",close:"Kapat",
-    names:{Fajr:"Sabah",Sunrise:"Güneş",Dhuhr:"Öğle",Asr:"İkindi",Maghrib:"Akşam",Isha:"Yatsı"},
+    names:{Fajr:"Sabah",Sunrise:"Güneş",Dhuhr:"Öğle",Asr:"İkindi",Maghrib:"Akşam",Isha:"Yatsı"},qiyam:"Teheccüd",qiyamSub:"Gecenin son üçte biri",
     adhan:{akbar:"Allah en büyüktür",shahada1:"Şahitlik ederim ki Allah'tan başka ilah yoktur",shahada2:"Şahitlik ederim ki Muhammed Allah'ın elçisidir",salah:"Haydin namaza",falah:"Haydin kurtuluşa",tawhid:"Allah'tan başka ilah yoktur",sleep:"Namaz uykudan hayırlıdır"}},
-  fa:{dir:"rtl",allCountries:"همهٔ کشورها",monthly:"جدول ماهانه و چاپ",done:"تمام",searchYourCity:"شهر خود را جستجو کنید",installTitle:"برنامه را روی گوشی نصب کنید",installText:"با یک لمس از صفحهٔ اصلی بازش کنید؛ حتی بدون اینترنت کار می‌کند.",installBtn:"نصب",noThanks:"نه، ممنون",iosHelp:"در Safari دکمهٔ اشتراک‌گذاری را بزنید و «Add to Home Screen» را انتخاب کنید.",installApp:"نصب برنامه",mecca:"مکه",tryLatin:"شهر پیدا نشد. نام را با حروف انگلیسی بنویسید، مثلاً Duhok.",searching:"در حال جستجو…",updated:"شهر به‌روز شد",cityLabel:"شهر",noteDenied:"دسترسی به موقعیت شما مسدود است، به همین دلیل اوقات مکه نمایش داده می‌شود. شهر خود را جستجو کنید یا موقعیت را بازگردانید.",noteUnknown:"موقعیت شما هنوز مشخص نشده، به همین دلیل اوقات مکه نمایش داده می‌شود. شهر خود را جستجو کنید یا موقعیت را فعال کنید.",btnRestore:"بازگرداندن موقعیت",btnEnable:"فعال‌کردن موقعیت",helpDenied:"مرورگر موقعیت را مسدود کرده است. روی نماد قفل کنار نوار آدرس بزنید، اجازهٔ موقعیت را بدهید و صفحه را دوباره بارگذاری کنید.",appearance:"ظاهر",light:"روشن",dark:"تیره",color:"رنگ",label:"فارسی",logo:"اذان کرد",
+  fa:{thisWeek:"اوقات این هفته",dir:"rtl",allCountries:"همهٔ کشورها",monthly:"جدول ماهانه و چاپ",done:"تمام",searchYourCity:"شهر خود را جستجو کنید",installTitle:"برنامه را روی گوشی نصب کنید",installText:"با یک لمس از صفحهٔ اصلی بازش کنید؛ حتی بدون اینترنت کار می‌کند.",installBtn:"نصب",noThanks:"نه، ممنون",iosHelp:"در Safari دکمهٔ اشتراک‌گذاری را بزنید و «Add to Home Screen» را انتخاب کنید.",installApp:"نصب برنامه",mecca:"مکه",tryLatin:"شهر پیدا نشد. نام را با حروف انگلیسی بنویسید، مثلاً Duhok.",searching:"در حال جستجو…",updated:"شهر به‌روز شد",cityLabel:"شهر",noteDenied:"دسترسی به موقعیت شما مسدود است، به همین دلیل اوقات مکه نمایش داده می‌شود. شهر خود را جستجو کنید یا موقعیت را بازگردانید.",noteUnknown:"موقعیت شما هنوز مشخص نشده، به همین دلیل اوقات مکه نمایش داده می‌شود. شهر خود را جستجو کنید یا موقعیت را فعال کنید.",btnRestore:"بازگرداندن موقعیت",btnEnable:"فعال‌کردن موقعیت",helpDenied:"مرورگر موقعیت را مسدود کرده است. روی نماد قفل کنار نوار آدرس بزنید، اجازهٔ موقعیت را بدهید و صفحه را دوباره بارگذاری کنید.",appearance:"ظاهر",light:"روشن",dark:"تیره",color:"رنگ",label:"فارسی",logo:"اذان کرد",
     tagline:"اذان و اوقات شرعی برای همه جای جهان",todayTimes:"اوقات نماز امروز",nextPrayer:"نماز بعدی",
     locating:"در حال تعیین موقعیت…",cityPh:"نام شهر خود را بنویسید (مثلاً: Duhok)",search:"جستجو",myLocation:"موقعیت من",
     adhanText:"متن اذان",notFound:"شهر پیدا نشد، نام دیگری را امتحان کنید.",yourLoc:"موقعیت فعلی شما",
     fajrNote:"در اذان صبح پس از «حی علی الفلاح» دو بار افزوده می‌شود:",hijri:"ق",
     settings:"تنظیمات",methodLabel:"روش محاسبه",auto:"خودکار بر اساس شهر",asrLabel:"محاسبه عصر",
     standard:"رایج (شافعی، مالکی، حنبلی)",hanafi:"حنفی",timeFormat:"قالب زمان",close:"بستن",
-    names:{Fajr:"صبح",Sunrise:"طلوع آفتاب",Dhuhr:"ظهر",Asr:"عصر",Maghrib:"مغرب",Isha:"عشا"},
+    names:{Fajr:"صبح",Sunrise:"طلوع آفتاب",Dhuhr:"ظهر",Asr:"عصر",Maghrib:"مغرب",Isha:"عشا"},qiyam:"نماز شب",qiyamSub:"یک‌سوم پایانی شب",
     adhan:{akbar:"خدا بزرگ‌تر است",shahada1:"گواهی می‌دهم که معبودی جز خدا نیست",shahada2:"گواهی می‌دهم که محمد فرستاده خداست",salah:"بشتابید به سوی نماز",falah:"بشتابید به سوی رستگاری",tawhid:"معبودی جز خدا نیست",sleep:"نماز از خواب بهتر است"}},
-  ur:{dir:"rtl",allCountries:"تمام ممالک",monthly:"ماہانہ نقشہ اور پرنٹ",done:"ہو گیا",searchYourCity:"اپنا شہر تلاش کریں",installTitle:"ایپ اپنے فون پر انسٹال کریں",installText:"ہوم اسکرین سے ایک ٹچ میں کھولیں، یہ انٹرنیٹ کے بغیر بھی چلتی ہے۔",installBtn:"انسٹال کریں",noThanks:"نہیں، شکریہ",iosHelp:"Safari میں شیئر بٹن دبائیں، پھر «Add to Home Screen» منتخب کریں۔",installApp:"ایپ انسٹال کریں",mecca:"مکہ مکرمہ",tryLatin:"شہر نہیں ملا۔ نام انگریزی حروف میں لکھ کر دیکھیں، مثلاً Duhok۔",searching:"تلاش جاری ہے…",updated:"شہر اپ ڈیٹ ہو گیا",cityLabel:"شہر",noteDenied:"مقام تک رسائی بند ہے، اس لیے مکہ مکرمہ کے اوقات دکھائے جا رہے ہیں۔ اپنا شہر تلاش کریں یا مقام بحال کریں۔",noteUnknown:"آپ کا مقام ابھی معلوم نہیں، اس لیے مکہ مکرمہ کے اوقات دکھائے جا رہے ہیں۔ اپنا شہر تلاش کریں یا مقام فعال کریں۔",btnRestore:"مقام بحال کریں",btnEnable:"مقام فعال کریں",helpDenied:"آپ کا براؤزر مقام روک رہا ہے۔ ایڈریس بار کے ساتھ تالے کے نشان پر کلک کریں، مقام کی اجازت دیں اور صفحہ دوبارہ لوڈ کریں۔",appearance:"ظاہری شکل",light:"روشن",dark:"گہرا",color:"رنگ",label:"اردو",logo:"اذان کرد",
+  ur:{thisWeek:"اس ہفتے کے اوقات",dir:"rtl",allCountries:"تمام ممالک",monthly:"ماہانہ نقشہ اور پرنٹ",done:"ہو گیا",searchYourCity:"اپنا شہر تلاش کریں",installTitle:"ایپ اپنے فون پر انسٹال کریں",installText:"ہوم اسکرین سے ایک ٹچ میں کھولیں، یہ انٹرنیٹ کے بغیر بھی چلتی ہے۔",installBtn:"انسٹال کریں",noThanks:"نہیں، شکریہ",iosHelp:"Safari میں شیئر بٹن دبائیں، پھر «Add to Home Screen» منتخب کریں۔",installApp:"ایپ انسٹال کریں",mecca:"مکہ مکرمہ",tryLatin:"شہر نہیں ملا۔ نام انگریزی حروف میں لکھ کر دیکھیں، مثلاً Duhok۔",searching:"تلاش جاری ہے…",updated:"شہر اپ ڈیٹ ہو گیا",cityLabel:"شہر",noteDenied:"مقام تک رسائی بند ہے، اس لیے مکہ مکرمہ کے اوقات دکھائے جا رہے ہیں۔ اپنا شہر تلاش کریں یا مقام بحال کریں۔",noteUnknown:"آپ کا مقام ابھی معلوم نہیں، اس لیے مکہ مکرمہ کے اوقات دکھائے جا رہے ہیں۔ اپنا شہر تلاش کریں یا مقام فعال کریں۔",btnRestore:"مقام بحال کریں",btnEnable:"مقام فعال کریں",helpDenied:"آپ کا براؤزر مقام روک رہا ہے۔ ایڈریس بار کے ساتھ تالے کے نشان پر کلک کریں، مقام کی اجازت دیں اور صفحہ دوبارہ لوڈ کریں۔",appearance:"ظاہری شکل",light:"روشن",dark:"گہرا",color:"رنگ",label:"اردو",logo:"اذان کرد",
     tagline:"دنیا کے ہر مقام کے لیے اذان اور نماز کے اوقات",todayTimes:"آج کے اوقاتِ نماز",nextPrayer:"اگلی نماز",
     locating:"مقام معلوم کیا جا رہا ہے…",cityPh:"اپنا شہر لکھیں (مثلاً: Duhok)",search:"تلاش",myLocation:"میرا مقام",
     adhanText:"اذان کا متن",notFound:"شہر نہیں ملا، کوئی اور نام آزمائیں۔",yourLoc:"آپ کا موجودہ مقام",
     fajrNote:"فجر کی اذان میں «حی علی الفلاح» کے بعد دو بار کہا جاتا ہے:",hijri:"ھ",
     settings:"ترتیبات",methodLabel:"حساب کا طریقہ",auto:"خودکار (شہر کے مطابق)",asrLabel:"عصر کا حساب",
     standard:"عام (شافعی، مالکی، حنبلی)",hanafi:"حنفی",timeFormat:"وقت کا انداز",close:"بند کریں",
-    names:{Fajr:"فجر",Sunrise:"طلوعِ آفتاب",Dhuhr:"ظہر",Asr:"عصر",Maghrib:"مغرب",Isha:"عشاء"},
+    names:{Fajr:"فجر",Sunrise:"طلوعِ آفتاب",Dhuhr:"ظہر",Asr:"عصر",Maghrib:"مغرب",Isha:"عشاء"},qiyam:"تہجد",qiyamSub:"رات کا آخری تہائی",
     adhan:{akbar:"اللہ سب سے بڑا ہے",shahada1:"میں گواہی دیتا ہوں کہ اللہ کے سوا کوئی معبود نہیں",shahada2:"میں گواہی دیتا ہوں کہ محمد اللہ کے رسول ہیں",salah:"آؤ نماز کی طرف",falah:"آؤ فلاح کی طرف",tawhid:"اللہ کے سوا کوئی معبود نہیں",sleep:"نماز نیند سے بہتر ہے"}},
-  fr:{dir:"ltr",allCountries:"Tous les pays",monthly:"Calendrier mensuel et impression",done:"Terminé",searchYourCity:"Rechercher votre ville",installTitle:"Installez l'application sur votre téléphone",installText:"Ouvrez-la d'un geste depuis l'écran d'accueil — elle fonctionne même hors ligne.",installBtn:"Installer",noThanks:"Non, merci",iosHelp:"Touchez le bouton Partager dans Safari, puis « Sur l'écran d'accueil ».",installApp:"Installer l'application",mecca:"La Mecque",tryLatin:"Ville introuvable. Essayez d'écrire le nom en lettres latines, ex. Duhok.",searching:"Recherche…",updated:"Ville mise à jour",cityLabel:"Ville",noteDenied:"L'accès à la position est bloqué, les horaires de La Mecque sont donc affichés. Recherchez votre ville ou rétablissez la position.",noteUnknown:"Votre position n'est pas encore définie, les horaires de La Mecque sont donc affichés. Recherchez votre ville ou activez la position.",btnRestore:"Rétablir la position",btnEnable:"Activer la position",helpDenied:"Votre navigateur bloque la position. Cliquez sur le cadenas à côté de la barre d'adresse, autorisez la position, puis rechargez la page.",appearance:"Apparence",light:"Clair",dark:"Sombre",color:"Couleur",label:"Français",logo:"AzanKurd",
+  fr:{thisWeek:"Cette semaine",dir:"ltr",allCountries:"Tous les pays",monthly:"Calendrier mensuel et impression",done:"Terminé",searchYourCity:"Rechercher votre ville",installTitle:"Installez l'application sur votre téléphone",installText:"Ouvrez-la d'un geste depuis l'écran d'accueil — elle fonctionne même hors ligne.",installBtn:"Installer",noThanks:"Non, merci",iosHelp:"Touchez le bouton Partager dans Safari, puis « Sur l'écran d'accueil ».",installApp:"Installer l'application",mecca:"La Mecque",tryLatin:"Ville introuvable. Essayez d'écrire le nom en lettres latines, ex. Duhok.",searching:"Recherche…",updated:"Ville mise à jour",cityLabel:"Ville",noteDenied:"L'accès à la position est bloqué, les horaires de La Mecque sont donc affichés. Recherchez votre ville ou rétablissez la position.",noteUnknown:"Votre position n'est pas encore définie, les horaires de La Mecque sont donc affichés. Recherchez votre ville ou activez la position.",btnRestore:"Rétablir la position",btnEnable:"Activer la position",helpDenied:"Votre navigateur bloque la position. Cliquez sur le cadenas à côté de la barre d'adresse, autorisez la position, puis rechargez la page.",appearance:"Apparence",light:"Clair",dark:"Sombre",color:"Couleur",label:"Français",logo:"AzanKurd",
     tagline:"L'appel à la prière et les horaires de prière pour chaque lieu du monde",todayTimes:"Horaires de prière du jour",nextPrayer:"Prochaine prière",
     locating:"Localisation en cours…",cityPh:"Entrez votre ville (ex. Duhok)",search:"Rechercher",myLocation:"Ma position",
     adhanText:"L'Adhan",notFound:"Ville introuvable, essayez un autre nom.",yourLoc:"Votre position actuelle",
     fajrNote:"Dans l'adhan du Fajr, après « Venez à la réussite », on ajoute deux fois :",hijri:"H",
     settings:"Paramètres",methodLabel:"Méthode de calcul",auto:"Automatique (selon la ville)",asrLabel:"Calcul de l'Asr",
     standard:"Standard (chaféite, malékite, hanbalite)",hanafi:"Hanafite",timeFormat:"Format horaire",close:"Fermer",
-    names:{Fajr:"Fajr",Sunrise:"Lever du soleil",Dhuhr:"Dhuhr",Asr:"Asr",Maghrib:"Maghrib",Isha:"Icha"},
+    names:{Fajr:"Fajr",Sunrise:"Lever du soleil",Dhuhr:"Dhuhr",Asr:"Asr",Maghrib:"Maghrib",Isha:"Icha"},qiyam:"Prière de nuit (Qiyam)",qiyamSub:"Dernier tiers de la nuit",
     adhan:{akbar:"Allah est le plus Grand",shahada1:"J'atteste qu'il n'y a de divinité qu'Allah",shahada2:"J'atteste que Muhammad est le Messager d'Allah",salah:"Venez à la prière",falah:"Venez à la réussite",tawhid:"Il n'y a de divinité qu'Allah",sleep:"La prière est meilleure que le sommeil"}},
-  es:{dir:"ltr",allCountries:"Todos los países",monthly:"Calendario mensual e impresión",done:"Listo",searchYourCity:"Busca tu ciudad",installTitle:"Instala la app en tu teléfono",installText:"Ábrela con un toque desde la pantalla de inicio; funciona incluso sin conexión.",installBtn:"Instalar",noThanks:"No, gracias",iosHelp:"Toca el botón Compartir en Safari y elige «Añadir a pantalla de inicio».",installApp:"Instalar la app",mecca:"La Meca",tryLatin:"Ciudad no encontrada. Prueba a escribir el nombre en letras latinas, p. ej. Duhok.",searching:"Buscando…",updated:"Ciudad actualizada",cityLabel:"Ciudad",noteDenied:"El acceso a la ubicación está bloqueado, por eso se muestran los horarios de La Meca. Busca tu ciudad o restablece la ubicación.",noteUnknown:"Tu ubicación aún no está definida, por eso se muestran los horarios de La Meca. Busca tu ciudad o activa la ubicación.",btnRestore:"Restablecer ubicación",btnEnable:"Activar ubicación",helpDenied:"Tu navegador bloquea la ubicación. Pulsa el candado junto a la barra de direcciones, permite la ubicación y recarga la página.",appearance:"Apariencia",light:"Claro",dark:"Oscuro",color:"Color",label:"Español",logo:"AzanKurd",
+  es:{thisWeek:"Esta semana",dir:"ltr",allCountries:"Todos los países",monthly:"Calendario mensual e impresión",done:"Listo",searchYourCity:"Busca tu ciudad",installTitle:"Instala la app en tu teléfono",installText:"Ábrela con un toque desde la pantalla de inicio; funciona incluso sin conexión.",installBtn:"Instalar",noThanks:"No, gracias",iosHelp:"Toca el botón Compartir en Safari y elige «Añadir a pantalla de inicio».",installApp:"Instalar la app",mecca:"La Meca",tryLatin:"Ciudad no encontrada. Prueba a escribir el nombre en letras latinas, p. ej. Duhok.",searching:"Buscando…",updated:"Ciudad actualizada",cityLabel:"Ciudad",noteDenied:"El acceso a la ubicación está bloqueado, por eso se muestran los horarios de La Meca. Busca tu ciudad o restablece la ubicación.",noteUnknown:"Tu ubicación aún no está definida, por eso se muestran los horarios de La Meca. Busca tu ciudad o activa la ubicación.",btnRestore:"Restablecer ubicación",btnEnable:"Activar ubicación",helpDenied:"Tu navegador bloquea la ubicación. Pulsa el candado junto a la barra de direcciones, permite la ubicación y recarga la página.",appearance:"Apariencia",light:"Claro",dark:"Oscuro",color:"Color",label:"Español",logo:"AzanKurd",
     tagline:"La llamada a la oración y los horarios de oración para cualquier lugar del mundo",todayTimes:"Horarios de oración de hoy",nextPrayer:"Próxima oración",
     locating:"Obteniendo ubicación…",cityPh:"Escribe tu ciudad (p. ej. Duhok)",search:"Buscar",myLocation:"Mi ubicación",
     adhanText:"El Adhan",notFound:"Ciudad no encontrada, prueba con otro nombre.",yourLoc:"Tu ubicación actual",
     fajrNote:"En el adhan del Fajr, después de «Venid al éxito», se añade dos veces:",hijri:"H",
     settings:"Ajustes",methodLabel:"Método de cálculo",auto:"Automático (según la ciudad)",asrLabel:"Cálculo del Asr",
     standard:"Estándar (shafi'i, maliki, hanbali)",hanafi:"Hanafi",timeFormat:"Formato de hora",close:"Cerrar",
-    names:{Fajr:"Fajr",Sunrise:"Amanecer",Dhuhr:"Dhuhr",Asr:"Asr",Maghrib:"Magrib",Isha:"Isha"},
+    names:{Fajr:"Fajr",Sunrise:"Amanecer",Dhuhr:"Dhuhr",Asr:"Asr",Maghrib:"Magrib",Isha:"Isha"},qiyam:"Oración nocturna (Qiyam)",qiyamSub:"Último tercio de la noche",
     adhan:{akbar:"Allah es el más Grande",shahada1:"Atestiguo que no hay más dios que Allah",shahada2:"Atestiguo que Muhammad es el Mensajero de Allah",salah:"Venid a la oración",falah:"Venid al éxito",tawhid:"No hay más dios que Allah",sleep:"La oración es mejor que el sueño"}},
-  it:{dir:"ltr",allCountries:"Tutti i paesi",monthly:"Calendario mensile e stampa",done:"Fatto",searchYourCity:"Cerca la tua città",installTitle:"Installa l'app sul telefono",installText:"Aprila con un tocco dalla schermata Home: funziona anche offline.",installBtn:"Installa",noThanks:"No, grazie",iosHelp:"Tocca il pulsante Condividi in Safari e scegli «Aggiungi alla schermata Home».",installApp:"Installa l'app",mecca:"La Mecca",tryLatin:"Città non trovata. Prova a scrivere il nome in lettere latine, es. Duhok.",searching:"Ricerca in corso…",updated:"Città aggiornata",cityLabel:"Città",noteDenied:"L'accesso alla posizione è bloccato, quindi vengono mostrati gli orari della Mecca. Cerca la tua città o ripristina la posizione.",noteUnknown:"La tua posizione non è ancora impostata, quindi vengono mostrati gli orari della Mecca. Cerca la tua città o attiva la posizione.",btnRestore:"Ripristina posizione",btnEnable:"Attiva posizione",helpDenied:"Il browser blocca la posizione. Fai clic sul lucchetto accanto alla barra degli indirizzi, consenti la posizione e ricarica la pagina.",appearance:"Aspetto",light:"Chiaro",dark:"Scuro",color:"Colore",label:"Italiano",logo:"AzanKurd",
+  it:{thisWeek:"Questa settimana",dir:"ltr",allCountries:"Tutti i paesi",monthly:"Calendario mensile e stampa",done:"Fatto",searchYourCity:"Cerca la tua città",installTitle:"Installa l'app sul telefono",installText:"Aprila con un tocco dalla schermata Home: funziona anche offline.",installBtn:"Installa",noThanks:"No, grazie",iosHelp:"Tocca il pulsante Condividi in Safari e scegli «Aggiungi alla schermata Home».",installApp:"Installa l'app",mecca:"La Mecca",tryLatin:"Città non trovata. Prova a scrivere il nome in lettere latine, es. Duhok.",searching:"Ricerca in corso…",updated:"Città aggiornata",cityLabel:"Città",noteDenied:"L'accesso alla posizione è bloccato, quindi vengono mostrati gli orari della Mecca. Cerca la tua città o ripristina la posizione.",noteUnknown:"La tua posizione non è ancora impostata, quindi vengono mostrati gli orari della Mecca. Cerca la tua città o attiva la posizione.",btnRestore:"Ripristina posizione",btnEnable:"Attiva posizione",helpDenied:"Il browser blocca la posizione. Fai clic sul lucchetto accanto alla barra degli indirizzi, consenti la posizione e ricarica la pagina.",appearance:"Aspetto",light:"Chiaro",dark:"Scuro",color:"Colore",label:"Italiano",logo:"AzanKurd",
     tagline:"La chiamata alla preghiera e gli orari di preghiera per ogni luogo del mondo",todayTimes:"Orari di preghiera di oggi",nextPrayer:"Prossima preghiera",
     locating:"Rilevamento posizione…",cityPh:"Inserisci la tua città (es. Duhok)",search:"Cerca",myLocation:"La mia posizione",
     adhanText:"L'Adhan",notFound:"Città non trovata, prova un altro nome.",yourLoc:"La tua posizione attuale",
     fajrNote:"Nell'adhan del Fajr, dopo «Venite al successo», si aggiunge due volte:",hijri:"E.",
     settings:"Impostazioni",methodLabel:"Metodo di calcolo",auto:"Automatico (in base alla città)",asrLabel:"Calcolo dell'Asr",
     standard:"Standard (sciafeita, malikita, hanbalita)",hanafi:"Hanafita",timeFormat:"Formato orario",close:"Chiudi",
-    names:{Fajr:"Fajr",Sunrise:"Alba",Dhuhr:"Dhuhr",Asr:"Asr",Maghrib:"Maghrib",Isha:"Isha"},
+    names:{Fajr:"Fajr",Sunrise:"Alba",Dhuhr:"Dhuhr",Asr:"Asr",Maghrib:"Maghrib",Isha:"Isha"},qiyam:"Preghiera notturna (Qiyam)",qiyamSub:"Ultimo terzo della notte",
     adhan:{akbar:"Allah è il più Grande",shahada1:"Testimonio che non c'è divinità all'infuori di Allah",shahada2:"Testimonio che Muhammad è il Messaggero di Allah",salah:"Venite alla preghiera",falah:"Venite al successo",tawhid:"Non c'è divinità all'infuori di Allah",sleep:"La preghiera è migliore del sonno"}},
-  nl:{dir:"ltr",allCountries:"Alle landen",monthly:"Maandrooster en afdrukken",done:"Klaar",searchYourCity:"Zoek je stad",installTitle:"Installeer de app op je telefoon",installText:"Open hem met één tik vanaf je beginscherm – werkt zelfs offline.",installBtn:"Installeren",noThanks:"Nee, bedankt",iosHelp:"Tik in Safari op de deelknop en kies ‘Zet op beginscherm’.",installApp:"App installeren",mecca:"Mekka",tryLatin:"Stad niet gevonden. Probeer de naam in Latijnse letters, bijv. Duhok.",searching:"Zoeken…",updated:"Stad bijgewerkt",cityLabel:"Stad",noteDenied:"Locatietoegang is geblokkeerd, daarom worden de tijden van Mekka getoond. Zoek je stad of herstel de locatie.",noteUnknown:"Je locatie is nog niet bepaald, daarom worden de tijden van Mekka getoond. Zoek je stad of schakel de locatie in.",btnRestore:"Locatie herstellen",btnEnable:"Locatie inschakelen",helpDenied:"Je browser blokkeert de locatie. Klik op het slotje naast de adresbalk, sta locatie toe en herlaad de pagina.",appearance:"Weergave",light:"Licht",dark:"Donker",color:"Kleur",label:"Nederlands",logo:"AzanKurd",
+  nl:{thisWeek:"Deze week",dir:"ltr",allCountries:"Alle landen",monthly:"Maandrooster en afdrukken",done:"Klaar",searchYourCity:"Zoek je stad",installTitle:"Installeer de app op je telefoon",installText:"Open hem met één tik vanaf je beginscherm – werkt zelfs offline.",installBtn:"Installeren",noThanks:"Nee, bedankt",iosHelp:"Tik in Safari op de deelknop en kies ‘Zet op beginscherm’.",installApp:"App installeren",mecca:"Mekka",tryLatin:"Stad niet gevonden. Probeer de naam in Latijnse letters, bijv. Duhok.",searching:"Zoeken…",updated:"Stad bijgewerkt",cityLabel:"Stad",noteDenied:"Locatietoegang is geblokkeerd, daarom worden de tijden van Mekka getoond. Zoek je stad of herstel de locatie.",noteUnknown:"Je locatie is nog niet bepaald, daarom worden de tijden van Mekka getoond. Zoek je stad of schakel de locatie in.",btnRestore:"Locatie herstellen",btnEnable:"Locatie inschakelen",helpDenied:"Je browser blokkeert de locatie. Klik op het slotje naast de adresbalk, sta locatie toe en herlaad de pagina.",appearance:"Weergave",light:"Licht",dark:"Donker",color:"Kleur",label:"Nederlands",logo:"AzanKurd",
     tagline:"De gebedsoproep en gebedstijden voor elke plek ter wereld",todayTimes:"Gebedstijden vandaag",nextPrayer:"Volgend gebed",
     locating:"Locatie bepalen…",cityPh:"Voer je stad in (bijv. Duhok)",search:"Zoeken",myLocation:"Mijn locatie",
     adhanText:"De Adhan",notFound:"Stad niet gevonden, probeer een andere naam.",yourLoc:"Je huidige locatie",
     fajrNote:"In de adhan van Fajr wordt na „Kom tot succes” twee keer toegevoegd:",hijri:"AH",
     settings:"Instellingen",methodLabel:"Berekeningsmethode",auto:"Automatisch (op basis van stad)",asrLabel:"Asr-berekening",
     standard:"Standaard (shafi'i, maliki, hanbali)",hanafi:"Hanafi",timeFormat:"Tijdnotatie",close:"Sluiten",
-    names:{Fajr:"Fadjr",Sunrise:"Zonsopgang",Dhuhr:"Dhoehr",Asr:"Asr",Maghrib:"Maghrib",Isha:"Isha"},
+    names:{Fajr:"Fadjr",Sunrise:"Zonsopgang",Dhuhr:"Dhoehr",Asr:"Asr",Maghrib:"Maghrib",Isha:"Isha"},qiyam:"Nachtgebed (Qiyam)",qiyamSub:"Laatste derde van de nacht",
     adhan:{akbar:"Allah is de Grootste",shahada1:"Ik getuig dat er geen god is dan Allah",shahada2:"Ik getuig dat Mohammed de Boodschapper van Allah is",salah:"Kom tot het gebed",falah:"Kom tot succes",tawhid:"Er is geen god dan Allah",sleep:"Het gebed is beter dan slaap"}},
-  da:{dir:"ltr",allCountries:"Alle lande",monthly:"Månedsoversigt og udskrift",done:"Færdig",searchYourCity:"Søg efter din by",installTitle:"Installer appen på din telefon",installText:"Åbn den med ét tryk fra hjemmeskærmen – den virker også offline.",installBtn:"Installer",noThanks:"Nej tak",iosHelp:"Tryk på Del i Safari, og vælg »Føj til hjemmeskærm«.",installApp:"Installer app",mecca:"Mekka",tryLatin:"Byen blev ikke fundet. Prøv at skrive navnet med latinske bogstaver, f.eks. Duhok.",searching:"Søger…",updated:"By opdateret",cityLabel:"By",noteDenied:"Adgang til placering er blokeret, derfor vises tiderne for Mekka. Søg efter din by eller gendan placeringen.",noteUnknown:"Din placering er endnu ikke kendt, derfor vises tiderne for Mekka. Søg efter din by eller slå placering til.",btnRestore:"Gendan placering",btnEnable:"Slå placering til",helpDenied:"Din browser blokerer placering. Klik på hængelåsen ved adresselinjen, tillad placering, og genindlæs siden.",appearance:"Udseende",light:"Lys",dark:"Mørk",color:"Farve",label:"Dansk",logo:"AzanKurd",
+  da:{thisWeek:"Denne uge",dir:"ltr",allCountries:"Alle lande",monthly:"Månedsoversigt og udskrift",done:"Færdig",searchYourCity:"Søg efter din by",installTitle:"Installer appen på din telefon",installText:"Åbn den med ét tryk fra hjemmeskærmen – den virker også offline.",installBtn:"Installer",noThanks:"Nej tak",iosHelp:"Tryk på Del i Safari, og vælg »Føj til hjemmeskærm«.",installApp:"Installer app",mecca:"Mekka",tryLatin:"Byen blev ikke fundet. Prøv at skrive navnet med latinske bogstaver, f.eks. Duhok.",searching:"Søger…",updated:"By opdateret",cityLabel:"By",noteDenied:"Adgang til placering er blokeret, derfor vises tiderne for Mekka. Søg efter din by eller gendan placeringen.",noteUnknown:"Din placering er endnu ikke kendt, derfor vises tiderne for Mekka. Søg efter din by eller slå placering til.",btnRestore:"Gendan placering",btnEnable:"Slå placering til",helpDenied:"Din browser blokerer placering. Klik på hængelåsen ved adresselinjen, tillad placering, og genindlæs siden.",appearance:"Udseende",light:"Lys",dark:"Mørk",color:"Farve",label:"Dansk",logo:"AzanKurd",
     tagline:"Bønnekaldet og bønnetider for ethvert sted i verden",todayTimes:"Dagens bønnetider",nextPrayer:"Næste bøn",
     locating:"Finder placering…",cityPh:"Skriv din by (f.eks. Duhok)",search:"Søg",myLocation:"Min placering",
     adhanText:"Adhan",notFound:"Byen blev ikke fundet, prøv et andet navn.",yourLoc:"Din nuværende placering",
     fajrNote:"I fajr-adhan tilføjes efter »Kom til fremgang« to gange:",hijri:"AH",
     settings:"Indstillinger",methodLabel:"Beregningsmetode",auto:"Automatisk (efter by)",asrLabel:"Asr-beregning",
     standard:"Standard (shafi'i, maliki, hanbali)",hanafi:"Hanafi",timeFormat:"Tidsformat",close:"Luk",
-    names:{Fajr:"Fajr",Sunrise:"Solopgang",Dhuhr:"Dhuhr",Asr:"Asr",Maghrib:"Maghrib",Isha:"Isha"},
+    names:{Fajr:"Fajr",Sunrise:"Solopgang",Dhuhr:"Dhuhr",Asr:"Asr",Maghrib:"Maghrib",Isha:"Isha"},qiyam:"Natbøn (Qiyam)",qiyamSub:"Nattens sidste tredjedel",
     adhan:{akbar:"Allah er den Største",shahada1:"Jeg bevidner, at der ingen gud er uden Allah",shahada2:"Jeg bevidner, at Muhammad er Allahs Sendebud",salah:"Kom til bøn",falah:"Kom til fremgang",tawhid:"Der er ingen gud uden Allah",sleep:"Bøn er bedre end søvn"}},
-  sv:{dir:"ltr",allCountries:"Alla länder",monthly:"Månadsschema och utskrift",done:"Klar",searchYourCity:"Sök din stad",installTitle:"Installera appen på din telefon",installText:"Öppna den med ett tryck från hemskärmen – den fungerar även offline.",installBtn:"Installera",noThanks:"Nej tack",iosHelp:"Tryck på Dela i Safari och välj ”Lägg till på hemskärmen”.",installApp:"Installera appen",mecca:"Mecka",tryLatin:"Staden hittades inte. Försök skriva namnet med latinska bokstäver, t.ex. Duhok.",searching:"Söker…",updated:"Staden uppdaterad",cityLabel:"Stad",noteDenied:"Platsåtkomst är blockerad, därför visas tiderna för Mecka. Sök efter din stad eller återställ platsen.",noteUnknown:"Din plats är inte fastställd ännu, därför visas tiderna för Mecka. Sök efter din stad eller aktivera platsen.",btnRestore:"Återställ plats",btnEnable:"Aktivera plats",helpDenied:"Din webbläsare blockerar platsen. Klicka på hänglåset bredvid adressfältet, tillåt plats och ladda om sidan.",appearance:"Utseende",light:"Ljust",dark:"Mörkt",color:"Färg",label:"Svenska",logo:"AzanKurd",
+  sv:{thisWeek:"Denna vecka",dir:"ltr",allCountries:"Alla länder",monthly:"Månadsschema och utskrift",done:"Klar",searchYourCity:"Sök din stad",installTitle:"Installera appen på din telefon",installText:"Öppna den med ett tryck från hemskärmen – den fungerar även offline.",installBtn:"Installera",noThanks:"Nej tack",iosHelp:"Tryck på Dela i Safari och välj ”Lägg till på hemskärmen”.",installApp:"Installera appen",mecca:"Mecka",tryLatin:"Staden hittades inte. Försök skriva namnet med latinska bokstäver, t.ex. Duhok.",searching:"Söker…",updated:"Staden uppdaterad",cityLabel:"Stad",noteDenied:"Platsåtkomst är blockerad, därför visas tiderna för Mecka. Sök efter din stad eller återställ platsen.",noteUnknown:"Din plats är inte fastställd ännu, därför visas tiderna för Mecka. Sök efter din stad eller aktivera platsen.",btnRestore:"Återställ plats",btnEnable:"Aktivera plats",helpDenied:"Din webbläsare blockerar platsen. Klicka på hänglåset bredvid adressfältet, tillåt plats och ladda om sidan.",appearance:"Utseende",light:"Ljust",dark:"Mörkt",color:"Färg",label:"Svenska",logo:"AzanKurd",
     tagline:"Böneutropet och bönetider för varje plats i världen",todayTimes:"Dagens bönetider",nextPrayer:"Nästa bön",
     locating:"Hämtar plats…",cityPh:"Skriv din stad (t.ex. Duhok)",search:"Sök",myLocation:"Min plats",
     adhanText:"Adhan",notFound:"Staden hittades inte, försök med ett annat namn.",yourLoc:"Din nuvarande plats",
     fajrNote:"I fajr-adhan läggs efter ”Kom till framgång” till två gånger:",hijri:"AH",
     settings:"Inställningar",methodLabel:"Beräkningsmetod",auto:"Automatiskt (efter stad)",asrLabel:"Asr-beräkning",
     standard:"Standard (shafi'i, maliki, hanbali)",hanafi:"Hanafi",timeFormat:"Tidsformat",close:"Stäng",
-    names:{Fajr:"Fajr",Sunrise:"Soluppgång",Dhuhr:"Dhuhr",Asr:"Asr",Maghrib:"Maghrib",Isha:"Isha"},
+    names:{Fajr:"Fajr",Sunrise:"Soluppgång",Dhuhr:"Dhuhr",Asr:"Asr",Maghrib:"Maghrib",Isha:"Isha"},qiyam:"Nattbön (Qiyam)",qiyamSub:"Nattens sista tredjedel",
     adhan:{akbar:"Allah är störst",shahada1:"Jag vittnar om att det inte finns någon gud utom Allah",shahada2:"Jag vittnar om att Muhammad är Allahs sändebud",salah:"Kom till bönen",falah:"Kom till framgång",tawhid:"Det finns ingen gud utom Allah",sleep:"Bönen är bättre än sömnen"}},
-  ru:{dir:"ltr",allCountries:"Все страны",monthly:"Расписание на месяц и печать",done:"Готово",searchYourCity:"Найти свой город",installTitle:"Установите приложение на телефон",installText:"Открывайте его одним касанием с главного экрана — работает даже без интернета.",installBtn:"Установить",noThanks:"Нет, спасибо",iosHelp:"Нажмите «Поделиться» в Safari и выберите «На экран „Домой“».",installApp:"Установить приложение",mecca:"Мекка",tryLatin:"Город не найден. Попробуйте написать название латиницей, например Duhok.",searching:"Поиск…",updated:"Город обновлён",cityLabel:"Город",noteDenied:"Доступ к местоположению заблокирован, поэтому показано время для Мекки. Найдите свой город или восстановите доступ.",noteUnknown:"Ваше местоположение ещё не определено, поэтому показано время для Мекки. Найдите свой город или включите геолокацию.",btnRestore:"Восстановить доступ",btnEnable:"Включить геолокацию",helpDenied:"Браузер блокирует геолокацию. Нажмите на значок замка рядом с адресной строкой, разрешите доступ к местоположению и обновите страницу.",appearance:"Оформление",light:"Светлая",dark:"Тёмная",color:"Цвет",label:"Русский",logo:"AzanKurd",
+  ru:{thisWeek:"На этой неделе",dir:"ltr",allCountries:"Все страны",monthly:"Расписание на месяц и печать",done:"Готово",searchYourCity:"Найти свой город",installTitle:"Установите приложение на телефон",installText:"Открывайте его одним касанием с главного экрана — работает даже без интернета.",installBtn:"Установить",noThanks:"Нет, спасибо",iosHelp:"Нажмите «Поделиться» в Safari и выберите «На экран „Домой“».",installApp:"Установить приложение",mecca:"Мекка",tryLatin:"Город не найден. Попробуйте написать название латиницей, например Duhok.",searching:"Поиск…",updated:"Город обновлён",cityLabel:"Город",noteDenied:"Доступ к местоположению заблокирован, поэтому показано время для Мекки. Найдите свой город или восстановите доступ.",noteUnknown:"Ваше местоположение ещё не определено, поэтому показано время для Мекки. Найдите свой город или включите геолокацию.",btnRestore:"Восстановить доступ",btnEnable:"Включить геолокацию",helpDenied:"Браузер блокирует геолокацию. Нажмите на значок замка рядом с адресной строкой, разрешите доступ к местоположению и обновите страницу.",appearance:"Оформление",light:"Светлая",dark:"Тёмная",color:"Цвет",label:"Русский",logo:"AzanKurd",
     tagline:"Азан и время намаза для любого места на Земле",todayTimes:"Время намаза сегодня",nextPrayer:"Следующий намаз",
     locating:"Определяем местоположение…",cityPh:"Введите город (например, Duhok)",search:"Найти",myLocation:"Моё местоположение",
     adhanText:"Текст азана",notFound:"Город не найден, попробуйте другое название.",yourLoc:"Ваше текущее местоположение",
     fajrNote:"В утреннем азане после «Спешите к спасению» дважды добавляется:",hijri:"г. х.",
     settings:"Настройки",methodLabel:"Метод расчёта",auto:"Автоматически (по городу)",asrLabel:"Расчёт времени Аср",
     standard:"Стандартный (шафиитский, маликитский, ханбалитский)",hanafi:"Ханафитский",timeFormat:"Формат времени",close:"Закрыть",
-    names:{Fajr:"Фаджр",Sunrise:"Восход",Dhuhr:"Зухр",Asr:"Аср",Maghrib:"Магриб",Isha:"Иша"},
+    names:{Fajr:"Фаджр",Sunrise:"Восход",Dhuhr:"Зухр",Asr:"Аср",Maghrib:"Магриб",Isha:"Иша"},qiyam:"Ночной намаз (Тахаджуд)",qiyamSub:"Последняя треть ночи",
     adhan:{akbar:"Аллах велик",shahada1:"Свидетельствую, что нет божества, кроме Аллаха",shahada2:"Свидетельствую, что Мухаммад — посланник Аллаха",salah:"Спешите на молитву",falah:"Спешите к спасению",tawhid:"Нет божества, кроме Аллаха",sleep:"Молитва лучше сна"}},
-  bs:{dir:"ltr",allCountries:"Sve države",monthly:"Mjesečna vaktija i štampa",done:"Gotovo",searchYourCity:"Potražite svoj grad",installTitle:"Instalirajte aplikaciju na telefon",installText:"Otvorite je jednim dodirom s početnog ekrana – radi i bez interneta.",installBtn:"Instaliraj",noThanks:"Ne, hvala",iosHelp:"U Safariju dodirnite Podijeli, pa odaberite „Dodaj na početni ekran“.",installApp:"Instaliraj aplikaciju",mecca:"Meka",tryLatin:"Grad nije pronađen. Pokušajte napisati naziv latiničnim slovima, npr. Duhok.",searching:"Pretraga…",updated:"Grad ažuriran",cityLabel:"Grad",noteDenied:"Pristup lokaciji je blokiran, zato je prikazana vaktija za Meku. Potražite svoj grad ili vratite lokaciju.",noteUnknown:"Vaša lokacija još nije određena, zato je prikazana vaktija za Meku. Potražite svoj grad ili uključite lokaciju.",btnRestore:"Vrati lokaciju",btnEnable:"Uključi lokaciju",helpDenied:"Preglednik blokira lokaciju. Kliknite na ikonu lokota pored adresne trake, dozvolite lokaciju i ponovo učitajte stranicu.",appearance:"Izgled",light:"Svijetlo",dark:"Tamno",color:"Boja",label:"Bosanski",logo:"AzanKurd",
+  bs:{thisWeek:"Ova sedmica",dir:"ltr",allCountries:"Sve države",monthly:"Mjesečna vaktija i štampa",done:"Gotovo",searchYourCity:"Potražite svoj grad",installTitle:"Instalirajte aplikaciju na telefon",installText:"Otvorite je jednim dodirom s početnog ekrana – radi i bez interneta.",installBtn:"Instaliraj",noThanks:"Ne, hvala",iosHelp:"U Safariju dodirnite Podijeli, pa odaberite „Dodaj na početni ekran“.",installApp:"Instaliraj aplikaciju",mecca:"Meka",tryLatin:"Grad nije pronađen. Pokušajte napisati naziv latiničnim slovima, npr. Duhok.",searching:"Pretraga…",updated:"Grad ažuriran",cityLabel:"Grad",noteDenied:"Pristup lokaciji je blokiran, zato je prikazana vaktija za Meku. Potražite svoj grad ili vratite lokaciju.",noteUnknown:"Vaša lokacija još nije određena, zato je prikazana vaktija za Meku. Potražite svoj grad ili uključite lokaciju.",btnRestore:"Vrati lokaciju",btnEnable:"Uključi lokaciju",helpDenied:"Preglednik blokira lokaciju. Kliknite na ikonu lokota pored adresne trake, dozvolite lokaciju i ponovo učitajte stranicu.",appearance:"Izgled",light:"Svijetlo",dark:"Tamno",color:"Boja",label:"Bosanski",logo:"AzanKurd",
     tagline:"Ezan i vaktija za svako mjesto na svijetu",todayTimes:"Današnja vaktija",nextPrayer:"Sljedeći namaz",
     locating:"Određivanje lokacije…",cityPh:"Upišite svoj grad (npr. Duhok)",search:"Traži",myLocation:"Moja lokacija",
     adhanText:"Tekst ezana",notFound:"Grad nije pronađen, pokušajte drugi naziv.",yourLoc:"Vaša trenutna lokacija",
     fajrNote:"U sabahskom ezanu, nakon «Dođite spasu», dodaje se dva puta:",hijri:"h.",
     settings:"Postavke",methodLabel:"Metoda računanja",auto:"Automatski (prema gradu)",asrLabel:"Računanje ikindije",
     standard:"Standardno (šafijski, malikijski, hanbelijski)",hanafi:"Hanefijski",timeFormat:"Format vremena",close:"Zatvori",
-    names:{Fajr:"Zora",Sunrise:"Izlazak sunca",Dhuhr:"Podne",Asr:"Ikindija",Maghrib:"Akšam",Isha:"Jacija"},
+    names:{Fajr:"Zora",Sunrise:"Izlazak sunca",Dhuhr:"Podne",Asr:"Ikindija",Maghrib:"Akšam",Isha:"Jacija"},qiyam:"Noćni namaz (Tehadžud)",qiyamSub:"Posljednja trećina noći",
     adhan:{akbar:"Allah je najveći",shahada1:"Svjedočim da nema boga osim Allaha",shahada2:"Svjedočim da je Muhammed Allahov poslanik",salah:"Dođite na namaz",falah:"Dođite spasu",tawhid:"Nema boga osim Allaha",sleep:"Namaz je bolji od sna"}},
-  id:{dir:"ltr",allCountries:"Semua negara",monthly:"Jadwal bulanan & cetak",done:"Selesai",searchYourCity:"Cari kota Anda",installTitle:"Pasang aplikasi di ponsel Anda",installText:"Buka dengan sekali ketuk dari layar utama — tetap berfungsi tanpa internet.",installBtn:"Pasang",noThanks:"Tidak, terima kasih",iosHelp:"Ketuk tombol Bagikan di Safari, lalu pilih “Tambahkan ke Layar Utama”.",installApp:"Pasang aplikasi",mecca:"Makkah",tryLatin:"Kota tidak ditemukan. Coba tulis nama dengan huruf Latin, mis. Duhok.",searching:"Mencari…",updated:"Kota diperbarui",cityLabel:"Kota",noteDenied:"Akses lokasi diblokir, jadi jadwal Makkah yang ditampilkan. Cari kota Anda atau pulihkan lokasi.",noteUnknown:"Lokasi Anda belum ditentukan, jadi jadwal Makkah yang ditampilkan. Cari kota Anda atau aktifkan lokasi.",btnRestore:"Pulihkan lokasi",btnEnable:"Aktifkan lokasi",helpDenied:"Peramban memblokir lokasi. Klik ikon gembok di samping bilah alamat, izinkan lokasi, lalu muat ulang halaman.",appearance:"Tampilan",light:"Terang",dark:"Gelap",color:"Warna",label:"Bahasa Indonesia",logo:"AzanKurd",
+  id:{thisWeek:"Minggu Ini",dir:"ltr",allCountries:"Semua negara",monthly:"Jadwal bulanan & cetak",done:"Selesai",searchYourCity:"Cari kota Anda",installTitle:"Pasang aplikasi di ponsel Anda",installText:"Buka dengan sekali ketuk dari layar utama — tetap berfungsi tanpa internet.",installBtn:"Pasang",noThanks:"Tidak, terima kasih",iosHelp:"Ketuk tombol Bagikan di Safari, lalu pilih “Tambahkan ke Layar Utama”.",installApp:"Pasang aplikasi",mecca:"Makkah",tryLatin:"Kota tidak ditemukan. Coba tulis nama dengan huruf Latin, mis. Duhok.",searching:"Mencari…",updated:"Kota diperbarui",cityLabel:"Kota",noteDenied:"Akses lokasi diblokir, jadi jadwal Makkah yang ditampilkan. Cari kota Anda atau pulihkan lokasi.",noteUnknown:"Lokasi Anda belum ditentukan, jadi jadwal Makkah yang ditampilkan. Cari kota Anda atau aktifkan lokasi.",btnRestore:"Pulihkan lokasi",btnEnable:"Aktifkan lokasi",helpDenied:"Peramban memblokir lokasi. Klik ikon gembok di samping bilah alamat, izinkan lokasi, lalu muat ulang halaman.",appearance:"Tampilan",light:"Terang",dark:"Gelap",color:"Warna",label:"Bahasa Indonesia",logo:"AzanKurd",
     tagline:"Azan dan jadwal salat untuk setiap tempat di dunia",todayTimes:"Jadwal Salat Hari Ini",nextPrayer:"Salat berikutnya",
     locating:"Menentukan lokasi…",cityPh:"Ketik kota Anda (mis. Duhok)",search:"Cari",myLocation:"Lokasi saya",
     adhanText:"Lafaz Azan",notFound:"Kota tidak ditemukan, coba nama lain.",yourLoc:"Lokasi Anda saat ini",
     fajrNote:"Pada azan Subuh, setelah «Marilah meraih kemenangan» ditambahkan dua kali:",hijri:"H",
     settings:"Pengaturan",methodLabel:"Metode perhitungan",auto:"Otomatis (sesuai kota)",asrLabel:"Perhitungan Asar",
     standard:"Standar (Syafi'i, Maliki, Hanbali)",hanafi:"Hanafi",timeFormat:"Format waktu",close:"Tutup",
-    names:{Fajr:"Subuh",Sunrise:"Terbit",Dhuhr:"Zuhur",Asr:"Asar",Maghrib:"Magrib",Isha:"Isya"},
+    names:{Fajr:"Subuh",Sunrise:"Terbit",Dhuhr:"Zuhur",Asr:"Asar",Maghrib:"Magrib",Isha:"Isya"},qiyam:"Qiyamul Lail",qiyamSub:"Sepertiga malam terakhir",
     adhan:{akbar:"Allah Mahabesar",shahada1:"Aku bersaksi bahwa tiada tuhan selain Allah",shahada2:"Aku bersaksi bahwa Muhammad adalah utusan Allah",salah:"Marilah salat",falah:"Marilah meraih kemenangan",tawhid:"Tiada tuhan selain Allah",sleep:"Salat lebih baik daripada tidur"}},
-  ms:{dir:"ltr",allCountries:"Semua negara",monthly:"Jadual bulanan & cetak",done:"Selesai",searchYourCity:"Cari bandar anda",installTitle:"Pasang aplikasi pada telefon anda",installText:"Buka dengan satu ketikan dari skrin utama — berfungsi walaupun tanpa internet.",installBtn:"Pasang",noThanks:"Tidak, terima kasih",iosHelp:"Ketik butang Kongsi dalam Safari, kemudian pilih “Tambah ke Skrin Utama”.",installApp:"Pasang aplikasi",mecca:"Makkah",tryLatin:"Bandar tidak ditemui. Cuba tulis nama dengan huruf Rumi, cth. Duhok.",searching:"Mencari…",updated:"Bandar dikemas kini",cityLabel:"Bandar",noteDenied:"Akses lokasi disekat, jadi waktu Makkah dipaparkan. Cari bandar anda atau pulihkan lokasi.",noteUnknown:"Lokasi anda belum ditentukan, jadi waktu Makkah dipaparkan. Cari bandar anda atau aktifkan lokasi.",btnRestore:"Pulihkan lokasi",btnEnable:"Aktifkan lokasi",helpDenied:"Pelayar menyekat lokasi. Klik ikon mangga di sebelah bar alamat, benarkan lokasi, kemudian muat semula halaman.",appearance:"Paparan",light:"Cerah",dark:"Gelap",color:"Warna",label:"Bahasa Melayu",logo:"AzanKurd",
+  ms:{thisWeek:"Minggu Ini",dir:"ltr",allCountries:"Semua negara",monthly:"Jadual bulanan & cetak",done:"Selesai",searchYourCity:"Cari bandar anda",installTitle:"Pasang aplikasi pada telefon anda",installText:"Buka dengan satu ketikan dari skrin utama — berfungsi walaupun tanpa internet.",installBtn:"Pasang",noThanks:"Tidak, terima kasih",iosHelp:"Ketik butang Kongsi dalam Safari, kemudian pilih “Tambah ke Skrin Utama”.",installApp:"Pasang aplikasi",mecca:"Makkah",tryLatin:"Bandar tidak ditemui. Cuba tulis nama dengan huruf Rumi, cth. Duhok.",searching:"Mencari…",updated:"Bandar dikemas kini",cityLabel:"Bandar",noteDenied:"Akses lokasi disekat, jadi waktu Makkah dipaparkan. Cari bandar anda atau pulihkan lokasi.",noteUnknown:"Lokasi anda belum ditentukan, jadi waktu Makkah dipaparkan. Cari bandar anda atau aktifkan lokasi.",btnRestore:"Pulihkan lokasi",btnEnable:"Aktifkan lokasi",helpDenied:"Pelayar menyekat lokasi. Klik ikon mangga di sebelah bar alamat, benarkan lokasi, kemudian muat semula halaman.",appearance:"Paparan",light:"Cerah",dark:"Gelap",color:"Warna",label:"Bahasa Melayu",logo:"AzanKurd",
     tagline:"Azan dan waktu solat untuk setiap tempat di dunia",todayTimes:"Waktu Solat Hari Ini",nextPrayer:"Solat seterusnya",
     locating:"Menentukan lokasi…",cityPh:"Taip bandar anda (cth. Duhok)",search:"Cari",myLocation:"Lokasi saya",
     adhanText:"Lafaz Azan",notFound:"Bandar tidak ditemui, cuba nama lain.",yourLoc:"Lokasi semasa anda",
     fajrNote:"Dalam azan Subuh, selepas «Marilah menuju kejayaan» ditambah dua kali:",hijri:"H",
     settings:"Tetapan",methodLabel:"Kaedah pengiraan",auto:"Automatik (ikut bandar)",asrLabel:"Pengiraan Asar",
     standard:"Standard (Syafie, Maliki, Hanbali)",hanafi:"Hanafi",timeFormat:"Format masa",close:"Tutup",
-    names:{Fajr:"Subuh",Sunrise:"Syuruk",Dhuhr:"Zohor",Asr:"Asar",Maghrib:"Maghrib",Isha:"Isyak"},
+    names:{Fajr:"Subuh",Sunrise:"Syuruk",Dhuhr:"Zohor",Asr:"Asar",Maghrib:"Maghrib",Isha:"Isyak"},qiyam:"Qiamullail",qiyamSub:"Sepertiga malam terakhir",
     adhan:{akbar:"Allah Maha Besar",shahada1:"Aku bersaksi bahawa tiada Tuhan melainkan Allah",shahada2:"Aku bersaksi bahawa Muhammad itu pesuruh Allah",salah:"Marilah menunaikan solat",falah:"Marilah menuju kejayaan",tawhid:"Tiada Tuhan melainkan Allah",sleep:"Solat itu lebih baik daripada tidur"}}
 };
 
@@ -530,7 +561,8 @@ const PICONS = {
   Dhuhr:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>',
   Asr:'<svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="3.5"/><path d="M3 20h18M12 5v2M5.6 7.6L7 9M18.4 7.6L17 9M3 13h2M19 13h2"/></svg>',
   Maghrib:'<svg viewBox="0 0 24 24"><path d="M3 18h18M7 18a5 5 0 0 1 10 0M12 9V5M9.5 6.5L12 9l2.5-2.5M4.6 11.6l1.4 1.4M19.4 11.6L18 13"/></svg>',
-  Isha:'<svg viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>'
+  Isha:'<svg viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>',
+  Qiyam:'<svg viewBox="0 0 24 24"><path d="M12 3l1.2 3.3L16.5 7.5l-3.3 1.2L12 12l-1.2-3.3L7.5 7.5l3.3-1.2z"/><path d="M18.5 12.5l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7z"/><path d="M6 14l.6 1.6 1.6.6-1.6.6L6 18.4l-.6-1.6-1.6-.6 1.6-.6z"/><path d="M3 21h18"/></svg>'
 };
 
 /* ---------- نص الأذان (يبقى بالعربية دائماً) ---------- */
@@ -680,6 +712,12 @@ function render(data, label){
     d.innerHTML = `${PICONS[k]}<span>${t.names[k]}</span><b>${fmtTime(timings[k].slice(0,5))}</b>`;
     box.appendChild(d);
   });
+  // قيام الليل: الثلث الأخير من الليل (نافلة، في نافذة عريضة تحت الصلوات)
+  if(timings.Lastthird){
+    const q = document.createElement("div"); q.className="t qiyam";
+    q.innerHTML = `${PICONS.Qiyam}<div class="lbl"><span>${t.qiyam}</span><small>${t.qiyamSub}</small></div><b>${fmtTime(timings.Lastthird.slice(0,5))}</b>`;
+    box.appendChild(q);
+  }
   const h = data.date.hijri;
   const month = (t.dir==="rtl") ? h.month.ar : h.month.en;
   document.getElementById("locText").textContent = `${h.day} ${month} ${h.year} ${t.hijri}`;
@@ -687,6 +725,7 @@ function render(data, label){
   document.getElementById("cityLine").hidden = false;
   document.getElementById("methodLine").textContent = `${t.methodLabel}: ${METHODS[usedMethod] || ""}`;
   updateMonthly(label);
+  loadWeek(data, label);
   clearInterval(timer); tick(); timer = setInterval(tick, 1000);
 }
 
@@ -741,6 +780,57 @@ async function updateMonthly(q){
     }catch(e){}
   }
   if(monthlySlug){ a.href = `/${lang}/${monthlySlug}`; a.hidden = false; } else a.hidden = true;
+  syncWeekSec();
+}
+
+/* ---------- جدول الأسبوع (يُطلب بعد ظهور مواقيت اليوم) ---------- */
+let weekDays = null, weekKey = null;
+function syncWeekSec(){
+  document.getElementById("weekSec").hidden = !weekDays && document.getElementById("monthlyLink").hidden;
+}
+function calUrl(q, method, y, m){
+  const base = `https://api.aladhan.com/v1/`;
+  const p = `method=${method}&school=${schoolFor(method)}`;
+  return q.type === "coords"
+    ? `${base}calendar/${y}/${m}?latitude=${q.lat}&longitude=${q.lng}&${p}`
+    : `${base}calendarByAddress/${y}/${m}?address=${encodeURIComponent(q.city)}&${p}`;
+}
+async function loadWeek(data, q){
+  const g = data.date && data.date.gregorian;
+  if(!q || !g){ weekDays = null; return syncWeekSec(); }
+  const [d, m, y] = g.date.split("-").map(Number);
+  const key = JSON.stringify([q.type, q.lat, q.lng, q.city, usedMethod, schoolFor(usedMethod), g.date]);
+  if(key === weekKey){ return renderWeek(); }
+  weekKey = key; weekDays = null; renderWeek();
+  try{
+    const get = async (yy, mm) => { const j = await (await fetch(calUrl(q, usedMethod, yy, mm))).json(); if(j.code !== 200) throw 0; return j.data; };
+    let days = await get(y, m);
+    let i = days.findIndex(x => Number(x.date.gregorian.day) === d);
+    if(i < 0) throw 0;
+    days = days.slice(i, i + 7);
+    if(days.length < 7){
+      const nm = m === 12 ? 1 : m + 1, ny = m === 12 ? y + 1 : y;
+      days = days.concat((await get(ny, nm)).slice(0, 7 - days.length));
+    }
+    if(weekKey === key){ weekDays = days; renderWeek(); }
+  }catch(e){ if(weekKey === key){ weekDays = null; syncWeekSec(); } }
+}
+function renderWeek(){
+  const tb = document.getElementById("week");
+  if(!weekDays){ tb.innerHTML = ""; return syncWeekSec(); }
+  const t = L(), loc = (lang === "ku" ? "ar" : lang) + "-u-nu-latn";
+  const short = hm => { const s = fmtTime(hm); return timeFmt === "24" ? s : s.replace(/\s*[^\d:\s]+\.?\s*/g, "").trim() || s; };
+  let wd, dm;
+  try{ wd = new Intl.DateTimeFormat(loc, {weekday:"short", timeZone:"UTC"}); dm = new Intl.DateTimeFormat(loc, {day:"numeric", month:"numeric", timeZone:"UTC"}); }
+  catch(e){ wd = new Intl.DateTimeFormat("en", {weekday:"short", timeZone:"UTC"}); dm = new Intl.DateTimeFormat("en", {day:"numeric", month:"numeric", timeZone:"UTC"}); }
+  let h = `<thead><tr><th></th>` + ORDER.map(k => `<th title="${t.names[k]}" aria-label="${t.names[k]}">${PICONS[k]}</th>`).join("") + `</tr></thead><tbody>`;
+  weekDays.forEach((x, i) => {
+    const gg = x.date.gregorian, dt = new Date(Date.UTC(+gg.year, gg.month.number - 1, +gg.day));
+    h += `<tr${i === 0 ? ' class="today"' : ""}><td class="day"><b>${wd.format(dt)}</b><small>${dm.format(dt)}</small></td>` +
+      ORDER.map(k => `<td>${short(x.timings[k].slice(0,5))}</td>`).join("") + `</tr>`;
+  });
+  tb.innerHTML = h + `</tbody>`;
+  syncWeekSec();
 }
 
 /* ---------- الأماكن ---------- */
