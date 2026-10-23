@@ -1,5 +1,6 @@
 // صفحة البلد: /ar/country/iq      وصفحة كل البلدان: /ar/countries
 const { LANGS, SITE, CITIES, cityAt, autoMethod, dayTimes, todayIn, KEYS } = require("./_core.js");
+const NAV = require("./_nav.js");
 const { T, esc, fill, countryFlag, localName, countryName, REGIONS, nCitiesText, page, send } = require("./_layout.js");
 
 const NAMEKEY = { fajr:"Fajr", sunrise:"Sunrise", dhuhr:"Dhuhr", asr:"Asr", maghrib:"Maghrib", isha:"Isha" };
@@ -71,7 +72,7 @@ async function countryPage(res, lang, cc){
   const cards = KEYS.map(k => `<div class="tt">${IC[k]}<span>${esc(t.names[NAMEKEY[k]])}</span><b>${times[k]}</b></div>`).join("");
   const links = list.map((c, i) => `<a href="/${lang}/${c.slug}" class="${i < 12 ? "top" : ""}" data-n="${esc(nm(c, i) + " " + c.name + " " + c.slug)}"><span>${esc(nm(c, i))}</span></a>`).join("");
   const body = `
-  <nav class="crumbs"><a href="/?lang=${lang}">${esc(t.home)}</a><span>›</span><a href="/${lang}/countries">${esc(t.allCountries)}</a><span>›</span><b>${esc(country)}</b></nav>
+  <nav class="crumbs">${NAV.html(lang)}<span>›</span><a href="/${lang}/countries">${esc(t.allCountries)}</a><span>›</span><b>${esc(country)}</b></nav>
   <section class="hcard">
     <div class="chead"><img src="${countryFlag(cc)}" alt=""><h1>${esc(fill(t.title, { city:"\u0000" })).replace("\u0000", `<em>${esc(country)}</em>`)}</h1></div>
     <p class="lead">${esc(desc)}</p>
@@ -95,7 +96,7 @@ function allPage(res, lang){
     .sort((a, b) => (!!REGIONS[b.cc] - !!REGIONS[a.cc]) || coll.compare(a.name, b.name));
   const title = `${t.allTitle} | ${t.logo}`;
   const body = `
-  <nav class="crumbs"><a href="/?lang=${lang}">${esc(t.home)}</a><span>›</span><b>${esc(t.allCountries)}</b></nav>
+  <nav class="crumbs">${NAV.html(lang)}<span>›</span><b>${esc(t.allCountries)}</b></nav>
   <section class="hcard">
     <h1>${esc(t.allTitle)}</h1>
     <p class="lead" style="margin-bottom:16px">${esc(t.allDesc)}</p>

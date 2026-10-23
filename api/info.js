@@ -2,6 +2,7 @@
 const { LANGS } = require("./_core.js");
 const { T, esc, page, send } = require("./_layout.js");
 const I = require("./_info.js");
+const NAV = require("./_nav.js");
 
 const CSS = `
 .prose p{margin-bottom:14px;font-size:1.02rem;line-height:2}
@@ -28,7 +29,7 @@ module.exports = (req, res) => {
   const lang = LANGS.includes(u.searchParams.get("lang")) ? u.searchParams.get("lang") : "ar";
   const which = ["about","privacy","contact"].includes(u.searchParams.get("page")) ? u.searchParams.get("page") : "about";
   const t = T[lang], x = I[lang] || I.en;
-  const crumbs = title => `<nav class="crumbs"><a href="/?lang=${lang}">${esc(t.home)}</a><span>›</span><b>${esc(title)}</b></nav>`;
+  const crumbs = title => `<nav class="crumbs">${NAV.html(lang)}<span>›</span><b>${esc(title)}</b></nav>`;
   let title, desc, body, js = "";
 
   if(which === "about"){
