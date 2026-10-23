@@ -18,6 +18,10 @@
       "destination": "/api/country?lang=:lang&cc=:cc"
     },
     {
+      "source": "/:lang(ar|ku|en|de|tr|fa|ur|fr|es|it|nl|da|sv|ru|bs|id|ms|bn|ps|ha|sw)/:page(about|privacy|contact)",
+      "destination": "/api/info?lang=:lang&page=:page"
+    },
+    {
       "source": "/:lang(ar|ku|en|de|tr|fa|ur|fr|es|it|nl|da|sv|ru|bs|id|ms|bn|ps|ha|sw)/:slug",
       "destination": "/api/city?lang=:lang&slug=:slug"
     }

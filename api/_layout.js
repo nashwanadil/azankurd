@@ -2,6 +2,7 @@
 const T = require("./_i18n.js");
 const THEME_JS = require("./_theme.js");
 const FLAGS = require("./_flags.js");
+const INFO = require("./_info.js");
 const { LANGS, SITE } = require("./_core.js");
 
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -150,7 +151,7 @@ ${css}
     <details class="langs"><summary><img class="flag" alt="" src="${flagSrc(lang)}">${esc(t.label)}<svg class="ic chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></summary><div class="menu">${langMenu}</div></details>
   </div>
 ${body}
-  <footer>© ${new Date().getUTCFullYear()} <a href="/?lang=${lang}">azankurd.com</a> · <a href="/${lang}/countries">${esc(t.allCountries)}</a> · ${esc(t.tagline)}</footer>
+  <footer>© ${new Date().getUTCFullYear()} <a href="/?lang=${lang}">azankurd.com</a> · <a href="/${lang}/countries">${esc(t.allCountries)}</a> · <a href="/${lang}/about">${esc(INFO[lang].cAbout)}</a> · <a href="/${lang}/privacy">${esc(INFO[lang].cPrivacy)}</a> · <a href="/${lang}/contact">${esc(INFO[lang].cContact)}</a></footer>
 </div>
 <script>
 (function(){

@@ -3,6 +3,7 @@ const QR = require("qrcode");
 const T = require("./_i18n.js");
 const THEME_JS = require("./_theme.js");
 const FLAGS = require("./_flags.js");
+const INFO = require("./_info.js");
 const flagSrc = l => "data:image/svg+xml;charset=utf-8," + encodeURIComponent(FLAGS[l] || "");
 const { LANGS, SITE, findCity, nearby, METHODS, autoMethod, dayTimes, todayIn, qibla, KEYS } = require("./_core.js");
 
@@ -400,7 +401,7 @@ footer a{color:var(--gold)}
     ${faq.map(([q, a], i) => `<details${i === 0 ? " open" : ""}><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join("")}
   </section>
 
-  <footer>© ${today.y} <a href="/?lang=${lang}">azankurd.com</a> · <a href="/${lang}/countries">${esc(t.allCountries)}</a> · ${esc(t.tagline)}</footer>
+  <footer>© ${today.y} <a href="/?lang=${lang}">azankurd.com</a> · <a href="/${lang}/countries">${esc(t.allCountries)}</a> · <a href="/${lang}/about">${esc(INFO[lang].cAbout)}</a> · <a href="/${lang}/privacy">${esc(INFO[lang].cPrivacy)}</a> · <a href="/${lang}/contact">${esc(INFO[lang].cContact)}</a></footer>
 
   <div class="sheet-print">
     <div class="ph">
@@ -452,8 +453,12 @@ footer a{color:var(--gold)}
 (function(){
   var K="azk_mosque", KF="azk_mosque_font", btn=document.getElementById("mqBtn"), box=document.getElementById("mqEdit"), inp=document.getElementById("mqIn");
   var lbl=document.getElementById("mqLbl"), base=lbl.textContent;
-  function get(k){ try{ return localStorage.getItem(k||K) || ""; }catch(e){ return ""; } }
-  function put(v,k){ try{ if(v) localStorage.setItem(k||K,v); else localStorage.removeItem(k||K); }catch(e){} }
+  // اسم المسجد لا يُحفظ في المتصفح: يبقى لهذه الصفحة فقط، حتى لا يُطبع اسم قديم بالخطأ لاحقًا
+  // (أما الخط المختار فيُحفظ). ونحذف أي اسم قديم محفوظ من النسخة السابقة
+  var name="";
+  try{ localStorage.removeItem(K); }catch(e){}
+  function get(k){ if(!k || k===K) return name; try{ return localStorage.getItem(k) || ""; }catch(e){ return ""; } }
+  function put(v,k){ if(!k || k===K){ name=v||""; return; } try{ if(v) localStorage.setItem(k,v); else localStorage.removeItem(k); }catch(e){} }
   var font=get(KF) || "ruqaa", pick=font;
   // حجم الخط في الطباعة حسب طول الاسم، حتى يبقى في سطر أو سطرين
   function pt(v){ var n=v.length; return n<=12 ? 25 : n<=20 ? 22 : n<=30 ? 18 : 15; }
