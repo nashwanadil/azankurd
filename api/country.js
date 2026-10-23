@@ -91,7 +91,8 @@ function allPage(res, lang){
   const t = T[lang];
   const coll = new Intl.Collator(lang === "ku" ? "ckb" : lang);
   const list = Object.keys(COUNT).map(cc => ({ cc, name:countryName(cc, lang), en:countryName(cc, "en"), n:COUNT[cc] }))
-    .sort((a, b) => coll.compare(a.name, b.name));
+    // إقليم كردستان أولًا، ثم البلدان بالترتيب الأبجدي
+    .sort((a, b) => (!!REGIONS[b.cc] - !!REGIONS[a.cc]) || coll.compare(a.name, b.name));
   const title = `${t.allTitle} | ${t.logo}`;
   const body = `
   <nav class="crumbs"><a href="/?lang=${lang}">${esc(t.home)}</a><span>›</span><b>${esc(t.allCountries)}</b></nav>
