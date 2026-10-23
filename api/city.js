@@ -6,9 +6,9 @@ const FLAGS = require("./_flags.js");
 const flagSrc = l => "data:image/svg+xml;charset=utf-8," + encodeURIComponent(FLAGS[l] || "");
 const { LANGS, SITE, findCity, nearby, METHODS, autoMethod, dayTimes, todayIn, qibla, KEYS } = require("./_core.js");
 
-// زخرفة اسم المسجد (في ورقة الطباعة وفي المعاينة)
-const ORN = '<svg viewBox="0 0 60 12" aria-hidden="true"><path d="M0 6h40M44 6l4-4 4 4-4 4zM54 6h6" /><circle cx="48" cy="6" r="1.2"/></svg>';
-const ORN_R = '<svg viewBox="0 0 60 12" aria-hidden="true" style="transform:scaleX(-1)"><path d="M0 6h40M44 6l4-4 4 4-4 4zM54 6h6" /><circle cx="48" cy="6" r="1.2"/></svg>';
+// زخرفة اسم المسجد: شريط مزخرف تحت الاسم، وشمسة إسلامية مكان شعار الموقع
+const FLOURISH = '<svg class="fl" viewBox="0 0 240 24" aria-hidden="true"><path d="M4 12H92M148 12h88" stroke-width="1.4"/><path d="M60 12h30M150 12h30" stroke-width="3" opacity=".35"/><path d="M96 12l5-5 5 5-5 5zM134 12l5-5 5 5-5 5z"/><path d="M120 2l3.4 6.6L130 12l-6.6 3.4L120 22l-3.4-6.6L110 12l6.6-3.4z"/><circle cx="120" cy="12" r="2.4" fill="#fff"/><circle cx="2" cy="12" r="1.6"/><circle cx="238" cy="12" r="1.6"/></svg>';
+const ROSETTE = '<svg class="ro" viewBox="0 0 48 48" aria-hidden="true"><path d="M10 10h28v28H10z" fill="#8f2a39"/><path d="M24 4l20 20-20 20L4 24z" fill="#8f2a39"/><path d="M10 10h28v28H10zM24 4l20 20-20 20L4 24z" fill="none" stroke="#c9a24e" stroke-width="1.6"/><circle cx="24" cy="24" r="9" fill="none" stroke="#c9a24e" stroke-width="1.4"/><path d="M24 17l2 5 5 2-5 2-2 5-2-5-5-2 5-2z" fill="#c9a24e"/></svg>';
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const fill = (s, v) => s.replace(/\{(\w+)\}/g, (_, k) => v[k] ?? "");
 const intlLoc = l => l === "ku" ? "ckb" : l;
@@ -169,7 +169,7 @@ ${alts}
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#2a1d17">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@700&family=Aref+Ruqaa:wght@700&family=Noto+Kufi+Arabic:wght@400;600;700&family=Noto+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@700&family=Aref+Ruqaa:wght@700&family=Reem+Kufi:wght@700&family=Noto+Kufi+Arabic:wght@400;600;700&family=Noto+Sans:wght@400;600;700&display=swap" rel="stylesheet">
 <script type="application/ld+json">${JSON.stringify(ld).replace(/</g, "\\u003c")}</script>
 <script>${THEME_JS}</script>
 <style>
@@ -229,10 +229,16 @@ html[data-mode=dark] h1 em{color:var(--gold)}
 .mqedit[hidden]{display:none}
 .mqedit input{flex:1 1 220px;min-width:0;font:inherit;font-size:.95rem;padding:9px 12px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--text)}
 .mqedit small{flex-basis:100%;color:var(--muted);font-size:.8rem}
-.mqprev{flex-basis:100%;display:flex;align-items:center;justify-content:center;gap:10px;background:#fff;border:1px dashed var(--line);border-radius:10px;padding:10px 8px}
+.mqprev{flex-basis:100%;display:flex;align-items:center;justify-content:center;gap:12px;background:#fff;border:1px dashed var(--line);border-radius:10px;padding:12px 10px}
 .mqprev[hidden]{display:none}
-.mqprev span{font-family:'Aref Ruqaa','Amiri',serif;font-weight:700;font-size:1.5rem;color:#8f2a39;line-height:1.4;text-align:center}
-.mqprev svg{width:52px;height:11px;flex:none;fill:#b08a3e;stroke:#b08a3e;stroke-width:1.1}
+.mqprev .ro{width:46px;height:46px;flex:none}
+.mqprev .mqt{text-align:center;min-width:0}
+.mqprev .mqn{font-weight:700;font-size:1.6rem;color:#8f2a39;line-height:1.35;overflow-wrap:anywhere}
+.mqprev .fl{display:block;width:170px;max-width:100%;height:16px;margin:2px auto 0;fill:#c9a24e;stroke:#c9a24e}
+.f-naskh{font-family:'Amiri',serif}.f-ruqaa{font-family:'Aref Ruqaa','Amiri',serif}.f-kufi{font-family:'Reem Kufi','Noto Kufi Arabic',sans-serif}
+.fonts{display:flex;gap:6px;flex-basis:100%;justify-content:center}
+.fonts button{font-size:1.05rem;padding:6px 16px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--text);cursor:pointer;font-weight:700}
+.fonts button[aria-pressed=true]{border-color:var(--green);background:var(--green);color:#fff}
 .mnav{display:flex;align-items:center;gap:10px}
 .mnav a{width:38px;height:38px;border:1px solid var(--line);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem}
 .mnav a:hover{background:var(--hover)}
@@ -302,11 +308,12 @@ footer a{color:var(--gold)}
   .ph .city{text-align:end}
   .ph .city b{display:block;font-size:15pt;line-height:1.25}
   .ph .city span{font-size:9pt;color:#7a6a60}
-  .ph .city span[hidden]{display:none}
-  .ph .city .mq{display:flex;align-items:center;justify-content:flex-end;gap:2.5mm;margin-top:1mm}
-  .ph .city .mq[hidden]{display:none}
-  .ph .city .mq span{font-family:'Aref Ruqaa','Amiri',serif;font-weight:700;font-size:17pt;color:#8f2a39;line-height:1.3}
-  .ph .city .mq svg{width:13mm;height:2.6mm;fill:#b08a3e;stroke:#b08a3e;stroke-width:1.1}
+  .ph .b[hidden]{display:none}
+  .ph .mqb{gap:4mm;max-width:62%}
+  .ph .mqb .ro{width:15mm;height:15mm;flex:none}
+  .ph .mqt{text-align:center}
+  .ph .mqn{font-weight:700;color:#8f2a39;line-height:1.12;font-size:24pt}
+  .ph .mqt .fl{display:block;width:58mm;height:4.6mm;margin:.3mm auto .6mm;fill:#c9a24e;stroke:#c9a24e}
   .pm{display:flex;justify-content:space-between;align-items:center;background:#f6efe8;border-radius:2.5mm;padding:2.4mm 4mm;margin-bottom:3.5mm;font-size:9.5pt}
   .pm b{font-size:12pt;color:#8f2a39}
   table.pt{width:100%;border-collapse:collapse;font-size:9pt}
@@ -349,7 +356,8 @@ footer a{color:var(--gold)}
         <button class="btn" type="button" id="mqSave">${esc(t.save)}</button>
         <button class="btn ghost" type="button" id="mqDel">${esc(t.remove)}</button>
         <small>${esc(t.mosquePh)}</small>
-        <div class="mqprev" id="mqPrev" hidden aria-hidden="true">${ORN}<span id="mqPrevName"></span>${ORN_R}</div>
+        <div class="fonts" id="mqFonts">${(t.dir === "rtl" ? ["نسخ","رقعة","كوفي"] : ["Naskh","Ruqʿa","Kufi"]).map((n, i) => { const f = ["naskh","ruqaa","kufi"][i]; return `<button type="button" class="f-${f}" data-f="${f}" aria-pressed="false">${n}</button>`; }).join("")}</div>
+        <div class="mqprev" id="mqPrev" hidden aria-hidden="true">${ROSETTE}<div class="mqt"><div class="mqn" id="mqPrevName"></div>${FLOURISH}</div></div>
       </div>
     </div>
     <div class="hcard">
@@ -391,8 +399,9 @@ footer a{color:var(--gold)}
 
   <div class="sheet-print">
     <div class="ph">
-      <div class="b"><img src="/icon-192.png" alt=""><div><div class="bn">${esc(t.logo)}</div><div class="bs">AZANKURD.COM · ${esc(t.tagline)}</div></div></div>
-      <div class="city"><b>${esc(fill(t.title, V))}</b><span id="pCountry">${esc(country)}</span><div class="mq" id="pMosque" hidden>${ORN}<span id="pMosqueName"></span>${ORN_R}</div></div>
+      <div class="b" id="pBrand"><img src="/icon-192.png" alt=""><div><div class="bn">${esc(t.logo)}</div><div class="bs">AZANKURD.COM · ${esc(t.tagline)}</div></div></div>
+      <div class="b mqb" id="pMq" hidden>${ROSETTE}<div class="mqt"><div class="mqn" id="pMosqueName"></div>${FLOURISH}<div class="bs">AZANKURD.COM · ${esc(t.tagline)}</div></div></div>
+      <div class="city"><b>${esc(fill(t.title, V))}</b><span>${esc(country)}</span></div>
     </div>
     <div class="pm"><span>${esc(t.printHead)}</span><b>${esc(mTitle)}</b><span>${esc(hijRange)}</span></div>
     <table class="pt"><thead><tr>${pth}</tr></thead><tbody>${ptrs}</tbody></table>
@@ -436,21 +445,30 @@ footer a{color:var(--gold)}
   tick(); setInterval(tick,1000);
 })();
 (function(){
-  var K="azk_mosque", btn=document.getElementById("mqBtn"), box=document.getElementById("mqEdit"), inp=document.getElementById("mqIn");
+  var K="azk_mosque", KF="azk_mosque_font", btn=document.getElementById("mqBtn"), box=document.getElementById("mqEdit"), inp=document.getElementById("mqIn");
   var lbl=document.getElementById("mqLbl"), base=lbl.textContent;
-  function get(){ try{ return localStorage.getItem(K) || ""; }catch(e){ return ""; } }
-  function put(v){ try{ if(v) localStorage.setItem(K,v); else localStorage.removeItem(K); }catch(e){} }
+  function get(k){ try{ return localStorage.getItem(k||K) || ""; }catch(e){ return ""; } }
+  function put(v,k){ try{ if(v) localStorage.setItem(k||K,v); else localStorage.removeItem(k||K); }catch(e){} }
+  var font=get(KF) || "ruqaa", pick=font;
+  // حجم الخط في الطباعة حسب طول الاسم، حتى يبقى في سطر أو سطرين
+  function pt(v){ var n=v.length; return n<=12 ? 25 : n<=20 ? 22 : n<=30 ? 18 : 15; }
+  function setFont(el,f){ el.className=el.className.replace(/\\s*f-\\w+/g,"")+" f-"+f; }
   function show(){
-    var v=get();
-    document.getElementById("pMosqueName").textContent=v;
-    document.getElementById("pMosque").hidden=!v;
-    document.getElementById("pCountry").hidden=!!v;
+    var v=get(), n=document.getElementById("pMosqueName");
+    n.textContent=v; setFont(n,font); n.style.fontSize=pt(v)+"pt";
+    document.getElementById("pMq").hidden=!v;
+    document.getElementById("pBrand").hidden=!!v;
     lbl.textContent=v || base;
   }
-  function prev(){ var v=inp.value.trim(); document.getElementById("mqPrevName").textContent=v; document.getElementById("mqPrev").hidden=!v; }
+  function prev(){
+    var v=inp.value.trim(), n=document.getElementById("mqPrevName");
+    n.textContent=v; setFont(n,pick); document.getElementById("mqPrev").hidden=!v;
+    document.querySelectorAll("#mqFonts button").forEach(function(b){ b.setAttribute("aria-pressed", String(b.getAttribute("data-f")===pick)); });
+  }
+  document.querySelectorAll("#mqFonts button").forEach(function(b){ b.addEventListener("click",function(){ pick=b.getAttribute("data-f"); prev(); }); });
   inp.addEventListener("input",prev);
-  btn.addEventListener("click",function(){ box.hidden=!box.hidden; btn.setAttribute("aria-expanded",String(!box.hidden)); if(!box.hidden){ inp.value=get(); prev(); inp.focus(); } });
-  document.getElementById("mqSave").addEventListener("click",function(){ put(inp.value.trim()); show(); box.hidden=true; btn.setAttribute("aria-expanded","false"); });
+  btn.addEventListener("click",function(){ box.hidden=!box.hidden; btn.setAttribute("aria-expanded",String(!box.hidden)); if(!box.hidden){ inp.value=get(); pick=font; prev(); inp.focus(); } });
+  document.getElementById("mqSave").addEventListener("click",function(){ put(inp.value.trim()); font=pick; put(font,KF); show(); box.hidden=true; btn.setAttribute("aria-expanded","false"); });
   inp.addEventListener("keydown",function(e){ if(e.key==="Enter") document.getElementById("mqSave").click(); });
   document.getElementById("mqDel").addEventListener("click",function(){ put(""); inp.value=""; show(); box.hidden=true; btn.setAttribute("aria-expanded","false"); });
   show();
