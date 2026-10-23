@@ -724,11 +724,30 @@ function placeLabel(q){
   return t.yourLoc;
 }
 function placeKey(q){ return q.type === "city" ? "c:" + q.city.toLowerCase() : `p:${q.lat},${q.lng}`; }
+// مكانان متطابقان إذا كانت إحداثياتهما متقاربة (نفس المدينة بالعربية أو الإنجليزية)
+function samePlace(a, b){
+  if(!a || !b) return false;
+  if(a.type === "coords" && b.type === "coords")
+    return Math.abs(a.lat - b.lat) < 0.15 && Math.abs(a.lng - b.lng) < 0.15;
+  return placeKey(a) === placeKey(b);
+}
+const hasArabic = s => /[\u0600-\u06FF]/.test(s || "");
+// عند الدمج نُبقي الاسم المكتوب بحروف لغة الواجهة
+function betterName(a, b){
+  const wantAr = L().dir === "rtl";
+  return (hasArabic(a.name) === wantAr || hasArabic(b.name) !== wantAr) ? a : {...a, name:b.name, country:b.country};
+}
 function getRecent(){
-  return (readJSON("recent") || []).map(x => typeof x === "string" ? {type:"city", city:x} : x);
+  const raw = (readJSON("recent") || []).filter(x => x && typeof x === "object" && x.type === "coords");
+  const out = [];
+  raw.forEach(q => { const i = out.findIndex(x => samePlace(x, q)); if(i < 0) out.push(q); else out[i] = betterName(out[i], q); });
+  return out;
 }
 function addRecent(q){
-  const list = getRecent().filter(x => placeKey(x) !== placeKey(q));
+  let list = getRecent();
+  const old = list.find(x => samePlace(x, q));
+  if(old) q = betterName(q, old);
+  list = list.filter(x => !samePlace(x, q));
   list.unshift(q);
   store.set("recent", JSON.stringify(list.slice(0,5)));
 }
@@ -906,7 +925,7 @@ function fillSettings(){
   let ch = `<option value="here">${t.myLocation}</option>`;
   recent.forEach((q,i) => ch += `<option value="r${i}">${placeLabel(q).replace(/</g,"&lt;")}</option>`);
   cs.innerHTML = ch;
-  const idx = lastQuery ? recent.findIndex(q => placeKey(q) === placeKey(lastQuery)) : -1;
+  const idx = lastQuery ? recent.findIndex(q => samePlace(q, lastQuery)) : -1;
   cs.value = idx >= 0 ? "r" + idx : "here";
   const ms = document.getElementById("methodSelect");
   let html = `<option value="auto">${t.auto}${autoUsed !== null ? " · " + METHODS[autoUsed] : ""}</option>`;
