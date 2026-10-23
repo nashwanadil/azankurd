@@ -241,6 +241,7 @@ applyTheme();
   .install .ios{background:var(--inner);border:1px solid var(--line);border-radius:12px;padding:10px;color:var(--text)}
   .install .acts{display:flex;gap:10px;justify-content:center}
   .btn.wide{width:100%}
+  .btn.gbtn{background:var(--gold);color:var(--bg,#1a1208);border-color:var(--gold);font-weight:600}
   .sheet-head h3{font-size:1.1rem;color:var(--gold);font-weight:600}
   .iconbtn{background:none;border:1px solid var(--line);color:var(--text);border-radius:10px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer}
   .iconbtn:hover{background:var(--hover)}
@@ -461,14 +462,13 @@ applyTheme();
         <summary><span id="syncTitle"></span><svg class="chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></summary>
         <div style="padding:6px 12px 12px">
           <p id="syncHelp" style="font-size:.85rem;line-height:1.8;color:var(--muted);margin:4px 0 10px"></p>
-          <button class="btn wide" type="button" id="syncNew"></button>
-          <button class="btn wide" type="button" id="syncSave" hidden style="margin-top:8px"></button>
+          <button class="btn wide gbtn" type="button" id="syncNew"></button>
           <div id="syncCodeBox" hidden style="margin-top:10px;font-size:.9rem">
             <span id="syncCodeLbl"></span> <b id="syncCode" dir="ltr" style="font-family:monospace;letter-spacing:.08em"></b>
           </div>
           <label id="syncInLbl" for="syncIn" style="display:block;font-size:.85rem;color:var(--muted);margin:14px 0 6px"></label>
-          <input id="syncIn" dir="ltr" maxlength="12" autocomplete="off" spellcheck="false" style="width:100%;padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--text);font-family:monospace;font-size:1rem">
-          <button class="btn wide" type="button" id="syncApply" style="margin-top:8px"></button>
+          <input id="syncIn" dir="ltr" maxlength="5" autocomplete="off" spellcheck="false" style="width:100%;padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--text);font-family:monospace;font-size:1rem">
+          <button class="btn wide gbtn" type="button" id="syncApply" style="margin-top:8px"></button>
           <div id="syncMsg" role="status" style="margin-top:10px;font-size:.9rem;min-height:1.4em"></div>
         </div>
       </details>
@@ -483,7 +483,7 @@ applyTheme();
     <div id="syncRows"></div>
     <div style="display:flex;gap:8px;margin-top:14px">
       <button class="btn" type="button" id="syncDlgCancel" style="flex:1"></button>
-      <button class="btn" type="button" id="syncDlgApply" style="flex:1"></button>
+      <button class="btn gbtn" type="button" id="syncDlgApply" style="flex:1"></button>
     </div>
   </div>
 </div>
@@ -1509,14 +1509,13 @@ document.getElementById("installOverlay").addEventListener("click", e=>{
 /* ---------- مزامنة الإعدادات برمز (بلا حساب) ---------- */
 const SYNC_KEYS = ["lang","theme","mode","fmt","asr","method","lastQuery","myPlace","notifyPrefs","recent"];
 const SYNC_T = {
-  ar:{ title:"مزامنة الإعدادات", help:"أنشئ رمزًا واحفظه، فتعود إعداداتك ومدنك على أي جهاز بإدخال الرمز. الرمز لا يحمل بريدًا ولا اسمًا، لكن من يملكه يرى إعداداتك، فلا تشاركه.", newBtn:"إنشاء رمز جديد", saveBtn:"حفظ إعداداتي على رمزي", codeLbl:"رمزك:", inLbl:"لديّ رمز، أدخله هنا:", applyBtn:"استعادة الإعدادات", ok:"تم الحفظ. احتفظ بالرمز.", restored:"تمت الاستعادة", err:"تعذّر الاتصال، حاول لاحقًا", notFound:"الرمز غير صحيح أو منتهي" },
-  ku:{ title:"هاوکاریکرنا ڕێکخستنان", help:"کودەکێ دروست بکە و هەلگرە، پاشان ب ڕێکا وێ ڕێکخستن و باژێرێن خۆ ل ههر ئامێرەکێ ڤەبگەرینە. کود ئیمەیل یان ناڤ تێدا نینە، لێ هەر کەسەکێ کودی هەبیت دشێت ڕێکخستنێن تە ببینیت، ڤێ بۆ کەسان نەنیشان بدە.", newBtn:"کودەکا نوو دروست بکە", saveBtn:"ڕێکخستنێن خۆ ل سەر کودا خۆ هەلگرە", codeLbl:"کودێ تە:", inLbl:"کودەک هەیە؟ لێرە بنڤیسە:", applyBtn:"ڕێکخستنان ڤەگەرینە", ok:"هاتە هەلگرتن. کودی هەلگرە.", restored:"ڤەگەڕا", err:"پەیوەندی نەچوو، دووبارە هەوڵ بدە", notFound:"کود دروست نینە یان بەسەرچوویە" },
-  en:{ title:"Sync settings", help:"Create a code and keep it. Enter it on any device to restore your settings and cities. The code holds no email or name, but anyone with it can see your settings, so keep it private.", newBtn:"Create a new code", saveBtn:"Save my settings to my code", codeLbl:"Your code:", inLbl:"Have a code? Enter it here:", applyBtn:"Restore settings", ok:"Saved. Keep your code.", restored:"Restored", err:"Connection failed, try later", notFound:"Code is invalid or expired" }
+  ar:{ title:"مزامنة الإعدادات", help:"أنشئ رمزًا واحفظه، فتعود إعداداتك ومدنك على أي جهاز بإدخال الرمز. يُحدَّث الرمز بآخر تغييراتك كلما فتحت هذه القائمة. الرمز لا يحمل بريدًا ولا اسمًا، لكن من يملكه يرى إعداداتك، فلا تشاركه.", newBtn:"إنشاء رمز جديد", saveBtn:"حفظ إعداداتي على رمزي", codeLbl:"رمزك:", inLbl:"لديّ رمز، أدخله هنا:", applyBtn:"استعادة الإعدادات", ok:"تم الحفظ. احتفظ بالرمز.", restored:"تمت الاستعادة", err:"تعذّر الاتصال، حاول لاحقًا", notFound:"الرمز غير صحيح أو منتهي" },
+  ku:{ title:"هاوکاریکرنا ڕێکخستنان", help:"کودەکێ دروست بکە و هەلگرە، پاشان ب ڕێکا وێ ڕێکخستن و باژێرێن خۆ ل ههر ئامێرەکێ ڤەبگەرینە. کود ئیمەیل یان ناڤ تێدا نینە، لێ هەر کەسەکێ کودی هەبیت دشێت ڕێکخستنێن تە ببینیت، ڤێ بۆ کەسان نەنیشان بدە. کود ب هەر جارەکێ ڤەکرنا ڤی لیستێ ب دوماهیکێ ڕێکخستنان دهێتە نووکرن.", newBtn:"کودەکا نوو دروست بکە", saveBtn:"ڕێکخستنێن خۆ ل سەر کودا خۆ هەلگرە", codeLbl:"کودێ تە:", inLbl:"کودەک هەیە؟ لێرە بنڤیسە:", applyBtn:"ڕێکخستنان ڤەگەرینە", ok:"هاتە هەلگرتن. کودی هەلگرە.", restored:"ڤەگەڕا", err:"پەیوەندی نەچوو، دووبارە هەوڵ بدە", notFound:"کود دروست نینە یان بەسەرچوویە" },
+  en:{ title:"Sync settings", help:"Create a code and keep it. Enter it on any device to restore your settings and cities. The code is updated with your latest changes each time you open this list. It holds no email or name, but anyone with it can see your settings, so keep it private.", newBtn:"Create a new code", saveBtn:"Save my settings to my code", codeLbl:"Your code:", inLbl:"Have a code? Enter it here:", applyBtn:"Restore settings", ok:"Saved. Keep your code.", restored:"Restored", err:"Connection failed, try later", notFound:"Code is invalid or expired" }
 };
 const syncT = () => SYNC_T[lang] || SYNC_T.en;
 function syncRefresh(){
   const c = store.get("syncCode", "");
-  document.getElementById("syncSave").hidden = !c;
   document.getElementById("syncCodeBox").hidden = !c;
   document.getElementById("syncCode").textContent = c;
 }
@@ -1525,7 +1524,6 @@ function syncLabels(){
   document.getElementById("syncTitle").textContent = x.title;
   document.getElementById("syncHelp").textContent = x.help;
   document.getElementById("syncNew").textContent = x.newBtn;
-  document.getElementById("syncSave").textContent = x.saveBtn;
   document.getElementById("syncCodeLbl").textContent = x.codeLbl;
   document.getElementById("syncInLbl").textContent = x.inLbl;
   document.getElementById("syncApply").textContent = x.applyBtn;
@@ -1627,7 +1625,7 @@ function syncBuild(){
 
 async function syncRestore(){
   const x = syncT(), code = document.getElementById("syncIn").value.trim();
-  if(!/^[A-Za-z0-9]{12}$/.test(code)) return syncMsg(x.notFound, false);
+  if(!/^[a-z2-9]{5}$/.test(code)) return syncMsg(x.notFound, false);
   try{
     const { status, j } = await syncCall("GET", null, "?code=" + encodeURIComponent(code));
     if(status === 200 && j.ok){
@@ -1647,8 +1645,10 @@ async function syncApply(){
   syncDlgClose();
   location.reload();
 }
+document.getElementById("syncBox").addEventListener("toggle", () => {
+  if(document.getElementById("syncBox").open && store.get("syncCode", "")) syncSave(false);
+});
 document.getElementById("syncNew").addEventListener("click", () => syncSave(true));
-document.getElementById("syncSave").addEventListener("click", () => syncSave(false));
 document.getElementById("syncApply").addEventListener("click", syncRestore);
 document.getElementById("syncDlgApply").addEventListener("click", syncApply);
 document.getElementById("syncDlgCancel").addEventListener("click", syncDlgClose);
