@@ -874,12 +874,31 @@ function addRecent(q){
 // البحث عن المدن بقاعدة GeoNames عبر Open-Meteo (تدعم الأسماء بلغات كثيرة)
 async function geocode(text){
   const g = lang === "ku" ? "ku" : lang;
+  let out = [];
   try{
     const r = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(text)}&count=6&language=${g}&format=json`);
     const j = await r.json();
-    return (j.results || []).map(x => ({
+    out = (j.results || []).map(x => ({
       type:"coords", lat:Math.round(x.latitude*100)/100, lng:Math.round(x.longitude*100)/100,
       name:x.name, country:x.country || "", admin:x.admin1 || ""
+    }));
+  }catch(e){}
+  // بالحروف العربية: نضيف مدنًا ليس لها اسم عربي (انغولشتات ← Ingolstadt)
+  if(/[\u0600-\u06FF]/.test(text) && out.length < 6) out = out.concat((await findArabic(text)).filter(f => !out.some(o => Math.abs(o.lat - f.lat) < .15 && Math.abs(o.lng - f.lng) < .15))).slice(0, 6);
+  return out;
+}
+async function findArabic(text){
+  try{
+    const lq = readJSON("lastQuery");
+    let near = lq && lq.type === "coords" && !lq.mecca ? `&lat=${lq.lat}&lng=${lq.lng}` : "";
+    try{ near += "&tz=" + encodeURIComponent(Intl.DateTimeFormat().resolvedOptions().timeZone || ""); }catch(e){}
+    const j = await (await fetch(`/api/find?q=${encodeURIComponent(text.trim())}${near}`)).json();
+    let dn = null; try{ dn = new Intl.DisplayNames([lang === "ku" ? "ar" : lang], {type:"region"}); }catch(e){}
+    return j.map(c => ({
+      type:"coords", lat:Math.round(c.lat*100)/100, lng:Math.round(c.lng*100)/100,
+      // تطابق كامل: نعرض الاسم كما كتبه الزائر، ونضع الاسم الأصلي تحته
+      name: c.exact ? text.trim() : c.name, admin: c.exact ? c.name : "",
+      country: dn ? (dn.of(c.cc) || c.cc) : c.cc
     }));
   }catch(e){ return []; }
 }
