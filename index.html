@@ -943,6 +943,8 @@ async function loadWeek(data, q){
     if(weekKey === key){ weekDays = days; renderWeek(); }
   }catch(e){ if(weekKey === key){ weekDays = null; syncWeekSec(); } }
 }
+// أسماء الأيام بالكوردية (بهدينانية) للجدول الأسبوعي؛ Intl يعطيها بالعربية لأن الكوردية غير مدعومة فيه
+const KU_WD_SHORT = ["ئێکشەمب","دووشەمب","سێشەمب","چارشەمب","پێنجشەمب","ئەینی","شەمبی"];
 function renderWeek(){
   const tb = document.getElementById("week");
   if(!weekDays){ tb.innerHTML = ""; return syncWeekSec(); }
@@ -954,7 +956,7 @@ function renderWeek(){
   let h = `<thead><tr><th></th>` + ORDER.map(k => `<th title="${t.names[k]}" aria-label="${t.names[k]}">${PICONS[k]}</th>`).join("") + `</tr></thead><tbody>`;
   weekDays.forEach((x, i) => {
     const gg = x.date.gregorian, dt = new Date(Date.UTC(+gg.year, gg.month.number - 1, +gg.day));
-    h += `<tr${i === 0 ? ' class="today"' : ""}><td class="day"><b>${wd.format(dt)}</b><small>${dm.format(dt)}</small></td>` +
+    h += `<tr${i === 0 ? ' class="today"' : ""}><td class="day"><b>${lang === "ku" ? KU_WD_SHORT[dt.getUTCDay()] : wd.format(dt)}</b><small>${dm.format(dt)}</small></td>` +
       ORDER.map(k => `<td>${short(x.timings[k].slice(0,5))}</td>`).join("") + `</tr>`;
   });
   tb.innerHTML = h + `</tbody>`;
