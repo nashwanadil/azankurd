@@ -294,6 +294,11 @@ applyTheme();
   .fold summary::-webkit-details-marker{display:none}
   .fold .chev{width:18px;height:18px;stroke:var(--muted);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:transform .2s;flex:none}
   .fold[open] .chev{transform:rotate(180deg)}
+  /* قائمة المزامنة: عنوانها بلون الثيم مثل الزر المختار */
+  #syncBox{border-color:var(--green)}
+  #syncBox > summary{background:var(--green);color:#fff;border-radius:11px;font-weight:600}
+  #syncBox[open] > summary{border-radius:11px 11px 0 0}
+  #syncBox > summary .chev{stroke:#fff}
   .fold[hidden]{display:none}
   /* الخيارات المتقدمة ملتصقة بزر التنبيه، فيظهر أنها تخصه */
   .seg:has(+ .fold.glued:not([hidden])){border-bottom-left-radius:0;border-bottom-right-radius:0}
@@ -468,7 +473,7 @@ applyTheme();
             <span id="syncCodeLbl"></span> <b id="syncCode" dir="ltr" style="font-family:monospace;letter-spacing:.08em"></b>
           </div>
           <label id="syncInLbl" for="syncIn" style="display:block;font-size:.85rem;color:var(--muted);margin:14px 0 6px"></label>
-          <input id="syncIn" dir="ltr" maxlength="5" autocomplete="off" spellcheck="false" style="width:100%;padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--text);font-family:monospace;font-size:1rem">
+          <input id="syncIn" dir="ltr" maxlength="5" autocomplete="off" spellcheck="false" style="display:block;box-sizing:border-box;max-width:none;width:100%;padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--text);font-family:monospace;font-size:1rem">
           <button class="btn wide" type="button" id="syncApply" style="margin-top:8px"></button>
           <div id="syncMsg" role="status" style="margin-top:10px;font-size:.9rem;min-height:1.4em"></div>
         </div>
