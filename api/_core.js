@@ -118,6 +118,46 @@ function nextPrayer(lat, lng, tz, method, school, after){
   }
   return null;
 }
+// كل تنبيهات المشترك حسب اختياراته المتقدمة، ثم أقربها بعد لحظة معينة
+// prefs: { p:[الصلوات المختارة], b:دقائق قبل الصلاة, i:دقائق الإقامة بعد الأذان, fe:قبل نهاية الفجر, j:الجمعة, q:قيام الليل }
+const DEF_PREFS = { p:NOTIFY_KEYS, b:0, i:0, fe:0, j:0, q:0 };
+function cleanPrefs(x){
+  x = x && typeof x === "object" ? x : {};
+  const num = (v, ok) => ok.includes(Number(v)) ? Number(v) : 0;
+  const p = Array.isArray(x.p) ? NOTIFY_KEYS.filter(k => x.p.includes(k)) : NOTIFY_KEYS;
+  return { p, b:num(x.b, [0,5,10,15,20,30]), i:num(x.i, [0,5,10,15,20]), fe:x.fe ? 1 : 0, j:x.j ? 1 : 0, q:x.q ? 1 : 0 };
+}
+function dayEvents(lat, lng, tz, params, y, m, d, prefs){
+  const t = new adhan.PrayerTimes(new adhan.Coordinates(lat, lng), new Date(y, m - 1, d), params);
+  const ev = [], M = 60000, ok = x => x instanceof Date && !isNaN(x);
+  for(const k of prefs.p){
+    const at = t[k]; if(!ok(at)) continue;
+    const hmv = hm(at, tz);
+    ev.push({ type:"adhan", key:k, at, hm:hmv });
+    if(prefs.b) ev.push({ type:"before", key:k, at:new Date(at - prefs.b * M), hm:hmv });
+    if(prefs.i) ev.push({ type:"iqama", key:k, at:new Date(+at + prefs.i * M), hm:hmv });
+  }
+  if(prefs.fe && ok(t.sunrise)) ev.push({ type:"fajrEnd", key:"fajr", at:new Date(t.sunrise - 15 * M), hm:hm(t.sunrise, tz) });
+  if(prefs.j && ok(t.dhuhr) && new Date(Date.UTC(y, m - 1, d)).getUTCDay() === 5) ev.push({ type:"jumuah", key:"dhuhr", at:new Date(t.dhuhr - 30 * M), hm:hm(t.dhuhr, tz) });
+  if(prefs.q){
+    try{ const lt = new adhan.SunnahTimes(t).lastThirdOfTheNight; if(ok(lt)) ev.push({ type:"qiyam", key:"isha", at:lt, hm:hm(lt, tz) }); }catch(e){}
+  }
+  return ev;
+}
+function nextEvent(lat, lng, tz, method, school, prefs, after){
+  const params = paramsFor(method);
+  if(school === 0 || school === 1) params.madhab = school === 1 ? adhan.Madhab.Hanafi : adhan.Madhab.Shafi;
+  prefs = cleanPrefs(prefs);
+  let best = null;
+  for(let i = -1; i <= 1; i++){
+    const day = new Date(after.getTime() + i * 86400000);
+    const ds = new Intl.DateTimeFormat("en-CA", { timeZone:tz, year:"numeric", month:"2-digit", day:"2-digit" }).formatToParts(day);
+    const g = t => +ds.find(x => x.type === t).value;
+    for(const e of dayEvents(lat, lng, tz, params, g("year"), g("month"), g("day"), prefs))
+      if(e.at > after && (!best || e.at < best.at)) best = e;
+  }
+  return best;
+}
 const qibla = city => Math.round(adhan.Qibla(new adhan.Coordinates(city.lat, city.lng)));
 
-module.exports = { LANGS, SITE, CITIES, findCity, nearest, nearby, METHODS, autoMethod, dayTimes, todayIn, qibla, KEYS, cityAt, nextPrayer, NOTIFY_KEYS };
+module.exports = { LANGS, SITE, CITIES, findCity, nearest, nearby, METHODS, autoMethod, dayTimes, todayIn, qibla, KEYS, cityAt, nextPrayer, nextEvent, cleanPrefs, NOTIFY_KEYS };

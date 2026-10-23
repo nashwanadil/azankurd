@@ -2,7 +2,7 @@
 // يحفظ لكل مشترك: رمز الإشعار من المتصفح، وإحداثيات مدينته مقرّبة، وطريقة الحساب، ونصوص الإشعار بلغته
 // ولا يحفظ أي اسم أو بريد أو موقع دقيق
 const crypto = require("crypto");
-const { METHODS, nextPrayer, NOTIFY_KEYS } = require("./_core.js");
+const { METHODS, nextEvent, cleanPrefs, NOTIFY_KEYS } = require("./_core.js");
 const { redis, pipeline, ready } = require("./_redis.js");
 
 const MAX_SUBS = 100000;
@@ -45,15 +45,19 @@ module.exports = async (req, res) => {
      !sub.keys || !str(sub.keys.p256dh, 200) || !str(sub.keys.auth, 100)) return send(res, 400, { ok:false });
   const names = {};
   for(const k of NOTIFY_KEYS) names[k] = str(b.names && b.names[k], 30) || k;
+  // نصوص الإشعارات بلغة المشترك: لكل نوع تنبيه نصّ
+  const tpl = {};
+  for(const k of ["adhan","before","iqama","fajrEnd","jumuah","qiyam"]) tpl[k] = str(b.tpl && b.tpl[k], 100) || "{p}";
+  const prefs = cleanPrefs(b.prefs);
   const rec = {
     sub:{ endpoint, keys:{ p256dh:str(sub.keys.p256dh, 200), auth:str(sub.keys.auth, 100) } },
-    lat, lng, tz, method, school, names,
-    tpl:str(b.tpl, 80) || "{p}", place:str(b.place, 60), fmt:b.fmt === "12" ? "12" : "24", lang:str(b.lang, 5)
+    lat, lng, tz, method, school, names, tpl, prefs,
+    place:str(b.place, 60), fmt:b.fmt === "12" ? "12" : "24", lang:str(b.lang, 5)
   };
   const exists = await redis(["EXISTS", "s:" + id]);
   if(!exists && await redis(["ZCARD", "due"]) >= MAX_SUBS) return send(res, 503, { ok:false, error:"full" });
-  const next = nextPrayer(lat, lng, tz, method, school, new Date());
-  if(!next) return send(res, 400, { ok:false });
+  const next = nextEvent(lat, lng, tz, method, school, prefs, new Date());
+  if(!next){ await pipeline([["SET", "s:" + id, JSON.stringify(rec)], ["ZREM", "due", id]]); return send(res, 200, { ok:true, next:null }); }
   await pipeline([["SET", "s:" + id, JSON.stringify(rec)], ["ZADD", "due", String(next.at.getTime()), id]]);
-  send(res, 200, { ok:true, next:next.key, at:next.hm });
+  send(res, 200, { ok:true, next:next.type + ":" + next.key, at:next.hm });
 };

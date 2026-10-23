@@ -1,7 +1,7 @@
 // المنبّه: تطلبه خدمة cron-job.org كل دقيقة: /api/notify?key=CRON_SECRET
 // يسأل القاعدة سؤالًا واحدًا: من حان وقت صلاته الآن؟ فيرسل لهم الإشعار، ثم يحدد موعد صلاتهم التالية
 const webpush = require("web-push");
-const { nextPrayer } = require("./_core.js");
+const { nextEvent } = require("./_core.js");
 const { redis, pipeline, ready } = require("./_redis.js");
 
 const LATE = 15 * 60 * 1000;      // إن تأخر الإرسال أكثر من ربع ساعة (عطل مثلًا) نتجاوز هذه الصلاة ولا نرسل متأخرًا
@@ -34,14 +34,16 @@ module.exports = async (req, res) => {
     if(!recs[i]){ writes.push(["ZREM", "due", id]); return; }
     let r; try{ r = JSON.parse(recs[i]); }catch(e){ writes.push(["ZREM", "due", id]); return; }
     const t = at[id];
-    // الصلاة التي حان وقتها لهذا المشترك، ثم الصلاة التي بعدها
-    const cur = nextPrayer(r.lat, r.lng, r.tz, r.method, r.school, new Date(t - 1000));
-    const nxt = nextPrayer(r.lat, r.lng, r.tz, r.method, r.school, new Date(Math.max(t, now) + 1000));
-    if(cur && now - t <= LATE){
+    // التنبيه الذي حان وقته لهذا المشترك، ثم التنبيه الذي بعده
+    const prefs = r.prefs || null;
+    const cur = nextEvent(r.lat, r.lng, r.tz, r.method, r.school, prefs, new Date(t - 1000));
+    const nxt = nextEvent(r.lat, r.lng, r.tz, r.method, r.school, prefs, new Date(Math.max(t, now) + 1000));
+    if(cur && Math.abs(cur.at - t) < 60000 && now - t <= LATE){
+      const tpl = typeof r.tpl === "string" ? { adhan:r.tpl } : (r.tpl || {});
       const payload = JSON.stringify({
-        title:r.tpl.replace("{p}", r.names[cur.key] || cur.key),
+        title:(tpl[cur.type] || tpl.adhan || "{p}").replace("{p}", r.names[cur.key] || cur.key),
         body:[r.place, fmtTime(cur.hm, r.fmt)].filter(Boolean).join(" · "),
-        tag:"prayer-" + cur.key, url:r.lang ? `/?lang=${r.lang}` : "/"
+        tag:cur.type + "-" + cur.key, url:r.lang ? `/?lang=${r.lang}` : "/"
       });
       try{
         await webpush.sendNotification(r.sub, payload, { TTL:600, urgency:"high" });
