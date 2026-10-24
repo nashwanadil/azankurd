@@ -42,6 +42,7 @@ const CSS_ALL = `
 .cgrid a{display:flex;align-items:center;gap:12px;background:var(--inner);border:1px solid var(--line);border-radius:14px;padding:10px 14px;transition:border-color .15s}
 .cgrid a:hover{border-color:var(--gold)}
 .cgrid img{width:32px;height:24px;border-radius:4px;box-shadow:0 0 0 1px var(--line);flex:none}
+.cgrid .noflag{width:32px;height:24px;flex:none}
 .cgrid b{font-weight:600;font-size:.95rem;line-height:1.3}
 .cgrid small{display:block;color:var(--muted);font-size:.75rem}
 @media (max-width:760px){ .cgrid{grid-template-columns:repeat(2,1fr)} }
@@ -74,7 +75,7 @@ async function countryPage(res, lang, cc){
   const body = `
   <nav class="crumbs">${NAV.html(lang)}<span>›</span><a href="/${lang}/countries">${esc(t.allCountries)}</a><span>›</span><b>${esc(country)}</b></nav>
   <section class="hcard">
-    <div class="chead"><img src="${countryFlag(cc)}" alt=""><h1>${esc(fill(t.title, { city:"\u0000" })).replace("\u0000", `<em>${esc(country)}</em>`)}</h1></div>
+    <div class="chead">${countryFlag(cc) ? `<img src="${countryFlag(cc)}" alt="">` : ""}<h1>${esc(fill(t.title, { city:"\u0000" })).replace("\u0000", `<em>${esc(country)}</em>`)}</h1></div>
     <p class="lead">${esc(desc)}</p>
     <div class="sub2" style="margin-top:14px"><h2>${esc(fill(t.todayIn, { city:bigName }))}</h2><a class="btn" href="/${lang}/${big.slug}">${esc(t.monthlyBtn)}</a></div>
     <div class="big">${cards}</div>
@@ -88,12 +89,13 @@ async function countryPage(res, lang, cc){
   send(res, page({ lang, title, desc, path, ld, body, css:CSS_COUNTRY }));
 }
 
+const TOP_RANK = cc => REGIONS[cc] ? 2 : cc === "IQ" ? 1 : 0;
 function allPage(res, lang){
   const t = T[lang];
   const coll = new Intl.Collator(lang === "ku" ? "ckb" : lang);
   const list = Object.keys(COUNT).map(cc => ({ cc, name:countryName(cc, lang), en:countryName(cc, "en"), n:COUNT[cc] }))
-    // إقليم كردستان أولًا، ثم البلدان بالترتيب الأبجدي
-    .sort((a, b) => (!!REGIONS[b.cc] - !!REGIONS[a.cc]) || coll.compare(a.name, b.name));
+    // إقليم كردستان أولًا، ثم العراق، ثم البلدان بالترتيب الأبجدي
+    .sort((a, b) => (TOP_RANK(b.cc) - TOP_RANK(a.cc)) || coll.compare(a.name, b.name));
   const title = `${t.allTitle} | ${t.logo}`;
   const body = `
   <nav class="crumbs">${NAV.html(lang)}<span>›</span><b>${esc(t.allCountries)}</b></nav>
@@ -101,7 +103,7 @@ function allPage(res, lang){
     <h1>${esc(t.allTitle)}</h1>
     <p class="lead" style="margin-bottom:16px">${esc(t.allDesc)}</p>
     <label class="search">${SEARCH_IC}<input id="q" type="search" placeholder="${esc(t.findCountry)}" autocomplete="off"></label>
-    <div class="cgrid">${list.map(c => `<a href="/${lang}/country/${c.cc.toLowerCase()}" data-n="${esc(c.name + " " + c.en + " " + c.cc)}"><img src="${countryFlag(c.cc)}" alt="" loading="lazy"><span><b>${esc(c.name)}</b><small>${esc(nCitiesText(lang, c.n))}</small></span></a>`).join("")}</div>
+    <div class="cgrid">${list.map(c => `<a href="/${lang}/country/${c.cc.toLowerCase()}" data-n="${esc(c.name + " " + c.en + " " + c.cc)}">${countryFlag(c.cc) ? `<img src="${countryFlag(c.cc)}" alt="" loading="lazy">` : `<i class="noflag"></i>`}<span><b>${esc(c.name)}</b><small>${esc(nCitiesText(lang, c.n))}</small></span></a>`).join("")}</div>
     <p class="empty" id="empty">${esc(t.noMatch)}</p>
   </section>`;
   send(res, page({ lang, title, desc:t.allDesc, path:"/countries", body, css:CSS_ALL }));

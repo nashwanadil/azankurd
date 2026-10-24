@@ -19,7 +19,9 @@ const REGIONS = {
       id:"Wilayah Kurdistan", ms:"Wilayah Kurdistan", bn:"কুর্দিস্তান অঞ্চল", ps:"د کردستان سیمه", ha:"Yankin Kurdistan", sw:"Eneo la Kurdistan" }
   }
 };
-const countryFlag = cc => REGIONS[cc] ? flagSrc("ku") : `https://cdn.jsdelivr.net/npm/flag-icons@7.6.0/flags/4x3/${cc.toLowerCase()}.svg`;
+// لا يُعرض علم إسرائيل (يبقى الاسم والروابط كما هي)
+const NO_FLAG = ["IL"];
+const countryFlag = cc => NO_FLAG.includes(cc) ? "" : REGIONS[cc] ? flagSrc("ku") : `https://cdn.jsdelivr.net/npm/flag-icons@7.6.0/flags/4x3/${cc.toLowerCase()}.svg`;
 
 // اسم المدينة والبلد بلغة الصفحة برقم GeoNames الثابت
 async function getJSON(u){
