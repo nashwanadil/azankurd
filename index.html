@@ -140,7 +140,7 @@ applyTheme();
     .topbar > .langwrap{order:2;margin:0;min-width:0}
     #langBtn{width:100%;justify-content:center;height:40px;box-sizing:border-box;padding:0 8px;min-width:0}
     #langName{display:none}
-    #langBtn .flag{width:30px;height:21px}
+    #langBtn .flag{width:25px;height:17px}
     .gbmore{order:3;display:block}
     .gb{width:100%;padding:8px 6px;min-width:0}
     .gb span{overflow:hidden;text-overflow:ellipsis}
@@ -223,6 +223,14 @@ applyTheme();
   .next .sub{font-weight:700}
   .next .name{font-size:1.6rem;color:var(--title);font-weight:700}
   .next .count{font-size:3.2rem;font-variant-numeric:tabular-nums;letter-spacing:2px;direction:ltr;color:var(--gold);font-weight:800}
+  /* الهاتف: نضغط المسافات قليلًا حتى يظهر صف المواقيت الأول كاملًا */
+  @media (max-width:760px){
+    header{padding:20px 16px 18px}
+    .brand img{width:52px;height:52px}
+    .logo{font-size:2.6rem}
+    .next{margin-bottom:12px}
+    .next .count{font-size:2.9rem}
+  }
   .times{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
   .t{background:var(--inner);border:1px solid var(--line);border-radius:14px;padding:16px 6px 14px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:2px}
   .t svg{width:28px;height:28px;stroke:var(--gold);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;margin-bottom:4px;opacity:.9}
