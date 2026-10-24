@@ -21,12 +21,12 @@ const I = {
   azkar:'<circle cx="12" cy="5" r="1.6"/><circle cx="17.5" cy="8" r="1.6"/><circle cx="19" cy="13.5" r="1.6"/><circle cx="6.5" cy="8" r="1.6"/><circle cx="5" cy="13.5" r="1.6"/><circle cx="8" cy="18.5" r="1.6"/><circle cx="16" cy="18.5" r="1.6"/><path d="M12 20v2"/>',
   gear:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 0 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 0 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 0 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 0 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>'
 };
-const CALLBL = { ar:"تحويل التاريخ", ku:"گوهۆڕینا بەروارێ", en:"Date converter" };
-const ZAKATBL = { ar:"حاسبة الزكاة", ku:"هژمارتنا زەکاتێ", en:"Zakat calculator" };
-const QIBLABL = {ar: "اتجاه القبلة", ku: "ئاراستەیا قیبلێ", en: "Qibla direction"};
-const RAMADANBL = {ar: "زاوية رمضان", ku: "گۆشەیا ڕەمەزانێ", en: "Ramadan corner"};
-const OCCASIONSBL = {ar: "المناسبات الهجرية", ku: "بۆنێن هجری", en: "Hijri occasions"};
-const AZKARBL = { ar:"الأذكار", ku:"زکر و دوعا", en:"Adhkar" };
+const CALLBL = {"ar": "تحويل التاريخ", "ku": "گوهۆڕینا بەروارێ", "en": "Date converter", "de": "Datumsrechner", "tr": "Tarih çevirici", "fa": "تبدیل تاریخ", "ur": "تاریخ کی تبدیلی", "fr": "Convertisseur de dates", "es": "Conversor de fechas", "it": "Convertitore di date", "nl": "Datumomrekenaar", "da": "Datoomregner", "sv": "Datumomvandlare", "ru": "Конвертер дат", "bs": "Pretvarač datuma", "id": "Konversi tanggal", "ms": "Penukar tarikh", "bn": "তারিখ রূপান্তর", "ps": "د نېټې اړونه", "ha": "Sauya kwanan wata", "sw": "Kubadili tarehe"};
+const ZAKATBL = {"ar": "حاسبة الزكاة", "ku": "هژمارتنا زەکاتێ", "en": "Zakat calculator", "de": "Zakat-Rechner", "tr": "Zekât hesaplayıcı", "fa": "محاسبه‌گر زکات", "ur": "زکوٰۃ کیلکولیٹر", "fr": "Calcul de la zakat", "es": "Calculadora de zakat", "it": "Calcolo della zakat", "nl": "Zakat-calculator", "da": "Zakat-beregner", "sv": "Zakat-kalkylator", "ru": "Калькулятор закята", "bs": "Kalkulator zekata", "id": "Kalkulator zakat", "ms": "Kalkulator zakat", "bn": "যাকাত ক্যালকুলেটর", "ps": "د زکات حساب", "ha": "Lissafin zakka", "sw": "Kikokotoo cha zaka"};
+const QIBLABL = {"ar": "اتجاه القبلة", "ku": "ئاراستەیا قیبلێ", "en": "Qibla direction", "de": "Qibla-Richtung", "tr": "Kıble yönü", "fa": "جهت قبله", "ur": "سمتِ قبلہ", "fr": "Direction de la qibla", "es": "Dirección de la alquibla", "it": "Direzione della qibla", "nl": "Qibla-richting", "da": "Qibla-retning", "sv": "Qibla-riktning", "ru": "Направление киблы", "bs": "Smjer kible", "id": "Arah kiblat", "ms": "Arah kiblat", "bn": "কিবলার দিক", "ps": "د قبلې لوری", "ha": "Hanyar Alƙibla", "sw": "Mwelekeo wa Qibla"};
+const RAMADANBL = {"ar": "زاوية رمضان", "ku": "گۆشەیا ڕەمەزانێ", "en": "Ramadan corner", "de": "Ramadan-Ecke", "tr": "Ramazan köşesi", "fa": "گوشهٔ رمضان", "ur": "رمضان گوشہ", "fr": "Coin du Ramadan", "es": "Rincón del Ramadán", "it": "Angolo del Ramadan", "nl": "Ramadanhoek", "da": "Ramadan-hjørne", "sv": "Ramadanhörnan", "ru": "Уголок Рамадана", "bs": "Ramazanski kutak", "id": "Pojok Ramadan", "ms": "Sudut Ramadan", "bn": "রমজান কর্নার", "ps": "د رمضان کونج", "ha": "Kusurwar Ramadan", "sw": "Kona ya Ramadhani"};
+const OCCASIONSBL = {"ar": "المناسبات الهجرية", "ku": "بۆنێن هجری", "en": "Hijri occasions", "de": "Islamische Feiertage", "tr": "Hicrî günler", "fa": "مناسبت‌های قمری", "ur": "ہجری مواقع", "fr": "Fêtes de l'Hégire", "es": "Fechas islámicas", "it": "Ricorrenze islamiche", "nl": "Islamitische feestdagen", "da": "Islamiske mærkedage", "sv": "Islamiska högtider", "ru": "Исламские даты", "bs": "Islamski datumi", "id": "Hari besar Islam", "ms": "Hari kebesaran Islam", "bn": "হিজরি উপলক্ষ", "ps": "هجري مناسبتونه", "ha": "Lokutan Hijira", "sw": "Siku za Kiislamu"};
+const AZKARBL = {"ar": "الأذكار", "ku": "زکر و دوعا", "en": "Adhkar", "de": "Adhkar", "tr": "Zikirler", "fa": "اذکار", "ur": "اذکار", "fr": "Adhkar", "es": "Adhkar", "it": "Adhkar", "nl": "Adhkar", "da": "Adhkar", "sv": "Adhkar", "ru": "Азкары", "bs": "Zikrovi", "id": "Zikir", "ms": "Zikir", "bn": "যিকির", "ps": "اذکار", "ha": "Azkar", "sw": "Adhkar"};
 const ic = k => `<svg class="ni" viewBox="0 0 24 24">${I[k]}</svg>`;
 
 const css = `
@@ -91,6 +91,8 @@ const MORE = { ar:"المزيد", ku:"زێدەتر", en:"More", de:"Mehr", tr:"D
 const QSHORT = { ar:"القبلة", ku:"قیبلە", en:"Qibla", de:"Qibla", tr:"Kıble", fa:"قبله", ur:"قبلہ", fr:"Qibla", es:"Alquibla", it:"Qibla", nl:"Qibla", da:"Qibla", sv:"Qibla", ru:"Кибла", bs:"Kibla", id:"Kiblat", ms:"Kiblat", bn:"কিবলা", ps:"قبله", ha:"Alƙibla", sw:"Qibla" };
 I.more = '<circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/>';
 const lbl = (d, lang) => d[lang] || d.en;
+// اسم قصير لزر الرئيسية في الشريط (حتى لا يُقطع على الهاتف)
+const HOMESHORT = {"ar": "الرئيسية", "ku": "سەرەکی", "en": "Home", "de": "Start", "tr": "Ana sayfa", "fa": "خانه", "ur": "ہوم", "fr": "Accueil", "es": "Inicio", "it": "Home", "nl": "Home", "da": "Forside", "sv": "Start", "ru": "Главная", "bs": "Početna", "id": "Beranda", "ms": "Utama", "bn": "হোম", "ps": "کور", "ha": "Gida", "sw": "Mwanzo"};
 // أسماء قصيرة لأزرار الشريط في الحاسوب (القائمة في الهاتف تبقى بالأسماء الكاملة)
 const SHORT = { ar:{countries:"البلدان",hijri:"التاريخ",zakat:"الزكاة",azkar:"الأذكار",ramadan:"رمضان",occasions:"المناسبات"},
   ku:{countries:"وەلات",hijri:"بەروار",zakat:"زەکات",azkar:"زکر",ramadan:"ڕەمەزان",occasions:"بۆنە"},
@@ -108,7 +110,7 @@ function bar(lang, cur){
   const m = (href, k, label) => `<a href="${href}">${ic(k)}<span>${esc(label)}</span></a>`;
   const tools = [["countries","globe",t.allCountries],["hijri","cal",lbl(CALLBL,lang)],["zakat","zakat",lbl(ZAKATBL,lang)],["azkar","azkar",lbl(AZKARBL,lang)],["ramadan","ramadan",lbl(RAMADANBL,lang)],["occasions","occasions",lbl(OCCASIONSBL,lang)]];
   return `<nav class="gbar">
-${b(`/?lang=${lang}`, "home", t.home, " gbhome")}${b(`/${lang}/qibla`, "qibla", QSHORT[lang] || t.qibla, " wide")}
+${b(`/?lang=${lang}`, "home", HOMESHORT[lang] || t.home, " gbhome")}${b(`/${lang}/qibla`, "qibla", QSHORT[lang] || t.qibla, " wide")}
 ${tools.map(([p, k, l]) => b(`/${lang}/${p}`, k, (SHORT[lang] && SHORT[lang][p]) || l, " wide").replace(cur === p ? 'class="gb wide"' : "@@", 'class="gb wide on"')).join("")}
 <a class="gb wide" href="/?lang=${lang}&settings=1">${ic("gear")}<span>${esc(t.settings)}</span></a>
 <details class="gbmore navm"><summary class="gb">${ic("more")}<span>${esc(MORE[lang] || MORE.en)}</span></summary><div class="menu">
