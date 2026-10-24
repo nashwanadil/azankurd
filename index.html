@@ -279,11 +279,17 @@ applyTheme();
   .aclist[hidden]{display:none}
   .aclist button{display:block;width:100%;text-align:start;background:none;border:0;color:var(--text);font-family:inherit;font-size:.9rem;padding:7px 10px;border-radius:8px;cursor:pointer;line-height:1.5}
   .aclist button small{color:var(--muted);font-size:.78rem}
+  .aclist .achead{color:var(--muted);font-size:.8rem;padding:6px 10px 2px}
+  .aclist.didyou{position:static;margin-top:6px;box-shadow:none}
   .aclist button:hover,.aclist button.hl{background:var(--hover)}
   .mainstatus{text-align:center}
   .swatches{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
   .sw{display:flex;align-items:center;gap:10px;min-height:56px;padding:10px 12px;border-radius:14px;border:1.5px solid var(--line);background:var(--inner);color:var(--text);font-family:inherit;font-size:.86rem;font-weight:600;line-height:1.3;cursor:pointer;text-align:start}
   .sw .dots{display:flex;flex:none}
+  .swrest{grid-column:1/-1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .swrest[hidden]{display:none}
+  .sw.more .chev{width:16px;height:16px;flex:none;stroke:var(--muted);fill:none;stroke-width:2;transition:transform .2s}
+  .sw.more[aria-expanded=true] .chev{transform:rotate(180deg)}
   .sw .dots i{width:22px;height:22px;border-radius:50%;border:2px solid var(--card);box-shadow:0 0 0 1px var(--line)}
   .sw .dots i+i{margin-inline-start:-8px}
   .sw .nm{flex:1;min-width:0;overflow-wrap:anywhere}
@@ -459,10 +465,7 @@ applyTheme();
       <details class="fold">
         <summary><span data-i="methodLabel"></span><svg class="chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></summary>
         <select id="methodSelect" aria-label="method"></select>
-      </details>
-      <details class="fold">
-        <summary><span data-i="asrLabel"></span><svg class="chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></summary>
-        <select id="asrSelect" aria-label="asr"></select>
+        <div class="adv"><label data-i="asrLabel"></label><div class="chips" id="asrChips"></div></div>
       </details>
     </div>
     <div class="field">
@@ -1105,6 +1108,23 @@ async function byCoords(lat, lng){
   }
 }
 
+// «هل تقصد…؟» حين لا نجد الاسم اللاتيني كما كُتب (Dohuk ← Duhok)
+const DIDYOU = { ar:"لم نجد هذه المدينة. هل تقصد:", ku:"ئەڤ باژێرە نەهاتە دیتن. مەبەستا تە ئەڤەیە:", en:"We couldn't find this city. Did you mean:",
+  de:"Diese Stadt wurde nicht gefunden. Meinten Sie:", tr:"Bu şehir bulunamadı. Şunu mu demek istediniz:", fa:"این شهر پیدا نشد. منظورتان این است:",
+  fr:"Ville introuvable. Vouliez-vous dire :", es:"No encontramos esta ciudad. ¿Quisiste decir:", it:"Città non trovata. Forse cercavi:", nl:"Deze stad is niet gevonden. Bedoelde je:",
+  ru:"Город не найден. Возможно, вы имели в виду:", ur:"یہ شہر نہیں ملا۔ کیا آپ کا مطلب ہے:", id:"Kota tidak ditemukan. Maksud Anda:", ms:"Bandar tidak dijumpai. Adakah maksud anda:" };
+async function didYouMean(text){
+  if(!/[a-z]/i.test(text)) return [];
+  try{
+    let tz = ""; try{ tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ""; }catch(e){}
+    const j = await (await fetch(`/api/find?fz=1&q=${encodeURIComponent(text.trim())}&lang=${lang}&tz=${encodeURIComponent(tz)}`)).json();
+    let dn = null; try{ dn = new Intl.DisplayNames([lang === "ku" ? "ar" : lang], {type:"region"}); }catch(e){}
+    return j.map(c => ({ type:"coords", lat:Math.round(c.lat*100)/100, lng:Math.round(c.lng*100)/100,
+      name:c.local || c.name, admin:c.local ? c.name : "", country:fixCountry(c.cc, dn ? (dn.of(c.cc) || c.cc) : c.cc) }));
+  }catch(e){ return []; }
+}
+const placeBtn = p => `${p.name.replace(/</g,"&lt;")}${p.admin ? " <span dir=\"ltr\">" + p.admin.replace(/</g,"&lt;") + "</span>" : ""}<br><small>${(p.country || "").replace(/</g,"&lt;")}</small>`;
+
 // بحث موحّد: نص أو مكان مختار من الاقتراحات
 async function runSearch(arg, statusEl){
   const t = L();
@@ -1119,6 +1139,13 @@ async function runSearch(arg, statusEl){
     return true;
   }catch(e){
     statusEl.classList.add("err"); statusEl.textContent = t.tryLatin;
+    const sug = typeof arg === "string" && !q ? await didYouMean(arg) : [];
+    if(sug.length){
+      statusEl.className = "cstatus"; statusEl.textContent = DIDYOU[lang] || DIDYOU.en;
+      const box = document.createElement("div"); box.className = "aclist didyou";
+      sug.forEach(p => { const b = document.createElement("button"); b.type = "button"; b.innerHTML = placeBtn(p); b.onclick = ()=> settingsSearch(p); box.appendChild(b); });
+      statusEl.appendChild(box);
+    }
     return false;
   }
 }
@@ -1135,7 +1162,7 @@ function attachAC(inputId, listId, onPick, onEnter){
   const inp = document.getElementById(inputId), list = document.getElementById(listId);
   let timer = null, seq = 0, hl = -1;
   list._items = [];
-  const paint = ()=> [...list.children].forEach((b,i)=> b.classList.toggle("hl", i === hl));
+  const paint = ()=> [...list.querySelectorAll("button")].forEach((b,i)=> b.classList.toggle("hl", i === hl));
   inp.addEventListener("input", ()=>{
     clearTimeout(timer);
     const v = inp.value.trim();
@@ -1144,7 +1171,15 @@ function attachAC(inputId, listId, onPick, onEnter){
       const my = ++seq, res = await geocode(v);
       if(my !== seq || inp.value.trim() !== v) return;
       list.innerHTML = ""; list._items = res; hl = -1;
-      if(!res.length){ list.hidden = true; return; }
+      if(!res.length){
+        const sug = await didYouMean(v);
+        if(my !== seq || inp.value.trim() !== v || !sug.length){ list.hidden = true; return; }
+        list._items = sug;
+        const h = document.createElement("div"); h.className = "achead"; h.textContent = DIDYOU[lang] || DIDYOU.en; list.appendChild(h);
+        sug.forEach(p=>{ const b = document.createElement("button"); b.type = "button"; b.innerHTML = placeBtn(p);
+          b.addEventListener("mousedown", e=> e.preventDefault()); b.addEventListener("click", ()=>{ hideAC(listId); inp.value = ""; onPick(p); }); list.appendChild(b); });
+        list.hidden = false; return;
+      }
       res.forEach(p=>{
         const b = document.createElement("button"); b.type = "button";
         b.innerHTML = `${p.name.replace(/</g,"&lt;")}<br><small>${[p.admin, p.country].filter(Boolean).join(L().dir === "rtl" ? "، " : ", ").replace(/</g,"&lt;")}</small>`;
@@ -1220,16 +1255,32 @@ function fillSettings(){
   Object.entries(METHODS).forEach(([id,name])=> html += `<option value="${id}">${name}</option>`);
   ms.innerHTML = html; ms.value = methodChoice;
 
-  const as = document.getElementById("asrSelect");
-  as.innerHTML = `<option value="auto">${t.auto}</option><option value="0">${t.standard}</option><option value="1">${t.hanafi}</option>`;
-  as.value = asrChoice;
+  // حساب العصر داخل طريقة الحساب: لا شيء مؤشَّر (تلقائي) حتى يختار الزائر، والضغط مرة ثانية يلغي الاختيار
+  const ac = document.getElementById("asrChips"); ac.innerHTML = "";
+  [["0", t.standard], ["1", t.hanafi]].forEach(([v, label])=>{
+    const b = document.createElement("button"); b.type = "button"; b.textContent = label;
+    b.setAttribute("aria-pressed", asrChoice === v ? "true" : "false");
+    b.onclick = ()=>{ asrChoice = asrChoice === v ? "auto" : v; store.set("asr", asrChoice); fillSettings(); refetch(); };
+    ac.appendChild(b);
+  });
 
   document.querySelectorAll(".seg button[data-fmt]").forEach(b=> b.setAttribute("aria-pressed", b.dataset.fmt === timeFmt ? "true" : "false"));
   fillAdvanced();
   const mode = store.get("mode","light"), theme = store.get("theme","earth");
   document.querySelectorAll(".seg button[data-mode]").forEach(b=> b.setAttribute("aria-pressed", b.dataset.mode === mode ? "true" : "false"));
   const sw = document.getElementById("swatches"); sw.innerHTML = "";
-  THEMES.forEach((th,i)=>{
+  // اللون المختار (العنابي افتراضيًا) أولًا، وبجانبه «المزيد» يكشف بقية الألوان عند مرور المؤشر أو الضغط
+  const MORE = { ar:"المزيد", ku:"زێدەتر", en:"More", de:"Mehr", tr:"Daha fazla", fa:"بیشتر", ur:"مزید", fr:"Plus", es:"Más", it:"Altri", nl:"Meer", da:"Flere", sv:"Fler", ru:"Ещё", bs:"Više", id:"Lainnya", ms:"Lagi", bn:"আরও", ps:"نور", ha:"Ƙari", sw:"Zaidi" };
+  const order = THEMES.slice().sort((a, b) => (b.id === theme) - (a.id === theme));
+  const rest = document.createElement("div"); rest.className = "swrest"; rest.hidden = !sw._open;
+  const more = document.createElement("button"); more.type = "button"; more.className = "sw more";
+  more.innerHTML = `<span class="dots">${THEMES.filter(x => x.id !== theme).slice(0, 3).map(x => `<i style="background:${x.btn}"></i>`).join("")}</span><span class="nm"></span><svg class="chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>`;
+  more.querySelector(".nm").textContent = MORE[lang] || MORE.en;
+  more.setAttribute("aria-expanded", sw._open ? "true" : "false");
+  const reveal = open => { sw._open = open; rest.hidden = !open; more.setAttribute("aria-expanded", open ? "true" : "false"); };
+  more.onclick = ()=> reveal(rest.hidden);
+  more.onmouseenter = ()=> reveal(true);
+  order.forEach((th,i)=>{
     const v = themeVars(th, mode), b = document.createElement("button");
     b.type = "button"; b.className = "sw";
     const nm = (t.themes && t.themes[th.id]) || `${t.color} ${i+1}`;
@@ -1238,7 +1289,7 @@ function fillSettings(){
     b.setAttribute("aria-label", nm);
     b.setAttribute("aria-pressed", th.id === theme ? "true" : "false");
     b.onclick = ()=>{ store.set("theme", th.id); applyTheme(); fillSettings(); };
-    sw.appendChild(b);
+    if(i === 0){ sw.appendChild(b); sw.appendChild(more); sw.appendChild(rest); } else rest.appendChild(b);
   });
 }
 function refetch(){ if(lastQuery) getTimes(lastQuery).catch(()=>{}); }
@@ -1307,9 +1358,7 @@ attachAC("setCityInput", "acSet", p => settingsSearch(p), ()=> settingsSearch())
 document.getElementById("methodSelect").addEventListener("change", e=>{
   methodChoice = e.target.value; store.set("method", methodChoice); refetch();
 });
-document.getElementById("asrSelect").addEventListener("change", e=>{
-  asrChoice = e.target.value; store.set("asr", asrChoice); refetch();
-});
+
 document.querySelectorAll(".seg button[data-mode]").forEach(b=> b.addEventListener("click", ()=>{
   store.set("mode", b.dataset.mode); applyTheme(); fillSettings();
 }));
