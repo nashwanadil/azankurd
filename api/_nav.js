@@ -49,7 +49,9 @@ const css = `
   /* الهاتف: الشعار، الرئيسية، اللغة، المزيد في سطر واحد أعلى الصفحة */
   .top{display:grid;grid-template-columns:auto repeat(3,minmax(0,1fr));gap:8px;align-items:center}
   .top > .gbar,.top > .tr{display:contents}
-  .top > .brandmini{order:0;font-size:0;gap:0}
+  html .top > .brandmini{order:0;font-size:0!important;gap:0}
+  html[dir=ltr] .gb{font-size:.8rem;gap:5px}
+  .gb svg{width:16px;height:16px}
   .gb.gbhome{order:1}
   .top .langs{order:2;min-width:0}
   .top .langs summary{width:100%;justify-content:center;box-sizing:border-box;height:40px}
