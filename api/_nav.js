@@ -30,6 +30,24 @@ const AZKARBL = { ar:"الأذكار", ku:"زکر و دوعا", en:"Adhkar" };
 const ic = k => `<svg class="ni" viewBox="0 0 24 24">${I[k]}</svg>`;
 
 const css = `
+.gbar{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:2px 0 14px}
+.gb{box-sizing:border-box;height:40px;line-height:1.3;display:inline-flex;align-items:center;justify-content:center;gap:7px;border:1.5px solid var(--gold);color:var(--gold);background:var(--card);border-radius:999px;padding:7px 13px;font-family:inherit;font-size:.88rem;font-weight:700;white-space:nowrap;text-decoration:none;cursor:pointer;list-style:none}
+.gb::-webkit-details-marker{display:none}
+.gb:hover{background:var(--hover)}
+.gb svg{width:17px;height:17px;flex:none;stroke:var(--gold);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.gb.on{background:var(--green);border-color:var(--green);color:#fff}
+.gb.on svg{stroke:#f3d58a}
+.gbmore{position:relative;display:none}
+.gbmore .menu{inset-inline-start:auto!important;inset-inline-end:0!important}
+.gbmore > summary.gb{width:100%;height:auto;border-radius:999px;background:var(--card);border:1.5px solid var(--gold);display:flex}
+.gbmore .menu a{color:var(--gold);font-weight:600}
+@media (max-width:760px){
+  .gbar{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+  .gb{width:100%;padding:8px 6px;min-width:0}
+  .gb span{overflow:hidden;text-overflow:ellipsis}
+  .gb.wide{display:none}
+  .gbmore{display:block}
+}
 .tr{display:flex;align-items:center;gap:8px}
 .navm{position:relative}
 .navm summary{list-style:none;display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;background:var(--card);border:1px solid var(--gold);border-radius:999px;cursor:pointer}
@@ -54,25 +72,38 @@ const css = `
 @media (max-width:420px){ .setpill span{display:none} .setpill{padding:0;width:34px;height:34px;justify-content:center} .brandmini{font-size:1.35rem} }
 .navm .ni{width:17px;height:17px;flex:none;stroke:var(--gold);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}`;
 
+const MORE = { ar:"المزيد", ku:"زێدەتر", en:"More", de:"Mehr", tr:"Daha fazla", fa:"بیشتر", ur:"مزید", fr:"Plus", es:"Más", it:"Altro", nl:"Meer", da:"Mere", sv:"Mer", ru:"Ещё", bs:"Više", id:"Lainnya", ms:"Lagi", bn:"আরও", ps:"نور", ha:"Ƙari", sw:"Zaidi" };
+const QSHORT = { ar:"القبلة", ku:"قیبلە", en:"Qibla", de:"Qibla", tr:"Kıble", fa:"قبله", ur:"قبلہ", fr:"Qibla", es:"Alquibla", it:"Qibla", nl:"Qibla", da:"Qibla", sv:"Qibla", ru:"Кибла", bs:"Kibla", id:"Kiblat", ms:"Kiblat", bn:"কিবলা", ps:"قبله", ha:"Alƙibla", sw:"Qibla" };
+I.more = '<circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/>';
+const lbl = (d, lang) => d[lang] || d.en;
+// أسماء قصيرة لأزرار الشريط في الحاسوب (القائمة في الهاتف تبقى بالأسماء الكاملة)
+const SHORT = { ar:{countries:"البلدان",hijri:"التاريخ",zakat:"الزكاة",azkar:"الأذكار",ramadan:"رمضان",occasions:"المناسبات"},
+  ku:{countries:"وەلات",hijri:"بەروار",zakat:"زەکات",azkar:"زکر",ramadan:"ڕەمەزان",occasions:"بۆنە"},
+  en:{countries:"Countries",hijri:"Dates",zakat:"Zakat",azkar:"Adhkar",ramadan:"Ramadan",occasions:"Occasions"} };
+
+// بداية شريط المسار: «الرئيسية»
 function html(lang){
+  return `<a href="/?lang=${lang}">${esc(T[lang].home)}</a>`;
+}
+
+// الشريط الأفقي: الرئيسية والقبلة دائمًا؛ في الحاسوب بقية الأدوات والإعدادات، وفي الهاتف زر «المزيد» يفتح القائمة
+function bar(lang, cur){
   const t = T[lang], x = INFO[lang];
-  return `<details class="navm"><summary aria-label="${esc(t.home)}">${ic("menu").replace('class="ni"', "")}</summary><div class="menu">
-<a href="/?lang=${lang}">${ic("home")}<span>${esc(t.home)}</span></a>
-<a href="/${lang}/countries">${ic("globe")}<span>${esc(t.allCountries)}</span></a>
-<a class="mine" data-k="country" hidden>${ic("flag")}<span></span></a>
-<a class="mine" data-k="city" hidden>${ic("pin")}<span></span></a>
+  const b = (href, k, label, cls = "") => `<a class="gb${cls}${cur === k ? " on" : ""}" href="${href}">${ic(k)}<span>${esc(label)}</span></a>`;
+  const m = (href, k, label) => `<a href="${href}">${ic(k)}<span>${esc(label)}</span></a>`;
+  const tools = [["countries","globe",t.allCountries],["hijri","cal",lbl(CALLBL,lang)],["zakat","zakat",lbl(ZAKATBL,lang)],["azkar","azkar",lbl(AZKARBL,lang)],["ramadan","ramadan",lbl(RAMADANBL,lang)],["occasions","occasions",lbl(OCCASIONSBL,lang)]];
+  return `<nav class="gbar">
+${b(`/?lang=${lang}`, "home", t.home)}${b(`/${lang}/qibla`, "qibla", QSHORT[lang] || t.qibla)}
+${tools.map(([p, k, l]) => b(`/${lang}/${p}`, k, (SHORT[lang] && SHORT[lang][p]) || l, " wide").replace(cur === p ? 'class="gb wide"' : "@@", 'class="gb wide on"')).join("")}
+<a class="gb wide" href="/?lang=${lang}&settings=1">${ic("gear")}<span>${esc(t.settings)}</span></a>
+<details class="gbmore navm"><summary class="gb">${ic("more")}<span>${esc(MORE[lang] || MORE.en)}</span></summary><div class="menu">
+${tools.map(([p, k, l]) => m(`/${lang}/${p}`, k, l)).join("\n")}
+${m(`/?lang=${lang}&settings=1`, "gear", t.settings)}
 <hr>
-<a href="/${lang}/hijri">${ic("cal")}<span>${esc(CALLBL[lang] || CALLBL.en)}</span></a>
-<a href="/${lang}/zakat">${ic("zakat")}<span>${esc(ZAKATBL[lang] || ZAKATBL.en)}</span></a>
-<a href="/${lang}/azkar">${ic("azkar")}<span>${esc(AZKARBL[lang] || AZKARBL.en)}</span></a>
-<a href="/${lang}/qibla">${ic("qibla")}<span>${esc(QIBLABL[lang] || QIBLABL.en)}</span></a>
-<a href="/${lang}/ramadan">${ic("ramadan")}<span>${esc(RAMADANBL[lang] || RAMADANBL.en)}</span></a>
-<a href="/${lang}/occasions">${ic("occasions")}<span>${esc(OCCASIONSBL[lang] || OCCASIONSBL.en)}</span></a>
-<hr>
-<a href="/${lang}/about">${ic("about")}<span>${esc(x.cAbout)}</span></a>
-<a href="/${lang}/privacy">${ic("privacy")}<span>${esc(x.cPrivacy)}</span></a>
-<a href="/${lang}/contact">${ic("contact")}<span>${esc(x.cContact)}</span></a>
-</div></details>`;
+${m(`/${lang}/about`, "about", x.cAbout)}
+${m(`/${lang}/privacy`, "privacy", x.cPrivacy)}
+${m(`/${lang}/contact`, "contact", x.cContact)}
+</div></details></nav>`;
 }
 
 // زر الإعدادات: يفتح الإعدادات في الصفحة الرئيسية
@@ -87,7 +118,7 @@ function js(lang){
   try{
     var p=JSON.parse(localStorage.getItem("myPlace")||"null");
     if(p && p.slug){
-      var c=document.querySelector('.navm .mine[data-k="city"]'); c.href="/"+L+"/"+p.slug; c.querySelector("span").textContent=p.name||p.slug; c.hidden=false;
+      var c=document.querySelector('.navm .mine[data-k="city"]'); if(!c) throw 0; c.href="/"+L+"/"+p.slug; c.querySelector("span").textContent=p.name||p.slug; c.hidden=false;
       if(p.cc){
         var n=p.cc; try{ var dn=new Intl.DisplayNames([L==="ku"?"ckb":L, L==="ku"?"ar":"en"],{type:"region"}); n=(p.cc==="PS"&&PS[L])||dn.of(p.cc)||p.cc; }catch(e){}
         var k=document.querySelector('.navm .mine[data-k="country"]'); k.href="/"+L+"/country/"+p.cc.toLowerCase(); k.querySelector("span").textContent=n; k.hidden=false;
@@ -100,4 +131,4 @@ function js(lang){
 })();`;
 }
 
-module.exports = { css, html, js, settings };
+module.exports = { css, html, bar, js, settings };
