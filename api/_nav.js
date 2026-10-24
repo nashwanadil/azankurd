@@ -63,7 +63,7 @@ function html(lang){
 <a href="/${lang}/about">${ic("about")}<span>${esc(x.cAbout)}</span></a>
 <a href="/${lang}/privacy">${ic("privacy")}<span>${esc(x.cPrivacy)}</span></a>
 <a href="/${lang}/contact">${ic("contact")}<span>${esc(x.cContact)}</span></a>
-</div></details><a class="navcal" href="/${lang}/hijri" aria-label="${esc(CALLBL[lang] || CALLBL.en)}" title="${esc(CALLBL[lang] || CALLBL.en)}"><svg viewBox="0 0 24 24">${I.cal}</svg></a>`;
+</div></details>`;
 }
 
 // زر الإعدادات: يفتح الإعدادات في الصفحة الرئيسية
