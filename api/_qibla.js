@@ -24,19 +24,20 @@ const X = {
 
 const CSS = `
 .qb{text-align:center}
-.qb .place{color:var(--muted);margin:0 0 6px}
-.qb .deg{font-size:2.6rem;font-weight:800;color:var(--gold);direction:ltr;font-variant-numeric:tabular-nums;line-height:1.2}
+.qb h1{margin-bottom:2px}
+.qb .place{color:var(--muted);margin:0 0 4px}
+.qb .deg{font-size:2.3rem;font-weight:800;color:var(--gold);direction:ltr;font-variant-numeric:tabular-nums;line-height:1.2}
 .qb .deg small{display:block;font-size:.85rem;font-weight:400;color:var(--muted)}
 .qb .way{color:var(--title);font-weight:600;margin:4px 0 0}
-.qb .dial{position:relative;width:min(320px,82vw);aspect-ratio:1;margin:20px auto 14px;border-radius:50%;box-shadow:0 10px 30px rgba(60,30,20,.28),0 0 0 0 rgba(46,157,91,0);transition:box-shadow .25s}
+.qb .dial{position:relative;width:min(320px,74vw,38svh);aspect-ratio:1;margin:16px auto 10px;border-radius:50%;box-shadow:0 10px 30px rgba(60,30,20,.28),0 0 0 0 rgba(46,157,91,0);transition:box-shadow .25s}
 .qb .dial.ok{box-shadow:0 10px 30px rgba(60,30,20,.28),0 0 0 6px rgba(46,157,91,.45)}
 .qb .dial > svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
 .qb .lubber{position:absolute;top:-10px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:8px solid transparent;border-right:8px solid transparent;border-top:12px solid var(--green);filter:drop-shadow(0 1px 1px rgba(0,0,0,.3))}
 .qb .center{position:absolute;left:50%;top:50%;width:52%;transform:translate(-50%,-50%);display:flex;align-items:center;justify-content:center}
 .qb .center .k{width:46%;display:block;filter:drop-shadow(0 3px 4px rgba(0,0,0,.35))}
 .qb .center .txt{font-size:.78rem;line-height:1.7;color:var(--title);font-weight:600}
-.qb .btns{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
-.qb .go{background:var(--green);color:#fff;border:1px solid var(--green);border-radius:10px;padding:10px 16px;font-family:inherit;font-size:.95rem;font-weight:600;cursor:pointer}
+.qb .btns{display:flex;gap:8px;justify-content:center}
+.qb .go{flex:0 1 auto;min-width:0;background:var(--green);color:#fff;border:1px solid var(--green);border-radius:10px;padding:9px 12px;font-family:inherit;font-size:.88rem;line-height:1.35;font-weight:600;cursor:pointer}
 .qb .go.ghost{background:transparent;color:var(--text);border-color:var(--line)}
 .qb .msg{min-height:1.6em;margin:12px 0 0;font-weight:600}
 .qb .msg.ok{color:#2e9d5b}

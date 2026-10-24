@@ -38,8 +38,8 @@ const css = `
 .navm summary svg{width:19px;height:19px;stroke:var(--gold);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .navcal{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;background:var(--card);border:1px solid var(--gold);border-radius:999px;margin-inline-start:6px;flex:none}
 .navcal svg{width:19px;height:19px;stroke:var(--gold);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-.navm .menu{position:absolute;inset-inline-start:0;top:calc(100% + 8px);z-index:21;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:6px;width:230px;max-height:70vh;overflow:auto;box-shadow:0 14px 40px rgba(0,0,0,.2)}
-.navm .menu a{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:9px;font-size:.92rem}
+.navm .menu{position:absolute;inset-inline-start:0;top:calc(100% + 8px);z-index:21;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:6px;width:230px;max-height:70vh;max-height:calc(100svh - 120px);overflow:auto;box-shadow:0 14px 40px rgba(0,0,0,.2)}
+.navm .menu a{display:flex;align-items:center;gap:10px;padding:7px 12px;border-radius:9px;font-size:.92rem}
 .navm .menu a:hover{background:var(--hover)}
 .navm .menu a[hidden]{display:none}
 .navm .menu hr{border:0;border-top:1px solid var(--line);margin:5px 6px}
