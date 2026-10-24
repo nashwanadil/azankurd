@@ -96,7 +96,7 @@ ${alts}
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#2a1d17">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@700&family=Noto+Kufi+Arabic:wght@400;600;700&family=Noto+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Amiri:wght@700&family=Noto+Kufi+Arabic:wght@400;600;700&family=Noto+Sans:wght@400;600;700&display=swap" onload="this.onload=null;this.rel='stylesheet'"><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:wght@700&family=Noto+Kufi+Arabic:wght@400;600;700&family=Noto+Sans:wght@400;600;700&display=swap"></noscript>
 ${ld ? `<script type="application/ld+json">${JSON.stringify(ld).replace(/</g, "\\u003c")}</script>` : ""}
 <script>${THEME_JS}</script>
 <style>
@@ -148,7 +148,6 @@ ${css}
 <script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
 <script defer src="/_vercel/insights/script.js"></script>
 <script type="speculationrules">${JSON.stringify({ prerender:[{ source:"list", urls:[`/?lang=${lang}&settings=1`], eagerness:"moderate" }] })}</script>
-<link rel="prefetch" href="/?lang=${lang}&settings=1">
 </head>
 <body>
 <div class="wrap">
