@@ -89,11 +89,13 @@ async function countryPage(res, lang, cc){
   send(res, page({ lang, title, desc, path, ld, body, css:CSS_COUNTRY }));
 }
 
+// لا يظهر في قائمة البلدان، وتبقى صفحته ومدنه والبحث عنها كما هي
+const HIDE_IN_LIST = ["IL"];
 const TOP_RANK = cc => REGIONS[cc] ? 2 : cc === "IQ" ? 1 : 0;
 function allPage(res, lang){
   const t = T[lang];
   const coll = new Intl.Collator(lang === "ku" ? "ckb" : lang);
-  const list = Object.keys(COUNT).map(cc => ({ cc, name:countryName(cc, lang), en:countryName(cc, "en"), n:COUNT[cc] }))
+  const list = Object.keys(COUNT).filter(cc => !HIDE_IN_LIST.includes(cc)).map(cc => ({ cc, name:countryName(cc, lang), en:countryName(cc, "en"), n:COUNT[cc] }))
     // إقليم كردستان أولًا، ثم العراق، ثم البلدان بالترتيب الأبجدي
     .sort((a, b) => (TOP_RANK(b.cc) - TOP_RANK(a.cc)) || coll.compare(a.name, b.name));
   const title = `${t.allTitle} | ${t.logo}`;
