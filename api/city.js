@@ -156,9 +156,10 @@ module.exports = async (req, res) => {
   const alts = LANGS.map(l => `<link rel="alternate" hreflang="${l}" href="${SITE}/${l}/${city.slug}">`).join("\n") + `\n<link rel="alternate" hreflang="x-default" href="${SITE}/en/${city.slug}">`;
 
   const html = `<!DOCTYPE html>
-<html lang="${lang}" dir="${t.dir}">
+<html lang="${lang}" dir="${t.dir}" translate="no">
 <head>
 <meta charset="UTF-8">
+<meta name="google" content="notranslate">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(desc)}">
@@ -348,7 +349,8 @@ footer a{color:var(--gold)}
 <div class="wrap">
   <div class="top">
     <a class="brandmini" href="/?lang=${lang}"><img src="/icon-192.png" alt="" width="38" height="38">${esc(t.logo)}</a>
-    <div class="tr">${NAV.settings(lang)}<details class="langs"><summary><img class="flag" alt="" src="${flagSrc(lang)}">${esc(t.label)}<svg class="ic chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></summary><div class="menu">${langMenu}</div></details></div>
+    <div class="tr"><details class="langs"><summary aria-label="${esc(t.label)}"><img class="flag" alt="" src="${flagSrc(lang)}"><span class="lname">${esc(t.label)}</span><svg class="ic chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></summary><div class="menu">${langMenu}</div></details></div>
+    ${NAV.bar(lang, "")}
   </div>
   <nav class="crumbs">${NAV.html(lang)}<span>›</span><a href="/${lang}/countries">${esc(t.allCountries)}</a><span>›</span><a href="/${lang}/country/${city.cc.toLowerCase()}">${esc(country)}</a><span>›</span><b>${esc(cityName)}</b></nav>
 

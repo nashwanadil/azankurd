@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar" dir="rtl" translate="no">
 <head>
 <meta charset="UTF-8">
+<meta name="google" content="notranslate">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>أذان كُرد | مواقيت الصلاة والأذان في مدينتك – AzanKurd</title>
 <meta name="description" content="مواقيت الصلاة الدقيقة ونص الأذان لكل مدن العالم: الفجر والظهر والعصر والمغرب والعشاء، بـ17 لغة منها العربية والكوردية. Accurate prayer times and Adhan for every city — free.">
@@ -60,7 +61,6 @@ const THEMES = [
   {id:"emerald", h:160, s:32, accent:"#e0b860", accentL:"#8a6510", btn:"#1f7a5a"},
   {id:"night",   h:222, s:34, accent:"#e0b860", accentL:"#8a6510", btn:"#3b56b0"},
   {id:"royal",   h:255, s:28, accent:"#d9b25f", accentL:"#7d5bc4", btn:"#5a45b0"},
-  {id:"teal",    h:186, s:38, accent:"#f0c674", accentL:"#0f7c7c", btn:"#128a8a"},
   {id:"onyx",    h:30,  s:4,  accent:"#e0b860", accentL:"#8a6510", btn:"#8a6a2a"},
   {id:"rose",    h:332, s:24, accent:"#eab6ca", accentL:"#a03a6a", btn:"#a03a6a"},
   {id:"sand",    h:36,  s:38, accent:"#eeaa45", accentL:"#9a5c0c", btn:"#b5651d"},
@@ -120,16 +120,44 @@ applyTheme();
   .pill .chev{width:14px;height:14px;opacity:.7;transition:transform .2s}
   .pill[aria-expanded=true] .chev{transform:rotate(180deg)}
   .langwrap{position:relative}
-  .tl{display:flex;align-items:center;gap:8px}
+  /* الشريط الأفقي بأزرار ذهبية */
+  .topbar{max-width:980px;flex-wrap:wrap;gap:10px}
+  .gbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;order:2;flex-basis:100%;min-width:0}
+  .topbar > .langwrap{margin-inline-start:auto}
+  .gbwide{display:contents}
+  .gb{box-sizing:border-box;height:40px;line-height:1.3;display:inline-flex;align-items:center;justify-content:center;gap:7px;border:1.5px solid var(--gold);color:var(--gold);background:var(--card);border-radius:999px;padding:7px 13px;font-family:inherit;font-size:.88rem;font-weight:700;white-space:nowrap;text-decoration:none;cursor:pointer}
+  .gb:hover{background:var(--hover)}
+  .gb svg{width:17px;height:17px;flex:none;stroke:var(--gold);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  .gb.on{background:var(--green);border-color:var(--green);color:#fff}
+  .gb.on svg{stroke:#f3d58a}
+  .gbmore{display:none}
+  .gbmore .menu{inset-inline-start:auto!important;inset-inline-end:0!important}
+  .navmenu a{color:var(--gold)!important;font-weight:600}
+  @media (max-width:760px){
+    /* الهاتف: الرئيسية، اللغة، المزيد في سطر واحد أعلى الصفحة */
+    .topbar{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+    .gbar{display:contents}
+    #gbHome{order:1}
+    .topbar > .langwrap{order:2;margin:0;min-width:0}
+    #langBtn{width:100%;justify-content:center;height:40px;box-sizing:border-box;padding:0 8px;min-width:0}
+    #langName{display:none}
+    #langBtn .flag{width:25px;height:17px}
+    .gbmore{order:3;display:block}
+    .gb{width:100%;padding:8px 6px;min-width:0}
+    .gb span{overflow:hidden;text-overflow:ellipsis}
+    .gb.wide,.gbwide{display:none}
+    html[dir=ltr] .gb{font-size:.8rem;gap:5px}
+  }
+
   .pill.round{width:38px;height:38px;padding:0;justify-content:center}
   .navwrap .menu{inset-inline-end:auto;inset-inline-start:0}
-  .navmenu a{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:9px;font-size:.95rem;color:var(--text);text-decoration:none}
+  .navmenu a{display:flex;align-items:center;gap:10px;padding:7px 12px;border-radius:9px;font-size:.95rem;color:var(--text);text-decoration:none}
   .navmenu a:hover,.navmenu a:focus-visible{background:var(--hover);outline:none}
   .navmenu hr{border:0;border-top:1px solid var(--line);margin:5px 6px}
   .navmenu svg{width:17px;height:17px;flex:none;stroke:var(--gold);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
   html[data-mode=light] .menu,html[data-mode=light] .sheet{box-shadow:0 14px 40px rgba(60,40,20,.18)}
   .menu{
-    position:absolute;top:calc(100% + 8px);inset-inline-end:0;z-index:20;width:230px;max-height:62vh;overflow:auto;
+    position:absolute;top:calc(100% + 8px);inset-inline-end:0;z-index:20;width:230px;max-height:62vh;max-height:calc(100svh - 90px);overflow:auto;
     background:var(--card);border:1px solid var(--line);border-radius:14px;padding:6px;
     box-shadow:0 14px 40px rgba(0,0,0,.45)
   }
@@ -197,6 +225,14 @@ applyTheme();
   .next .sub{font-weight:700}
   .next .name{font-size:1.6rem;color:var(--title);font-weight:700}
   .next .count{font-size:3.2rem;font-variant-numeric:tabular-nums;letter-spacing:2px;direction:ltr;color:var(--gold);font-weight:800}
+  /* الهاتف: نضغط المسافات قليلًا حتى يظهر صف المواقيت الأول كاملًا */
+  @media (max-width:760px){
+    header{padding:20px 16px 18px}
+    .brand img{width:52px;height:52px}
+    .logo{font-size:2.6rem}
+    .next{margin-bottom:42px}
+    .next .count{font-size:2.9rem}
+  }
   .times{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
   .t{background:var(--inner);border:1px solid var(--line);border-radius:14px;padding:16px 6px 14px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:2px}
   .t svg{width:28px;height:28px;stroke:var(--gold);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;margin-bottom:4px;opacity:.9}
@@ -279,11 +315,17 @@ applyTheme();
   .aclist[hidden]{display:none}
   .aclist button{display:block;width:100%;text-align:start;background:none;border:0;color:var(--text);font-family:inherit;font-size:.9rem;padding:7px 10px;border-radius:8px;cursor:pointer;line-height:1.5}
   .aclist button small{color:var(--muted);font-size:.78rem}
+  .aclist .achead{color:var(--muted);font-size:.8rem;padding:6px 10px 2px}
+  .aclist.didyou{position:static;margin-top:6px;box-shadow:none}
   .aclist button:hover,.aclist button.hl{background:var(--hover)}
   .mainstatus{text-align:center}
   .swatches{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
   .sw{display:flex;align-items:center;gap:10px;min-height:56px;padding:10px 12px;border-radius:14px;border:1.5px solid var(--line);background:var(--inner);color:var(--text);font-family:inherit;font-size:.86rem;font-weight:600;line-height:1.3;cursor:pointer;text-align:start}
   .sw .dots{display:flex;flex:none}
+  .swrest{grid-column:1/-1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .swrest[hidden]{display:none}
+  .sw.more .chev{width:16px;height:16px;flex:none;stroke:var(--muted);fill:none;stroke-width:2;transition:transform .2s}
+  .sw.more[aria-expanded=true] .chev{transform:rotate(180deg)}
   .sw .dots i{width:22px;height:22px;border-radius:50%;border:2px solid var(--card);box-shadow:0 0 0 1px var(--line)}
   .sw .dots i+i{margin-inline-start:-8px}
   .sw .nm{flex:1;min-width:0;overflow-wrap:anywhere}
@@ -313,6 +355,9 @@ applyTheme();
   .seg.mini button{font-size:.82rem;padding:6px 2px}
   .sublbl{display:block;margin:12px 0 6px;color:var(--muted);font-size:.85rem}
   #advBeforeP,#advBefore{margin-bottom:4px}
+  /* الصلوات الخمس في سطر واحد حتى على الهاتف */
+  #advPrayers,#advBeforeP{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px}
+  #advPrayers button,#advBeforeP button{padding:6px 2px;font-size:.78rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
   #advBefore{margin-top:8px}
   .seg button svg.ic{width:16px;height:16px;vertical-align:-3px;margin-inline-end:4px}
   footer{text-align:center;color:var(--muted);font-size:.8rem;padding:0 16px 32px}
@@ -323,16 +368,16 @@ applyTheme();
 </head>
 <body>
 <div class="topbar">
-  <div class="tl">
-  <button class="pill" id="settingsBtn" type="button">
-    <svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 0 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 0 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 0 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 0 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
-    <span data-i="settings"></span>
-  </button>
-  <div class="langwrap navwrap">
-    <button class="pill round" id="navBtn" type="button" aria-haspopup="menu" aria-expanded="false"><svg class="ic" viewBox="0 0 24 24"><path d="M9 4L3 6v14l6-2 6 2 6-2V4l-6 2-6-2zM9 4v14M15 6v14"/></svg></button>
-    <div class="menu navmenu" id="navMenu" role="menu" hidden></div>
-  </div>
-  </div>
+  <nav class="gbar" id="gbar">
+    <a class="gb on" id="gbHome"><svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7M5 10v10h14V10"/></svg><span></span></a>
+    <a class="gb wide" id="gbQibla"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg><span></span></a>
+    <span id="gbWide" class="gbwide"></span>
+    <button class="gb wide" id="settingsBtn" type="button"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 0 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 0 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 0 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 0 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg><span data-i="settings"></span></button>
+    <div class="langwrap navwrap gbmore">
+      <button class="gb" id="navBtn" type="button" aria-haspopup="menu" aria-expanded="false"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg><span id="gbMoreT"></span></button>
+      <div class="menu navmenu" id="navMenu" role="menu" hidden></div>
+    </div>
+  </nav>
   <div class="langwrap">
     <button class="pill" id="langBtn" type="button" aria-haspopup="menu" aria-expanded="false">
       <img class="flag" id="langFlag" alt="">
@@ -456,10 +501,7 @@ applyTheme();
       <details class="fold">
         <summary><span data-i="methodLabel"></span><svg class="chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></summary>
         <select id="methodSelect" aria-label="method"></select>
-      </details>
-      <details class="fold">
-        <summary><span data-i="asrLabel"></span><svg class="chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></summary>
-        <select id="asrSelect" aria-label="asr"></select>
+        <div class="adv"><label data-i="asrLabel"></label><div class="chips" id="asrChips"></div></div>
       </details>
     </div>
     <div class="field">
@@ -779,13 +821,14 @@ function closeLangMenu(){
 function setLang(code){ lang = code; store.set("lang", code); applyLang(); }
 
 function applyLang(){
+  try{ setBar(); }catch(e){}
   const t = L();
   document.documentElement.lang = lang;
   document.documentElement.dir = t.dir;
   document.title = t.logo === "AzanKurd" ? `AzanKurd | ${t.todayTimes}` : `${t.logo} | ${t.todayTimes} – AzanKurd`;
   const md = document.querySelector('meta[name="description"]'); if(md) md.content = t.tagline + " — AzanKurd";
   document.getElementById("logo").textContent = t.logo;
-  document.getElementById("langName").textContent = t.label;
+  document.getElementById("langName").textContent = t.label; document.getElementById("langBtn").setAttribute("aria-label", t.label);
   document.getElementById("allCountriesLink").href = `/${lang}/countries`;
   document.getElementById("langFlag").src = flagSrc(lang);
   document.querySelectorAll("[data-i]").forEach(el => el.textContent = t[el.dataset.i]);
@@ -1102,6 +1145,23 @@ async function byCoords(lat, lng){
   }
 }
 
+// «هل تقصد…؟» حين لا نجد الاسم اللاتيني كما كُتب (Dohuk ← Duhok)
+const DIDYOU = { ar:"لم نجد هذه المدينة. هل تقصد:", ku:"ئەڤ باژێرە نەهاتە دیتن. مەبەستا تە ئەڤەیە:", en:"We couldn't find this city. Did you mean:",
+  de:"Diese Stadt wurde nicht gefunden. Meinten Sie:", tr:"Bu şehir bulunamadı. Şunu mu demek istediniz:", fa:"این شهر پیدا نشد. منظورتان این است:",
+  fr:"Ville introuvable. Vouliez-vous dire :", es:"No encontramos esta ciudad. ¿Quisiste decir:", it:"Città non trovata. Forse cercavi:", nl:"Deze stad is niet gevonden. Bedoelde je:",
+  ru:"Город не найден. Возможно, вы имели в виду:", ur:"یہ شہر نہیں ملا۔ کیا آپ کا مطلب ہے:", id:"Kota tidak ditemukan. Maksud Anda:", ms:"Bandar tidak dijumpai. Adakah maksud anda:" };
+async function didYouMean(text){
+  if(!/[a-z]/i.test(text)) return [];
+  try{
+    let tz = ""; try{ tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ""; }catch(e){}
+    const j = await (await fetch(`/api/find?fz=1&q=${encodeURIComponent(text.trim())}&lang=${lang}&tz=${encodeURIComponent(tz)}`)).json();
+    let dn = null; try{ dn = new Intl.DisplayNames([lang === "ku" ? "ar" : lang], {type:"region"}); }catch(e){}
+    return j.map(c => ({ type:"coords", lat:Math.round(c.lat*100)/100, lng:Math.round(c.lng*100)/100,
+      name:c.local || c.name, admin:c.local ? c.name : "", country:fixCountry(c.cc, dn ? (dn.of(c.cc) || c.cc) : c.cc) }));
+  }catch(e){ return []; }
+}
+const placeBtn = p => `${p.name.replace(/</g,"&lt;")}${p.admin ? " <span dir=\"ltr\">" + p.admin.replace(/</g,"&lt;") + "</span>" : ""}<br><small>${(p.country || "").replace(/</g,"&lt;")}</small>`;
+
 // بحث موحّد: نص أو مكان مختار من الاقتراحات
 async function runSearch(arg, statusEl){
   const t = L();
@@ -1116,6 +1176,13 @@ async function runSearch(arg, statusEl){
     return true;
   }catch(e){
     statusEl.classList.add("err"); statusEl.textContent = t.tryLatin;
+    const sug = typeof arg === "string" && !q ? await didYouMean(arg) : [];
+    if(sug.length){
+      statusEl.className = "cstatus"; statusEl.textContent = DIDYOU[lang] || DIDYOU.en;
+      const box = document.createElement("div"); box.className = "aclist didyou";
+      sug.forEach(p => { const b = document.createElement("button"); b.type = "button"; b.innerHTML = placeBtn(p); b.onclick = ()=> settingsSearch(p); box.appendChild(b); });
+      statusEl.appendChild(box);
+    }
     return false;
   }
 }
@@ -1132,7 +1199,7 @@ function attachAC(inputId, listId, onPick, onEnter){
   const inp = document.getElementById(inputId), list = document.getElementById(listId);
   let timer = null, seq = 0, hl = -1;
   list._items = [];
-  const paint = ()=> [...list.children].forEach((b,i)=> b.classList.toggle("hl", i === hl));
+  const paint = ()=> [...list.querySelectorAll("button")].forEach((b,i)=> b.classList.toggle("hl", i === hl));
   inp.addEventListener("input", ()=>{
     clearTimeout(timer);
     const v = inp.value.trim();
@@ -1141,7 +1208,15 @@ function attachAC(inputId, listId, onPick, onEnter){
       const my = ++seq, res = await geocode(v);
       if(my !== seq || inp.value.trim() !== v) return;
       list.innerHTML = ""; list._items = res; hl = -1;
-      if(!res.length){ list.hidden = true; return; }
+      if(!res.length){
+        const sug = await didYouMean(v);
+        if(my !== seq || inp.value.trim() !== v || !sug.length){ list.hidden = true; return; }
+        list._items = sug;
+        const h = document.createElement("div"); h.className = "achead"; h.textContent = DIDYOU[lang] || DIDYOU.en; list.appendChild(h);
+        sug.forEach(p=>{ const b = document.createElement("button"); b.type = "button"; b.innerHTML = placeBtn(p);
+          b.addEventListener("mousedown", e=> e.preventDefault()); b.addEventListener("click", ()=>{ hideAC(listId); inp.value = ""; onPick(p); }); list.appendChild(b); });
+        list.hidden = false; return;
+      }
       res.forEach(p=>{
         const b = document.createElement("button"); b.type = "button";
         b.innerHTML = `${p.name.replace(/</g,"&lt;")}<br><small>${[p.admin, p.country].filter(Boolean).join(L().dir === "rtl" ? "، " : ", ").replace(/</g,"&lt;")}</small>`;
@@ -1217,16 +1292,32 @@ function fillSettings(){
   Object.entries(METHODS).forEach(([id,name])=> html += `<option value="${id}">${name}</option>`);
   ms.innerHTML = html; ms.value = methodChoice;
 
-  const as = document.getElementById("asrSelect");
-  as.innerHTML = `<option value="auto">${t.auto}</option><option value="0">${t.standard}</option><option value="1">${t.hanafi}</option>`;
-  as.value = asrChoice;
+  // حساب العصر داخل طريقة الحساب: لا شيء مؤشَّر (تلقائي) حتى يختار الزائر، والضغط مرة ثانية يلغي الاختيار
+  const ac = document.getElementById("asrChips"); ac.innerHTML = "";
+  [["0", t.standard], ["1", t.hanafi]].forEach(([v, label])=>{
+    const b = document.createElement("button"); b.type = "button"; b.textContent = label;
+    b.setAttribute("aria-pressed", asrChoice === v ? "true" : "false");
+    b.onclick = ()=>{ asrChoice = asrChoice === v ? "auto" : v; store.set("asr", asrChoice); fillSettings(); refetch(); };
+    ac.appendChild(b);
+  });
 
   document.querySelectorAll(".seg button[data-fmt]").forEach(b=> b.setAttribute("aria-pressed", b.dataset.fmt === timeFmt ? "true" : "false"));
   fillAdvanced();
   const mode = store.get("mode","light"), theme = store.get("theme","earth");
   document.querySelectorAll(".seg button[data-mode]").forEach(b=> b.setAttribute("aria-pressed", b.dataset.mode === mode ? "true" : "false"));
   const sw = document.getElementById("swatches"); sw.innerHTML = "";
-  THEMES.forEach((th,i)=>{
+  // اللون المختار (العنابي افتراضيًا) أولًا، وبجانبه «المزيد» يكشف بقية الألوان عند مرور المؤشر أو الضغط
+  const MORE = { ar:"المزيد", ku:"زێدەتر", en:"More", de:"Mehr", tr:"Daha fazla", fa:"بیشتر", ur:"مزید", fr:"Plus", es:"Más", it:"Altri", nl:"Meer", da:"Flere", sv:"Fler", ru:"Ещё", bs:"Više", id:"Lainnya", ms:"Lagi", bn:"আরও", ps:"نور", ha:"Ƙari", sw:"Zaidi" };
+  const order = THEMES.slice().sort((a, b) => (b.id === theme) - (a.id === theme));
+  const rest = document.createElement("div"); rest.className = "swrest"; rest.hidden = !sw._open;
+  const more = document.createElement("button"); more.type = "button"; more.className = "sw more";
+  more.innerHTML = `<span class="dots">${THEMES.filter(x => x.id !== theme).slice(0, 3).map(x => `<i style="background:${x.btn}"></i>`).join("")}</span><span class="nm"></span><svg class="chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>`;
+  more.querySelector(".nm").textContent = MORE[lang] || MORE.en;
+  more.setAttribute("aria-expanded", sw._open ? "true" : "false");
+  const reveal = open => { sw._open = open; rest.hidden = !open; more.setAttribute("aria-expanded", open ? "true" : "false"); };
+  more.onclick = ()=> reveal(rest.hidden);
+  more.onmouseenter = ()=> reveal(true);
+  order.forEach((th,i)=>{
     const v = themeVars(th, mode), b = document.createElement("button");
     b.type = "button"; b.className = "sw";
     const nm = (t.themes && t.themes[th.id]) || `${t.color} ${i+1}`;
@@ -1235,7 +1326,7 @@ function fillSettings(){
     b.setAttribute("aria-label", nm);
     b.setAttribute("aria-pressed", th.id === theme ? "true" : "false");
     b.onclick = ()=>{ store.set("theme", th.id); applyTheme(); fillSettings(); };
-    sw.appendChild(b);
+    if(i === 0){ sw.appendChild(b); sw.appendChild(more); sw.appendChild(rest); } else rest.appendChild(b);
   });
 }
 function refetch(){ if(lastQuery) getTimes(lastQuery).catch(()=>{}); }
@@ -1304,9 +1395,7 @@ attachAC("setCityInput", "acSet", p => settingsSearch(p), ()=> settingsSearch())
 document.getElementById("methodSelect").addEventListener("change", e=>{
   methodChoice = e.target.value; store.set("method", methodChoice); refetch();
 });
-document.getElementById("asrSelect").addEventListener("change", e=>{
-  asrChoice = e.target.value; store.set("asr", asrChoice); refetch();
-});
+
 document.querySelectorAll(".seg button[data-mode]").forEach(b=> b.addEventListener("click", ()=>{
   store.set("mode", b.dataset.mode); applyTheme(); fillSettings();
 }));
@@ -1418,6 +1507,7 @@ function fillAdvanced(){
 
 /* ---------- قائمة التنقل ---------- */
 const NAVIC = {
+  gear:'<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/>',
   home:'<path d="M3 11l9-7 9 7M5 10v10h14V10"/>', globe:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',
   flag:'<path d="M5 21V4M5 4h11l-2 4 2 4H5"/>', pin:'<path d="M12 22s7-6.2 7-12a7 7 0 0 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/>',
   about:'<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/>', privacy:'<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/>',
@@ -1429,25 +1519,38 @@ const NAVIC = {
   zakat:'<circle cx="12" cy="12" r="9"/><path d="M14.5 9a2.5 2.5 0 0 0-2.5-1.5c-1.4 0-2.5.8-2.5 2s1.1 1.7 2.5 2 2.5.8 2.5 2-1.1 2-2.5 2a2.5 2.5 0 0 1-2.5-1.5M12 6v1.5M12 16.5V18"/>',
   azkar:'<circle cx="12" cy="5" r="1.6"/><circle cx="17.5" cy="8" r="1.6"/><circle cx="19" cy="13.5" r="1.6"/><circle cx="6.5" cy="8" r="1.6"/><circle cx="5" cy="13.5" r="1.6"/><circle cx="8" cy="18.5" r="1.6"/><circle cx="16" cy="18.5" r="1.6"/><path d="M12 20v2"/>'
 };
-const TOOLS_LBL = { cal:{ar:"تحويل التاريخ",ku:"گوهۆڕینا بەروارێ",en:"Date converter"}, zakat:{ar:"حاسبة الزكاة",ku:"هژمارتنا زەکاتێ",en:"Zakat calculator"}, azkar:{ar:"الأذكار",ku:"زکر و دوعا",en:"Adhkar"}, qibla:{ar: "اتجاه القبلة", ku: "ئاراستەیا قیبلێ", en: "Qibla direction"}, ramadan:{ar: "زاوية رمضان", ku: "گۆشەیا ڕەمەزانێ", en: "Ramadan corner"}, occasions:{ar: "المناسبات الهجرية", ku: "بۆنێن هجری", en: "Hijri occasions"} };
+const TOOLS_LBL = {"cal": {"ar": "تحويل التاريخ", "ku": "گوهۆڕینا بەروارێ", "en": "Date converter", "de": "Datumsrechner", "tr": "Tarih çevirici", "fa": "تبدیل تاریخ", "ur": "تاریخ کی تبدیلی", "fr": "Convertisseur de dates", "es": "Conversor de fechas", "it": "Convertitore di date", "nl": "Datumomrekenaar", "da": "Datoomregner", "sv": "Datumomvandlare", "ru": "Конвертер дат", "bs": "Pretvarač datuma", "id": "Konversi tanggal", "ms": "Penukar tarikh", "bn": "তারিখ রূপান্তর", "ps": "د نېټې اړونه", "ha": "Sauya kwanan wata", "sw": "Kubadili tarehe"}, "zakat": {"ar": "حاسبة الزكاة", "ku": "هژمارتنا زەکاتێ", "en": "Zakat calculator", "de": "Zakat-Rechner", "tr": "Zekât hesaplayıcı", "fa": "محاسبه‌گر زکات", "ur": "زکوٰۃ کیلکولیٹر", "fr": "Calcul de la zakat", "es": "Calculadora de zakat", "it": "Calcolo della zakat", "nl": "Zakat-calculator", "da": "Zakat-beregner", "sv": "Zakat-kalkylator", "ru": "Калькулятор закята", "bs": "Kalkulator zekata", "id": "Kalkulator zakat", "ms": "Kalkulator zakat", "bn": "যাকাত ক্যালকুলেটর", "ps": "د زکات حساب", "ha": "Lissafin zakka", "sw": "Kikokotoo cha zaka"}, "azkar": {"ar": "الأذكار", "ku": "زکر و دوعا", "en": "Adhkar", "de": "Adhkar", "tr": "Zikirler", "fa": "اذکار", "ur": "اذکار", "fr": "Adhkar", "es": "Adhkar", "it": "Adhkar", "nl": "Adhkar", "da": "Adhkar", "sv": "Adhkar", "ru": "Азкары", "bs": "Zikrovi", "id": "Zikir", "ms": "Zikir", "bn": "যিকির", "ps": "اذکار", "ha": "Azkar", "sw": "Adhkar"}, "qibla": {"ar": "اتجاه القبلة", "ku": "ئاراستەیا قیبلێ", "en": "Qibla direction", "de": "Qibla-Richtung", "tr": "Kıble yönü", "fa": "جهت قبله", "ur": "سمتِ قبلہ", "fr": "Direction de la qibla", "es": "Dirección de la alquibla", "it": "Direzione della qibla", "nl": "Qibla-richting", "da": "Qibla-retning", "sv": "Qibla-riktning", "ru": "Направление киблы", "bs": "Smjer kible", "id": "Arah kiblat", "ms": "Arah kiblat", "bn": "কিবলার দিক", "ps": "د قبلې لوری", "ha": "Hanyar Alƙibla", "sw": "Mwelekeo wa Qibla"}, "ramadan": {"ar": "زاوية رمضان", "ku": "گۆشەیا ڕەمەزانێ", "en": "Ramadan corner", "de": "Ramadan-Ecke", "tr": "Ramazan köşesi", "fa": "گوشهٔ رمضان", "ur": "رمضان گوشہ", "fr": "Coin du Ramadan", "es": "Rincón del Ramadán", "it": "Angolo del Ramadan", "nl": "Ramadanhoek", "da": "Ramadan-hjørne", "sv": "Ramadanhörnan", "ru": "Уголок Рамадана", "bs": "Ramazanski kutak", "id": "Pojok Ramadan", "ms": "Sudut Ramadan", "bn": "রমজান কর্নার", "ps": "د رمضان کونج", "ha": "Kusurwar Ramadan", "sw": "Kona ya Ramadhani"}, "occasions": {"ar": "المناسبات الهجرية", "ku": "بۆنێن هجری", "en": "Hijri occasions", "de": "Islamische Feiertage", "tr": "Hicrî günler", "fa": "مناسبت‌های قمری", "ur": "ہجری مواقع", "fr": "Fêtes de l'Hégire", "es": "Fechas islámicas", "it": "Ricorrenze islamiche", "nl": "Islamitische feestdagen", "da": "Islamiske mærkedage", "sv": "Islamiska högtider", "ru": "Исламские даты", "bs": "Islamski datumi", "id": "Hari besar Islam", "ms": "Hari kebesaran Islam", "bn": "হিজরি উপলক্ষ", "ps": "هجري مناسبتونه", "ha": "Lokutan Hijira", "sw": "Siku za Kiislamu"}};
+const HOMESHORT = {"ar": "الرئيسية", "ku": "سەرەکی", "en": "Home", "de": "Start", "tr": "Ana sayfa", "fa": "خانه", "ur": "ہوم", "fr": "Accueil", "es": "Inicio", "it": "Home", "nl": "Home", "da": "Forside", "sv": "Start", "ru": "Главная", "bs": "Početna", "id": "Beranda", "ms": "Utama", "bn": "হোম", "ps": "کور", "ha": "Gida", "sw": "Mwanzo"};
 const toolLbl = k => TOOLS_LBL[k][lang] || TOOLS_LBL[k].en;
-function buildNav(){
-  const t = L(), m = document.getElementById("navMenu"), items = [];
-  const a = (href, ic, label) => `<a role="menuitem" href="${href}"><svg viewBox="0 0 24 24">${NAVIC[ic]}</svg><span>${String(label).replace(/</g,"&lt;")}</span></a>`;
-  items.push(a(`/?lang=${lang}`, "home", t.home), a(`/${lang}/countries`, "globe", t.allCountries));
-  const p = readJSON("myPlace");
-  if(p && p.slug){
-    if(p.cc){
-      let n = p.cc;
-      try{ n = (p.cc === "PS" && PS_NAMES[lang]) || new Intl.DisplayNames([lang === "ku" ? "ckb" : lang, lang === "ku" ? "ar" : "en"], {type:"region"}).of(p.cc) || p.cc; }catch(e){}
-      items.push(a(`/${lang}/country/${p.cc.toLowerCase()}`, "flag", n));
-    }
-    items.push(a(`/${lang}/${p.slug}`, "pin", p.name || p.slug));
-  }
-  items.push("<hr>", a(`/${lang}/hijri`, "cal", toolLbl("cal")), a(`/${lang}/zakat`, "zakat", toolLbl("zakat")), a(`/${lang}/azkar`, "azkar", toolLbl("azkar")), a(`/${lang}/qibla`, "qibla", toolLbl("qibla")), a(`/${lang}/ramadan`, "ramadan", toolLbl("ramadan")), a(`/${lang}/occasions`, "occasions", toolLbl("occasions")));
-  items.push("<hr>", a(`/${lang}/about`, "about", t.cAbout), a(`/${lang}/privacy`, "privacy", t.cPrivacy), a(`/${lang}/contact`, "contact", t.cContact));
-  m.innerHTML = items.join("");
+const MORE_LBL = { ar:"المزيد", ku:"زێدەتر", en:"More", de:"Mehr", tr:"Daha fazla", fa:"بیشتر", ur:"مزید", fr:"Plus", es:"Más", it:"Altro", nl:"Meer", da:"Mere", sv:"Mer", ru:"Ещё", bs:"Više", id:"Lainnya", ms:"Lagi", bn:"আরও", ps:"نور", ha:"Ƙari", sw:"Zaidi" };
+const QSHORT = { ar:"القبلة", ku:"قیبلە", en:"Qibla", de:"Qibla", tr:"Kıble", fa:"قبله", ur:"قبلہ", fr:"Qibla", es:"Alquibla", it:"Qibla", nl:"Qibla", da:"Qibla", sv:"Qibla", ru:"Кибла", bs:"Kibla", id:"Kiblat", ms:"Kiblat", bn:"কিবলা", ps:"قبله", ha:"Alƙibla", sw:"Qibla" };
+const BAR_TOOLS = [["countries","globe"],["hijri","cal"],["zakat","zakat"],["azkar","azkar"],["ramadan","ramadan"],["occasions","occasions"]];
+const barLbl = k => k === "countries" ? L().allCountries : toolLbl(k === "hijri" ? "cal" : k);
+const BAR_SHORT = { ar:{countries:"البلدان",hijri:"التاريخ",zakat:"الزكاة",azkar:"الأذكار",ramadan:"رمضان",occasions:"المناسبات"},
+  ku:{countries:"وەلات",hijri:"بەروار",zakat:"زەکات",azkar:"زکر",ramadan:"ڕەمەزان",occasions:"بۆنە"},
+  en:{countries:"Countries",hijri:"Dates",zakat:"Zakat",azkar:"Adhkar",ramadan:"Ramadan",occasions:"Occasions"} };
+const barShort = k => (BAR_SHORT[lang] && BAR_SHORT[lang][k]) || barLbl(k);
+// أزرار الشريط بلغة الصفحة (تُستدعى عند تغيير اللغة)
+function setBar(){
+  const t = L(), esc = x => String(x).replace(/</g,"&lt;");
+  document.getElementById("gbHome").href = `/?lang=${lang}`;
+  document.getElementById("gbHome").querySelector("span").textContent = HOMESHORT[lang] || t.home;
+  const q = document.getElementById("gbQibla"); q.href = `/${lang}/qibla`; q.querySelector("span").textContent = QSHORT[lang] || toolLbl("qibla");
+  document.getElementById("gbMoreT").textContent = MORE_LBL[lang] || MORE_LBL.en;
+  document.getElementById("gbWide").innerHTML = BAR_TOOLS.map(([p, ic]) => `<a class="gb wide" href="/${lang}/${p}"><svg viewBox="0 0 24 24">${NAVIC[ic]}</svg><span>${esc(barShort(p))}</span></a>`).join("");
 }
+function buildNav(){
+  const t = L(), m = document.getElementById("navMenu");
+  const a = (href, ic, label) => `<a role="menuitem" href="${href}"><svg viewBox="0 0 24 24">${NAVIC[ic]}</svg><span>${String(label).replace(/</g,"&lt;")}</span></a>`;
+  m.innerHTML = a(`/${lang}/qibla`, "qibla", toolLbl("qibla")) + BAR_TOOLS.map(([p, ic]) => a(`/${lang}/${p}`, ic, barLbl(p))).join("")
+    + `<a role="menuitem" href="#" data-act="settings"><svg viewBox="0 0 24 24">${NAVIC.gear}</svg><span>${String(t.settings).replace(/</g,"&lt;")}</span></a>`
+    + "<hr>" + a(`/${lang}/about`, "about", t.cAbout) + a(`/${lang}/privacy`, "privacy", t.cPrivacy) + a(`/${lang}/contact`, "contact", t.cContact);
+}
+document.getElementById("navMenu").addEventListener("click", e=>{
+  const s = e.target.closest('[data-act="settings"]'); if(!s) return;
+  e.preventDefault(); closeNav(); openSettings();
+});
+setBar();
 function closeNav(){ document.getElementById("navMenu").hidden = true; document.getElementById("navBtn").setAttribute("aria-expanded","false"); }
 document.getElementById("navBtn").addEventListener("click", e=>{
   e.stopPropagation();

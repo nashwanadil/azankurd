@@ -29,8 +29,53 @@ const dist = (a, b, c, d) => {
   return 12742 * Math.asin(Math.sqrt(h));
 };
 
+// «هل تقصد…؟» لاسم لاتيني مكتوب بخطأ (Dohuk ← Duhok): أقرب الأسماء كتابةً، ثم الأقرب صوتًا والأكبر سكانًا
+const norm = s => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z]/g, "");
+let NIDX = null;
+const nidx = () => NIDX || (NIDX = DATA.c.map(c => [norm(c[1]), latSk(c[1]), c]));
+function lev(a, b, max){
+  if(Math.abs(a.length - b.length) > max) return max + 1;
+  let prev = Array.from({ length:b.length + 1 }, (_, j) => j);
+  for(let i = 1; i <= a.length; i++){
+    const cur = [i]; let best = i;
+    for(let j = 1; j <= b.length; j++){
+      cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+      if(cur[j] < best) best = cur[j];
+    }
+    if(best > max) return max + 1;
+    prev = cur;
+  }
+  return prev[b.length];
+}
+async function nameIn(gid, lg){
+  if(!gid) return null;
+  const ctl = new AbortController(); const tm = setTimeout(() => ctl.abort(), 2000);
+  try{ const r = await fetch(`https://geocoding-api.open-meteo.com/v1/get?id=${gid}&language=${lg}`, { signal:ctl.signal }); const j = r.ok ? await r.json() : null; return j && j.name ? j.name : null; }
+  catch(e){ return null; } finally { clearTimeout(tm); }
+}
+async function suggest(req, res, u){
+  const q = norm(String(u.searchParams.get("q") || "").slice(0, 60));
+  const lg = String(u.searchParams.get("lang") || "en").slice(0, 3);
+  res.setHeader("Content-Type", "application/json; charset=utf-8");
+  if(q.length < 3) return res.end("[]");
+  const q2 = q.replace(/x/g, "kh"), max = q.length <= 4 ? 1 : 2, sk = latSk(q), tzi = DATA.tz.indexOf(String(u.searchParams.get("tz") || ""));
+  const hits = [];
+  for(const [n, s, c] of nidx()){
+    if(n === q) continue;
+    // في الكردية اللاتينية x = kh (Zaxo ← Zakho)
+    const d = Math.min(lev(q, n, max), q2 !== q ? lev(q2, n, max) : max + 1);
+    if(d <= max) hits.push({ c, d: d - (s === sk ? .6 : 0) });
+  }
+  hits.sort((a, b) => (a.d - b.d) || (b.c[6] * (tzi >= 0 && b.c[5] === tzi ? 50 : 1) - a.c[6] * (tzi >= 0 && a.c[5] === tzi ? 50 : 1)));
+  const top = hits.slice(0, 3);
+  const local = lg === "en" ? [] : await Promise.all(top.map(h => nameIn(h.c[7], lg === "ku" ? "ar" : lg)));
+  res.setHeader("Cache-Control", "public, s-maxage=2592000");
+  res.end(JSON.stringify(top.map((h, i) => ({ slug:h.c[0], name:h.c[1], local:local[i] && local[i] !== h.c[1] ? local[i] : "", cc:h.c[2], lat:h.c[3], lng:h.c[4] }))));
+}
+
 module.exports = (req, res) => {
   const u = new URL(req.url, SITE);
+  if(u.searchParams.get("fz")) return suggest(req, res, u);
   const q = String(u.searchParams.get("q") || "").slice(0, 60);
   const lat = parseFloat(u.searchParams.get("lat")), lng = parseFloat(u.searchParams.get("lng"));
   res.setHeader("Content-Type", "application/json; charset=utf-8");

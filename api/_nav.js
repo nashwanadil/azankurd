@@ -21,15 +21,48 @@ const I = {
   azkar:'<circle cx="12" cy="5" r="1.6"/><circle cx="17.5" cy="8" r="1.6"/><circle cx="19" cy="13.5" r="1.6"/><circle cx="6.5" cy="8" r="1.6"/><circle cx="5" cy="13.5" r="1.6"/><circle cx="8" cy="18.5" r="1.6"/><circle cx="16" cy="18.5" r="1.6"/><path d="M12 20v2"/>',
   gear:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 0 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 0 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 0 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 0 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>'
 };
-const CALLBL = { ar:"تحويل التاريخ", ku:"گوهۆڕینا بەروارێ", en:"Date converter" };
-const ZAKATBL = { ar:"حاسبة الزكاة", ku:"هژمارتنا زەکاتێ", en:"Zakat calculator" };
-const QIBLABL = {ar: "اتجاه القبلة", ku: "ئاراستەیا قیبلێ", en: "Qibla direction"};
-const RAMADANBL = {ar: "زاوية رمضان", ku: "گۆشەیا ڕەمەزانێ", en: "Ramadan corner"};
-const OCCASIONSBL = {ar: "المناسبات الهجرية", ku: "بۆنێن هجری", en: "Hijri occasions"};
-const AZKARBL = { ar:"الأذكار", ku:"زکر و دوعا", en:"Adhkar" };
+const CALLBL = {"ar": "تحويل التاريخ", "ku": "گوهۆڕینا بەروارێ", "en": "Date converter", "de": "Datumsrechner", "tr": "Tarih çevirici", "fa": "تبدیل تاریخ", "ur": "تاریخ کی تبدیلی", "fr": "Convertisseur de dates", "es": "Conversor de fechas", "it": "Convertitore di date", "nl": "Datumomrekenaar", "da": "Datoomregner", "sv": "Datumomvandlare", "ru": "Конвертер дат", "bs": "Pretvarač datuma", "id": "Konversi tanggal", "ms": "Penukar tarikh", "bn": "তারিখ রূপান্তর", "ps": "د نېټې اړونه", "ha": "Sauya kwanan wata", "sw": "Kubadili tarehe"};
+const ZAKATBL = {"ar": "حاسبة الزكاة", "ku": "هژمارتنا زەکاتێ", "en": "Zakat calculator", "de": "Zakat-Rechner", "tr": "Zekât hesaplayıcı", "fa": "محاسبه‌گر زکات", "ur": "زکوٰۃ کیلکولیٹر", "fr": "Calcul de la zakat", "es": "Calculadora de zakat", "it": "Calcolo della zakat", "nl": "Zakat-calculator", "da": "Zakat-beregner", "sv": "Zakat-kalkylator", "ru": "Калькулятор закята", "bs": "Kalkulator zekata", "id": "Kalkulator zakat", "ms": "Kalkulator zakat", "bn": "যাকাত ক্যালকুলেটর", "ps": "د زکات حساب", "ha": "Lissafin zakka", "sw": "Kikokotoo cha zaka"};
+const QIBLABL = {"ar": "اتجاه القبلة", "ku": "ئاراستەیا قیبلێ", "en": "Qibla direction", "de": "Qibla-Richtung", "tr": "Kıble yönü", "fa": "جهت قبله", "ur": "سمتِ قبلہ", "fr": "Direction de la qibla", "es": "Dirección de la alquibla", "it": "Direzione della qibla", "nl": "Qibla-richting", "da": "Qibla-retning", "sv": "Qibla-riktning", "ru": "Направление киблы", "bs": "Smjer kible", "id": "Arah kiblat", "ms": "Arah kiblat", "bn": "কিবলার দিক", "ps": "د قبلې لوری", "ha": "Hanyar Alƙibla", "sw": "Mwelekeo wa Qibla"};
+const RAMADANBL = {"ar": "زاوية رمضان", "ku": "گۆشەیا ڕەمەزانێ", "en": "Ramadan corner", "de": "Ramadan-Ecke", "tr": "Ramazan köşesi", "fa": "گوشهٔ رمضان", "ur": "رمضان گوشہ", "fr": "Coin du Ramadan", "es": "Rincón del Ramadán", "it": "Angolo del Ramadan", "nl": "Ramadanhoek", "da": "Ramadan-hjørne", "sv": "Ramadanhörnan", "ru": "Уголок Рамадана", "bs": "Ramazanski kutak", "id": "Pojok Ramadan", "ms": "Sudut Ramadan", "bn": "রমজান কর্নার", "ps": "د رمضان کونج", "ha": "Kusurwar Ramadan", "sw": "Kona ya Ramadhani"};
+const OCCASIONSBL = {"ar": "المناسبات الهجرية", "ku": "بۆنێن هجری", "en": "Hijri occasions", "de": "Islamische Feiertage", "tr": "Hicrî günler", "fa": "مناسبت‌های قمری", "ur": "ہجری مواقع", "fr": "Fêtes de l'Hégire", "es": "Fechas islámicas", "it": "Ricorrenze islamiche", "nl": "Islamitische feestdagen", "da": "Islamiske mærkedage", "sv": "Islamiska högtider", "ru": "Исламские даты", "bs": "Islamski datumi", "id": "Hari besar Islam", "ms": "Hari kebesaran Islam", "bn": "হিজরি উপলক্ষ", "ps": "هجري مناسبتونه", "ha": "Lokutan Hijira", "sw": "Siku za Kiislamu"};
+const AZKARBL = {"ar": "الأذكار", "ku": "زکر و دوعا", "en": "Adhkar", "de": "Adhkar", "tr": "Zikirler", "fa": "اذکار", "ur": "اذکار", "fr": "Adhkar", "es": "Adhkar", "it": "Adhkar", "nl": "Adhkar", "da": "Adhkar", "sv": "Adhkar", "ru": "Азкары", "bs": "Zikrovi", "id": "Zikir", "ms": "Zikir", "bn": "যিকির", "ps": "اذکار", "ha": "Azkar", "sw": "Adhkar"};
 const ic = k => `<svg class="ni" viewBox="0 0 24 24">${I[k]}</svg>`;
 
 const css = `
+.gbar{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:2px 0 14px}
+.gb{box-sizing:border-box;height:40px;line-height:1.3;display:inline-flex;align-items:center;justify-content:center;gap:7px;border:1.5px solid var(--gold);color:var(--gold);background:var(--card);border-radius:999px;padding:7px 13px;font-family:inherit;font-size:.88rem;font-weight:700;white-space:nowrap;text-decoration:none;cursor:pointer;list-style:none}
+.gb::-webkit-details-marker{display:none}
+.gb:hover{background:var(--hover)}
+.gb svg{width:17px;height:17px;flex:none;stroke:var(--gold);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.gb.on{background:var(--green);border-color:var(--green);color:#fff}
+.gb.on svg{stroke:#f3d58a}
+.gbmore{position:relative;display:none}
+.gbmore .menu{inset-inline-start:auto!important;inset-inline-end:0!important}
+.gbmore > summary.gb{width:100%;height:auto;border-radius:999px;background:var(--card);border:1.5px solid var(--gold);display:flex}
+.gbmore .menu a{color:var(--gold);font-weight:600}
+.top{flex-wrap:wrap;gap:8px}
+.top > .brandmini{order:1}
+.top > .tr{order:2}
+.top > .gbar{order:3;flex-basis:100%;margin:6px 0 0}
+@media (max-width:760px){
+  /* الهاتف: الشعار، الرئيسية، اللغة، المزيد في سطر واحد أعلى الصفحة */
+  .top{display:grid;grid-template-columns:auto repeat(3,minmax(0,1fr));gap:8px;align-items:center}
+  .top > .gbar,.top > .tr{display:contents}
+  html .top > .brandmini{order:0;font-size:0!important;gap:0}
+  html[dir=ltr] .gb{font-size:.8rem;gap:5px}
+  .gb svg{width:16px;height:16px}
+  .gb.gbhome{order:1}
+  .top .langs{order:2;min-width:0}
+  .top .langs summary{width:100%;justify-content:center;box-sizing:border-box;height:40px}
+  .top .langs .lname{display:none}
+  .top .langs summary .flag{width:25px;height:17px}
+  .gbmore{order:3;display:block}
+  .gb{width:100%;padding:8px 6px;min-width:0}
+  .gb span{overflow:hidden;text-overflow:ellipsis}
+  .gb.wide{display:none}
+}
+
 .tr{display:flex;align-items:center;gap:8px}
 .navm{position:relative}
 .navm summary{list-style:none;display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;background:var(--card);border:1px solid var(--gold);border-radius:999px;cursor:pointer}
@@ -38,8 +71,8 @@ const css = `
 .navm summary svg{width:19px;height:19px;stroke:var(--gold);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .navcal{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;background:var(--card);border:1px solid var(--gold);border-radius:999px;margin-inline-start:6px;flex:none}
 .navcal svg{width:19px;height:19px;stroke:var(--gold);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-.navm .menu{position:absolute;inset-inline-start:0;top:calc(100% + 8px);z-index:21;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:6px;width:230px;max-height:70vh;overflow:auto;box-shadow:0 14px 40px rgba(0,0,0,.2)}
-.navm .menu a{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:9px;font-size:.92rem}
+.navm .menu{position:absolute;inset-inline-start:0;top:calc(100% + 8px);z-index:21;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:6px;width:230px;max-height:70vh;max-height:calc(100svh - 120px);overflow:auto;box-shadow:0 14px 40px rgba(0,0,0,.2)}
+.navm .menu a{display:flex;align-items:center;gap:10px;padding:7px 12px;border-radius:9px;font-size:.92rem}
 .navm .menu a:hover{background:var(--hover)}
 .navm .menu a[hidden]{display:none}
 .navm .menu hr{border:0;border-top:1px solid var(--line);margin:5px 6px}
@@ -54,25 +87,41 @@ const css = `
 @media (max-width:420px){ .setpill span{display:none} .setpill{padding:0;width:34px;height:34px;justify-content:center} .brandmini{font-size:1.35rem} }
 .navm .ni{width:17px;height:17px;flex:none;stroke:var(--gold);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}`;
 
+const MORE = { ar:"المزيد", ku:"زێدەتر", en:"More", de:"Mehr", tr:"Daha fazla", fa:"بیشتر", ur:"مزید", fr:"Plus", es:"Más", it:"Altro", nl:"Meer", da:"Mere", sv:"Mer", ru:"Ещё", bs:"Više", id:"Lainnya", ms:"Lagi", bn:"আরও", ps:"نور", ha:"Ƙari", sw:"Zaidi" };
+const QSHORT = { ar:"القبلة", ku:"قیبلە", en:"Qibla", de:"Qibla", tr:"Kıble", fa:"قبله", ur:"قبلہ", fr:"Qibla", es:"Alquibla", it:"Qibla", nl:"Qibla", da:"Qibla", sv:"Qibla", ru:"Кибла", bs:"Kibla", id:"Kiblat", ms:"Kiblat", bn:"কিবলা", ps:"قبله", ha:"Alƙibla", sw:"Qibla" };
+I.more = '<circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/>';
+const lbl = (d, lang) => d[lang] || d.en;
+// اسم قصير لزر الرئيسية في الشريط (حتى لا يُقطع على الهاتف)
+const HOMESHORT = {"ar": "الرئيسية", "ku": "سەرەکی", "en": "Home", "de": "Start", "tr": "Ana sayfa", "fa": "خانه", "ur": "ہوم", "fr": "Accueil", "es": "Inicio", "it": "Home", "nl": "Home", "da": "Forside", "sv": "Start", "ru": "Главная", "bs": "Početna", "id": "Beranda", "ms": "Utama", "bn": "হোম", "ps": "کور", "ha": "Gida", "sw": "Mwanzo"};
+// أسماء قصيرة لأزرار الشريط في الحاسوب (القائمة في الهاتف تبقى بالأسماء الكاملة)
+const SHORT = { ar:{countries:"البلدان",hijri:"التاريخ",zakat:"الزكاة",azkar:"الأذكار",ramadan:"رمضان",occasions:"المناسبات"},
+  ku:{countries:"وەلات",hijri:"بەروار",zakat:"زەکات",azkar:"زکر",ramadan:"ڕەمەزان",occasions:"بۆنە"},
+  en:{countries:"Countries",hijri:"Dates",zakat:"Zakat",azkar:"Adhkar",ramadan:"Ramadan",occasions:"Occasions"} };
+
+// بداية شريط المسار: «الرئيسية»
 function html(lang){
+  return `<a href="/?lang=${lang}">${esc(T[lang].home)}</a>`;
+}
+
+// الشريط الأفقي: الرئيسية والقبلة دائمًا؛ في الحاسوب بقية الأدوات والإعدادات، وفي الهاتف زر «المزيد» يفتح القائمة
+function bar(lang, cur){
   const t = T[lang], x = INFO[lang];
-  return `<details class="navm"><summary aria-label="${esc(t.home)}">${ic("menu").replace('class="ni"', "")}</summary><div class="menu">
-<a href="/?lang=${lang}">${ic("home")}<span>${esc(t.home)}</span></a>
-<a href="/${lang}/countries">${ic("globe")}<span>${esc(t.allCountries)}</span></a>
-<a class="mine" data-k="country" hidden>${ic("flag")}<span></span></a>
-<a class="mine" data-k="city" hidden>${ic("pin")}<span></span></a>
+  const b = (href, k, label, cls = "") => `<a class="gb${cls}${cur === k ? " on" : ""}" href="${href}">${ic(k)}<span>${esc(label)}</span></a>`;
+  const m = (href, k, label) => `<a href="${href}">${ic(k)}<span>${esc(label)}</span></a>`;
+  const tools = [["countries","globe",t.allCountries],["hijri","cal",lbl(CALLBL,lang)],["zakat","zakat",lbl(ZAKATBL,lang)],["azkar","azkar",lbl(AZKARBL,lang)],["ramadan","ramadan",lbl(RAMADANBL,lang)],["occasions","occasions",lbl(OCCASIONSBL,lang)]];
+  return `<nav class="gbar">
+${b(`/?lang=${lang}`, "home", HOMESHORT[lang] || t.home, " gbhome")}${b(`/${lang}/qibla`, "qibla", QSHORT[lang] || t.qibla, " wide")}
+${tools.map(([p, k, l]) => b(`/${lang}/${p}`, k, (SHORT[lang] && SHORT[lang][p]) || l, " wide").replace(cur === p ? 'class="gb wide"' : "@@", 'class="gb wide on"')).join("")}
+<a class="gb wide" href="/?lang=${lang}&settings=1">${ic("gear")}<span>${esc(t.settings)}</span></a>
+<details class="gbmore navm"><summary class="gb">${ic("more")}<span>${esc(MORE[lang] || MORE.en)}</span></summary><div class="menu">
+${m(`/${lang}/qibla`, "qibla", lbl(QIBLABL, lang))}
+${tools.map(([p, k, l]) => m(`/${lang}/${p}`, k, l)).join("\n")}
+${m(`/?lang=${lang}&settings=1`, "gear", t.settings)}
 <hr>
-<a href="/${lang}/hijri">${ic("cal")}<span>${esc(CALLBL[lang] || CALLBL.en)}</span></a>
-<a href="/${lang}/zakat">${ic("zakat")}<span>${esc(ZAKATBL[lang] || ZAKATBL.en)}</span></a>
-<a href="/${lang}/azkar">${ic("azkar")}<span>${esc(AZKARBL[lang] || AZKARBL.en)}</span></a>
-<a href="/${lang}/qibla">${ic("qibla")}<span>${esc(QIBLABL[lang] || QIBLABL.en)}</span></a>
-<a href="/${lang}/ramadan">${ic("ramadan")}<span>${esc(RAMADANBL[lang] || RAMADANBL.en)}</span></a>
-<a href="/${lang}/occasions">${ic("occasions")}<span>${esc(OCCASIONSBL[lang] || OCCASIONSBL.en)}</span></a>
-<hr>
-<a href="/${lang}/about">${ic("about")}<span>${esc(x.cAbout)}</span></a>
-<a href="/${lang}/privacy">${ic("privacy")}<span>${esc(x.cPrivacy)}</span></a>
-<a href="/${lang}/contact">${ic("contact")}<span>${esc(x.cContact)}</span></a>
-</div></details>`;
+${m(`/${lang}/about`, "about", x.cAbout)}
+${m(`/${lang}/privacy`, "privacy", x.cPrivacy)}
+${m(`/${lang}/contact`, "contact", x.cContact)}
+</div></details></nav>`;
 }
 
 // زر الإعدادات: يفتح الإعدادات في الصفحة الرئيسية
@@ -87,7 +136,7 @@ function js(lang){
   try{
     var p=JSON.parse(localStorage.getItem("myPlace")||"null");
     if(p && p.slug){
-      var c=document.querySelector('.navm .mine[data-k="city"]'); c.href="/"+L+"/"+p.slug; c.querySelector("span").textContent=p.name||p.slug; c.hidden=false;
+      var c=document.querySelector('.navm .mine[data-k="city"]'); if(!c) throw 0; c.href="/"+L+"/"+p.slug; c.querySelector("span").textContent=p.name||p.slug; c.hidden=false;
       if(p.cc){
         var n=p.cc; try{ var dn=new Intl.DisplayNames([L==="ku"?"ckb":L, L==="ku"?"ar":"en"],{type:"region"}); n=(p.cc==="PS"&&PS[L])||dn.of(p.cc)||p.cc; }catch(e){}
         var k=document.querySelector('.navm .mine[data-k="country"]'); k.href="/"+L+"/country/"+p.cc.toLowerCase(); k.querySelector("span").textContent=n; k.hidden=false;
@@ -100,4 +149,4 @@ function js(lang){
 })();`;
 }
 
-module.exports = { css, html, js, settings };
+module.exports = { css, html, bar, js, settings };
