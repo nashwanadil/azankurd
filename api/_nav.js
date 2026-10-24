@@ -13,6 +13,9 @@ const I = {
   about:'<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/>',
   privacy:'<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/>',
   contact:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/>',
+  qibla:'<circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/>',
+  ramadan:'<path d="M15 4a8 8 0 1 0 5 12.5A6.5 6.5 0 0 1 15 4z"/><path d="M18 3l.6 1.4L20 5l-1.4.6L18 7l-.6-1.4L16 5l1.4-.6z"/>',
+  occasions:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M12 12.5l1 2 2.2.3-1.6 1.5.4 2.2-2-1-2 1 .4-2.2-1.6-1.5 2.2-.3z"/>',
   cal:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M8 14h2M14 14h2M8 17.5h2"/>',
   zakat:'<circle cx="12" cy="12" r="9"/><path d="M14.5 9a2.5 2.5 0 0 0-2.5-1.5c-1.4 0-2.5.8-2.5 2s1.1 1.7 2.5 2 2.5.8 2.5 2-1.1 2-2.5 2a2.5 2.5 0 0 1-2.5-1.5M12 6v1.5M12 16.5V18"/>',
   azkar:'<circle cx="12" cy="5" r="1.6"/><circle cx="17.5" cy="8" r="1.6"/><circle cx="19" cy="13.5" r="1.6"/><circle cx="6.5" cy="8" r="1.6"/><circle cx="5" cy="13.5" r="1.6"/><circle cx="8" cy="18.5" r="1.6"/><circle cx="16" cy="18.5" r="1.6"/><path d="M12 20v2"/>',
@@ -20,6 +23,9 @@ const I = {
 };
 const CALLBL = { ar:"تحويل التاريخ", ku:"گوهۆڕینا بەروارێ", en:"Date converter" };
 const ZAKATBL = { ar:"حاسبة الزكاة", ku:"هژمارتنا زەکاتێ", en:"Zakat calculator" };
+const QIBLABL = {ar: "اتجاه القبلة", ku: "ئاراستەیا قیبلێ", en: "Qibla direction"};
+const RAMADANBL = {ar: "زاوية رمضان", ku: "گۆشەیا ڕەمەزانێ", en: "Ramadan corner"};
+const OCCASIONSBL = {ar: "المناسبات الهجرية", ku: "بۆنێن هجری", en: "Hijri occasions"};
 const AZKARBL = { ar:"الأذكار", ku:"زکر و دوعا", en:"Adhkar" };
 const ic = k => `<svg class="ni" viewBox="0 0 24 24">${I[k]}</svg>`;
 
@@ -59,6 +65,9 @@ function html(lang){
 <a href="/${lang}/hijri">${ic("cal")}<span>${esc(CALLBL[lang] || CALLBL.en)}</span></a>
 <a href="/${lang}/zakat">${ic("zakat")}<span>${esc(ZAKATBL[lang] || ZAKATBL.en)}</span></a>
 <a href="/${lang}/azkar">${ic("azkar")}<span>${esc(AZKARBL[lang] || AZKARBL.en)}</span></a>
+<a href="/${lang}/qibla">${ic("qibla")}<span>${esc(QIBLABL[lang] || QIBLABL.en)}</span></a>
+<a href="/${lang}/ramadan">${ic("ramadan")}<span>${esc(RAMADANBL[lang] || RAMADANBL.en)}</span></a>
+<a href="/${lang}/occasions">${ic("occasions")}<span>${esc(OCCASIONSBL[lang] || OCCASIONSBL.en)}</span></a>
 <hr>
 <a href="/${lang}/about">${ic("about")}<span>${esc(x.cAbout)}</span></a>
 <a href="/${lang}/privacy">${ic("privacy")}<span>${esc(x.cPrivacy)}</span></a>

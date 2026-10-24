@@ -163,4 +163,4 @@ function nextEvent(lat, lng, tz, method, school, prefs, after){
 }
 const qibla = city => Math.round(adhan.Qibla(new adhan.Coordinates(city.lat, city.lng)));
 
-module.exports = { LANGS, SITE, CITIES, findCity, nearest, nearby, METHODS, autoMethod, dayTimes, todayIn, qibla, KEYS, cityAt, nextPrayer, nextEvent, cleanPrefs, NOTIFY_KEYS };
+module.exports = { LANGS, SITE, CITIES, findCity, nearest, nearby, METHODS, autoMethod, dayTimes, todayIn, qibla, KEYS, cityAt, nextPrayer, nextEvent, cleanPrefs, NOTIFY_KEYS, paramsFor };
