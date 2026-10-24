@@ -41,13 +41,24 @@ const css = `
 .gbmore .menu{inset-inline-start:auto!important;inset-inline-end:0!important}
 .gbmore > summary.gb{width:100%;height:auto;border-radius:999px;background:var(--card);border:1.5px solid var(--gold);display:flex}
 .gbmore .menu a{color:var(--gold);font-weight:600}
+.top{flex-wrap:wrap;gap:8px}
+.top > .brandmini{order:1}
+.top > .tr{order:2}
+.top > .gbar{order:3;flex-basis:100%;margin:6px 0 0}
 @media (max-width:760px){
-  .gbar{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+  /* الهاتف: الشعار، الرئيسية، اللغة، المزيد في سطر واحد أعلى الصفحة */
+  .top{display:grid;grid-template-columns:auto repeat(3,minmax(0,1fr));gap:8px;align-items:center}
+  .top > .gbar,.top > .tr{display:contents}
+  .top > .brandmini{order:0;font-size:0;gap:0}
+  .gb.gbhome{order:1}
+  .top .langs{order:2;min-width:0}
+  .top .langs summary{width:100%;justify-content:center;box-sizing:border-box;height:40px}
+  .gbmore{order:3;display:block}
   .gb{width:100%;padding:8px 6px;min-width:0}
   .gb span{overflow:hidden;text-overflow:ellipsis}
   .gb.wide{display:none}
-  .gbmore{display:block}
 }
+
 .tr{display:flex;align-items:center;gap:8px}
 .navm{position:relative}
 .navm summary{list-style:none;display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;background:var(--card);border:1px solid var(--gold);border-radius:999px;cursor:pointer}
@@ -93,10 +104,11 @@ function bar(lang, cur){
   const m = (href, k, label) => `<a href="${href}">${ic(k)}<span>${esc(label)}</span></a>`;
   const tools = [["countries","globe",t.allCountries],["hijri","cal",lbl(CALLBL,lang)],["zakat","zakat",lbl(ZAKATBL,lang)],["azkar","azkar",lbl(AZKARBL,lang)],["ramadan","ramadan",lbl(RAMADANBL,lang)],["occasions","occasions",lbl(OCCASIONSBL,lang)]];
   return `<nav class="gbar">
-${b(`/?lang=${lang}`, "home", t.home)}${b(`/${lang}/qibla`, "qibla", QSHORT[lang] || t.qibla)}
+${b(`/?lang=${lang}`, "home", t.home, " gbhome")}${b(`/${lang}/qibla`, "qibla", QSHORT[lang] || t.qibla, " wide")}
 ${tools.map(([p, k, l]) => b(`/${lang}/${p}`, k, (SHORT[lang] && SHORT[lang][p]) || l, " wide").replace(cur === p ? 'class="gb wide"' : "@@", 'class="gb wide on"')).join("")}
 <a class="gb wide" href="/?lang=${lang}&settings=1">${ic("gear")}<span>${esc(t.settings)}</span></a>
 <details class="gbmore navm"><summary class="gb">${ic("more")}<span>${esc(MORE[lang] || MORE.en)}</span></summary><div class="menu">
+${m(`/${lang}/qibla`, "qibla", lbl(QIBLABL, lang))}
 ${tools.map(([p, k, l]) => m(`/${lang}/${p}`, k, l)).join("\n")}
 ${m(`/?lang=${lang}&settings=1`, "gear", t.settings)}
 <hr>

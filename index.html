@@ -133,13 +133,19 @@ applyTheme();
   .gbmore .menu{inset-inline-start:auto!important;inset-inline-end:0!important}
   .navmenu a{color:var(--gold)!important;font-weight:600}
   @media (max-width:760px){
-    .gbar{order:2;flex-basis:100%;display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+    /* الهاتف: الرئيسية، اللغة، المزيد في سطر واحد أعلى الصفحة */
+    .topbar{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+    .gbar{display:contents}
+    #gbHome{order:1}
+    .topbar > .langwrap{order:2;margin:0;min-width:0}
+    #langBtn{width:100%;justify-content:center;height:40px;box-sizing:border-box;padding:0 8px;min-width:0}
+    #langName{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .gbmore{order:3;display:block}
     .gb{width:100%;padding:8px 6px;min-width:0}
     .gb span{overflow:hidden;text-overflow:ellipsis}
     .gb.wide,.gbwide{display:none}
-    .gbmore{display:block}
-    .topbar > .langwrap{margin-inline-start:auto}
   }
+
   .pill.round{width:38px;height:38px;padding:0;justify-content:center}
   .navwrap .menu{inset-inline-end:auto;inset-inline-start:0}
   .navmenu a{display:flex;align-items:center;gap:10px;padding:7px 12px;border-radius:9px;font-size:.95rem;color:var(--text);text-decoration:none}
@@ -353,7 +359,7 @@ applyTheme();
 <div class="topbar">
   <nav class="gbar" id="gbar">
     <a class="gb on" id="gbHome"><svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7M5 10v10h14V10"/></svg><span data-i="home"></span></a>
-    <a class="gb" id="gbQibla"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg><span></span></a>
+    <a class="gb wide" id="gbQibla"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg><span></span></a>
     <span id="gbWide" class="gbwide"></span>
     <button class="gb wide" id="settingsBtn" type="button"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 0 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 0 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 0 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 0 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg><span data-i="settings"></span></button>
     <div class="langwrap navwrap gbmore">
@@ -1523,7 +1529,7 @@ function setBar(){
 function buildNav(){
   const t = L(), m = document.getElementById("navMenu");
   const a = (href, ic, label) => `<a role="menuitem" href="${href}"><svg viewBox="0 0 24 24">${NAVIC[ic]}</svg><span>${String(label).replace(/</g,"&lt;")}</span></a>`;
-  m.innerHTML = BAR_TOOLS.map(([p, ic]) => a(`/${lang}/${p}`, ic, barLbl(p))).join("")
+  m.innerHTML = a(`/${lang}/qibla`, "qibla", toolLbl("qibla")) + BAR_TOOLS.map(([p, ic]) => a(`/${lang}/${p}`, ic, barLbl(p))).join("")
     + `<a role="menuitem" href="#" data-act="settings"><svg viewBox="0 0 24 24">${NAVIC.gear}</svg><span>${String(t.settings).replace(/</g,"&lt;")}</span></a>`
     + "<hr>" + a(`/${lang}/about`, "about", t.cAbout) + a(`/${lang}/privacy`, "privacy", t.cPrivacy) + a(`/${lang}/contact`, "contact", t.cContact);
 }
