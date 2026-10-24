@@ -77,9 +77,10 @@ function page({ lang, title, desc, path, ld, body, css = "", js = "" }){
   const alts = LANGS.map(l => `<link rel="alternate" hreflang="${l}" href="${SITE}/${l}${path}">`).join("\n") + `\n<link rel="alternate" hreflang="x-default" href="${SITE}/en${path}">`;
   const langMenu = LANGS.map(l => `<a href="/${l}${path}" hreflang="${l}" ${l === lang ? 'aria-current="true"' : ""}><img class="flag" alt="" src="${flagSrc(l)}"><span dir="${T[l].dir}">${esc(T[l].label)}</span><svg class="chk" viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></svg></a>`).join("");
   return `<!DOCTYPE html>
-<html lang="${lang}" dir="${t.dir}">
+<html lang="${lang}" dir="${t.dir}" translate="no">
 <head>
 <meta charset="UTF-8">
+<meta name="google" content="notranslate">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(desc)}">
