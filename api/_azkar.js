@@ -60,10 +60,10 @@ const AZ = {
     SUBHAN100
   ],
   evening:[
-    KURSI_I, MUAW3,
+    SAYYID, KURSI_I, MUAW3,
     { t:"أَمْسَيْنَا وَأَمْسَى الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ، " + TAHLIL + "، رَبِّ أَسْأَلُكَ خَيْرَ مَا فِي هَٰذِهِ اللَّيْلَةِ وَخَيْرَ مَا بَعْدَهَا، وَأَعُوذُ بِكَ مِنْ شَرِّ مَا فِي هَٰذِهِ اللَّيْلَةِ وَشَرِّ مَا بَعْدَهَا، رَبِّ أَعُوذُ بِكَ مِنَ الْكَسَلِ وَسُوءِ الْكِبَرِ، رَبِّ أَعُوذُ بِكَ مِنْ عَذَابٍ فِي النَّارِ وَعَذَابٍ فِي الْقَبْرِ", n:1, s:[["m",2723]] },
     { t:"اللَّهُمَّ بِكَ أَمْسَيْنَا، وَبِكَ أَصْبَحْنَا، وَبِكَ نَحْيَا، وَبِكَ نَمُوتُ، وَإِلَيْكَ الْمَصِيرُ", n:1, s:[["t",3391]] },
-    SAYYID, BISMILLAH3, RADITU, YAHAYY,
+    BISMILLAH3, RADITU, YAHAYY,
     { t:"أَعُوذُ بِكَلِمَاتِ اللَّهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ", n:3, s:[["m",2709]] },
     SUBHAN100
   ],
@@ -101,7 +101,7 @@ const CSS = `
 .ak .item{background:var(--card);border:1px solid var(--line);border-inline-start:3px solid var(--gold);border-radius:14px;padding:16px}
 .ak .item.done{opacity:.55}
 .ak .h{color:var(--gold);font-size:.85rem;font-weight:600;margin:0 0 6px}
-.ak .tx{direction:rtl;text-align:right;font-size:1.2rem;line-height:2.1;color:var(--title);white-space:pre-line;font-family:"Amiri","Noto Naskh Arabic","Traditional Arabic",serif}
+.ak .tx{font-weight:400;direction:rtl;text-align:right;font-size:1.2rem;line-height:2.1;color:var(--title);white-space:pre-line;font-family:"Amiri","Noto Naskh Arabic","Traditional Arabic",serif}
 .ak .tx.q{font-size:1.3rem}
 .ak .ft{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px;flex-wrap:wrap}
 .ak .src{color:var(--muted);font-size:.8rem}
@@ -119,7 +119,7 @@ module.exports = (req, res) => {
     `<article class="item" data-n="${a.n}">${a.h ? `<p class="h" dir="rtl">${esc(a.h)}</p>` : ""}<p class="tx${a.q ? " q" : ""}">${esc(a.t)}</p>
     <div class="ft"><span class="src">${a.s ? esc(x.src + ": " + srcTxt(a.s)) : ""}</span><button class="cnt" type="button" aria-label="${a.n}">${a.n}</button></div></article>`).join("") + `</div>`).join("");
   const crumbs = `<nav class="crumbs">${NAV.html(lang)}<span>›</span><b>${esc(x.h1)}</b></nav>`;
-  const body = `${crumbs}<div class="ak"><section class="hcard"><h1>${esc(x.h1)}</h1><p class="intro">${esc(x.intro)}</p>
+  const body = `<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400&display=swap">${crumbs}<div class="ak"><section class="hcard"><h1>${esc(x.h1)}</h1><p class="intro">${esc(x.intro)}</p>
   <div class="tabs" role="tablist">${tabs}</div>${lists}<button class="reset" type="button" id="akReset">${esc(x.reset)}</button></section></div>`;
   const js = `(function(){
   var DONE=${JSON.stringify(x.done)};

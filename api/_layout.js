@@ -147,6 +147,8 @@ ${css}
 <!-- إحصاءات Vercel للزوار (بلا ملفات تعريف ارتباط) -->
 <script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
 <script defer src="/_vercel/insights/script.js"></script>
+<script type="speculationrules">${JSON.stringify({ prerender:[{ source:"list", urls:[`/?lang=${lang}&settings=1`], eagerness:"moderate" }] })}</script>
+<link rel="prefetch" href="/?lang=${lang}&settings=1">
 </head>
 <body>
 <div class="wrap">

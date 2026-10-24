@@ -408,7 +408,7 @@ applyTheme();
       <label for="citySelect" data-i="cityLabel"></label>
       <div class="cityrow">
         <select id="citySelect"></select>
-        <button class="btn ghost" type="button" id="cityDone" data-i="done"></button>
+        <button class="btn" type="button" id="cityDone" data-i="done"></button>
       </div>
       <div class="cityrow">
         <div class="acwrap"><input id="setCityInput" autocomplete="off"><div class="aclist" id="acSet" hidden></div></div>
@@ -1497,7 +1497,7 @@ applyLang();
 // قادم من زر الإعدادات في صفحة أخرى: نفتح الإعدادات مباشرة
 if(new URLSearchParams(location.search).get("settings") === "1"){
   history.replaceState(null, "", location.pathname + "?lang=" + lang);
-  setTimeout(()=> openSettings(), 150);
+  openSettings();
 }
 
 /* ---------- تثبيت التطبيق ---------- */
