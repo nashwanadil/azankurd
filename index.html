@@ -311,9 +311,9 @@ applyTheme();
   .chips button{border:1px solid var(--line);background:var(--card);color:var(--text);font-family:inherit;font-size:.85rem;padding:6px 12px;border-radius:999px;cursor:pointer}
   .chips button[aria-pressed=true]{background:var(--green);border-color:var(--green);color:#fff}
   .seg.mini button{font-size:.82rem;padding:6px 2px}
-  #advPrayers{margin-bottom:10px}
-  #notifyMore.dim{opacity:.45;pointer-events:none}
-  #notifyMore > label{display:block;margin:4px 0 6px;color:var(--muted);font-size:.85rem}
+  .sublbl{display:block;margin:12px 0 6px;color:var(--muted);font-size:.85rem}
+  #advBeforeP,#advBefore{margin-bottom:4px}
+  #advBefore{margin-top:8px}
   .seg button svg.ic{width:16px;height:16px;vertical-align:-3px;margin-inline-end:4px}
   footer{text-align:center;color:var(--muted);font-size:.8rem;padding:0 16px 32px}
 </style>
@@ -418,20 +418,20 @@ applyTheme();
     </div>
     <div class="field">
       <label data-i="notify"></label>
+      <label class="sublbl" data-i="beforeLbl"></label>
+      <div class="chips" id="advBeforeP"></div>
+      <div class="seg mini" id="advBefore"></div>
+      <label class="sublbl" data-i="atTimeLbl"></label>
       <div class="chips" id="advPrayers"></div>
-      <div id="notifyMore">
-        <label data-i="beforeLbl"></label>
-        <div class="seg mini" id="advBefore"></div>
-        <details class="fold" id="notifyAdv">
-          <summary><span data-i="advanced"></span><svg class="chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></summary>
-          <div class="adv">
-            <label data-i="iqamaLbl"></label>
-            <div class="seg mini" id="advIqama"></div>
-            <label data-i="extras"></label>
-            <div class="chips" id="advExtras"></div>
-          </div>
-        </details>
-      </div>
+      <details class="fold" id="notifyAdv">
+        <summary><span data-i="advanced"></span><svg class="chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="adv">
+          <label data-i="iqamaLbl"></label>
+          <div class="seg mini" id="advIqama"></div>
+          <label data-i="extras"></label>
+          <div class="chips" id="advExtras"></div>
+        </div>
+      </details>
       <div class="cstatus" id="notifyMsg" role="status" aria-live="polite"></div>
     </div>
     <div class="field">
@@ -1378,24 +1378,34 @@ async function setNotify(on){
 /* ---------- خيارات التنبيه المتقدمة ---------- */
 const PKEYS = ["fajr","dhuhr","asr","maghrib","isha"], PNAME = {fajr:"Fajr",dhuhr:"Dhuhr",asr:"Asr",maghrib:"Maghrib",isha:"Isha"};
 function getPrefs(){
-  const d = { p:PKEYS.slice(), a:1, b:0, i:0, fe:0, j:0, q:0 };
-  // التنبيه عند دخول الوقت دائمًا للصلوات المختارة (لم يعد له زر)
-  try{ return Object.assign(d, JSON.parse(store.get("notifyPrefs","{}")) || {}, { a:1 }); }catch(e){ return d; }
+  const d = { p:[], pb:[], a:1, b:10, i:0, fe:0, j:0, q:0 };
+  try{
+    const x = JSON.parse(store.get("notifyPrefs","{}")) || {};
+    const o = Object.assign(d, x, { a:1 });
+    if(!Array.isArray(x.pb)) o.pb = Array.isArray(x.p) ? (x.b ? x.p.slice() : []) : []; // إعدادات قديمة
+    if(!Array.isArray(x.p)) o.p = PKEYS.slice();
+    return o;
+  }catch(e){ return d; }
 }
-function setPrefs(p){ store.set("notifyPrefs", JSON.stringify(p)); fillAdvanced(); syncNotify(); }
+function setPrefs(p){
+  store.set("notifyPrefs", JSON.stringify(p));
+  const any = p.p.length || (p.pb.length && p.b);
+  if(!any){ if(store.get("notify","0") === "1") setNotify(false); else fillAdvanced(); return; }
+  if(store.get("notify","0") !== "1"){ setNotify(true); return; } // يطلب الإذن ثم يعيد الرسم
+  fillAdvanced(); syncNotify();
+}
 function fillAdvanced(){
   const t = L(), p = getPrefs(), on = store.get("notify","0") === "1";
-  // بلا صلاة مختارة لا تنبيه، فتُعطَّل الخيارات التي تحتها
-  document.getElementById("notifyMore").classList.toggle("dim", !on);
   const chip = (label, pressed, fn) => { const b = document.createElement("button"); b.type = "button"; b.textContent = label; b.setAttribute("aria-pressed", pressed ? "true" : "false"); b.onclick = fn; return b; };
-  const pr = document.getElementById("advPrayers"); pr.innerHTML = "";
-  PKEYS.forEach(k => pr.appendChild(chip(t.names[PNAME[k]], on && p.p.includes(k), ()=>{
-    const q = getPrefs();
-    if(store.get("notify","0") !== "1"){ q.p = [k]; store.set("notifyPrefs", JSON.stringify(q)); setNotify(true); return; }
-    q.p = q.p.includes(k) ? q.p.filter(x => x !== k) : PKEYS.filter(x => q.p.includes(x) || x === k);
-    if(!q.p.length){ store.set("notifyPrefs", JSON.stringify(q)); setNotify(false); return; }
-    setPrefs(q);
-  })));
+  const toggle = (arr, k) => arr.includes(k) ? arr.filter(x => x !== k) : PKEYS.filter(x => arr.includes(x) || x === k);
+  const row = (id, key, extra) => {
+    const el = document.getElementById(id); el.innerHTML = "";
+    PKEYS.forEach(k => el.appendChild(chip(t.names[PNAME[k]], on && p[key].includes(k), ()=>{
+      const q = getPrefs(); q[key] = toggle(q[key], k); if(extra) extra(q); setPrefs(q);
+    })));
+  };
+  row("advPrayers", "p");
+  row("advBeforeP", "pb", q => { if(!q.b) q.b = 10; });
   const seg = (id, key, vals) => {
     const el = document.getElementById(id); el.innerHTML = "";
     vals.forEach(v => { const b = chip(v ? String(v) : t.off, p[key] === v, ()=>{ const q = getPrefs(); q[key] = v; setPrefs(q); }); el.appendChild(b); });

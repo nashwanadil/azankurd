@@ -125,17 +125,20 @@ function cleanPrefs(x){
   x = x && typeof x === "object" ? x : {};
   const num = (v, ok) => ok.includes(Number(v)) ? Number(v) : 0;
   const p = Array.isArray(x.p) ? NOTIFY_KEYS.filter(k => x.p.includes(k)) : NOTIFY_KEYS;
-  return { p, a:x.a === 0 ? 0 : 1, b:num(x.b, [0,5,10,15,20,30]), i:num(x.i, [0,5,10,15,20]), fe:x.fe ? 1 : 0, j:x.j ? 1 : 0, q:x.q ? 1 : 0 };
+  const pb = Array.isArray(x.pb) ? NOTIFY_KEYS.filter(k => x.pb.includes(k)) : p;
+  return { p, pb, a:x.a === 0 ? 0 : 1, b:num(x.b, [0,5,10,15,20,30]), i:num(x.i, [0,5,10,15,20]), fe:x.fe ? 1 : 0, j:x.j ? 1 : 0, q:x.q ? 1 : 0 };
 }
 function dayEvents(lat, lng, tz, params, y, m, d, prefs){
   const t = new adhan.PrayerTimes(new adhan.Coordinates(lat, lng), new Date(y, m - 1, d), params);
   const ev = [], M = 60000, ok = x => x instanceof Date && !isNaN(x);
-  for(const k of prefs.p){
+  for(const k of NOTIFY_KEYS){
     const at = t[k]; if(!ok(at)) continue;
     const hmv = hm(at, tz);
-    if(prefs.a) ev.push({ type:"adhan", key:k, at, hm:hmv });
-    if(prefs.b) ev.push({ type:"before", key:k, at:new Date(at - prefs.b * M), hm:hmv });
-    if(prefs.i) ev.push({ type:"iqama", key:k, at:new Date(+at + prefs.i * M), hm:hmv });
+    if(prefs.p.includes(k)){
+      if(prefs.a) ev.push({ type:"adhan", key:k, at, hm:hmv });
+      if(prefs.i) ev.push({ type:"iqama", key:k, at:new Date(+at + prefs.i * M), hm:hmv });
+    }
+    if(prefs.b && prefs.pb.includes(k)) ev.push({ type:"before", key:k, at:new Date(at - prefs.b * M), hm:hmv });
   }
   if(prefs.fe && ok(t.sunrise)) ev.push({ type:"fajrEnd", key:"fajr", at:new Date(t.sunrise - 15 * M), hm:hm(t.sunrise, tz) });
   if(prefs.j && ok(t.dhuhr) && new Date(Date.UTC(y, m - 1, d)).getUTCDay() === 5) ev.push({ type:"jumuah", key:"dhuhr", at:new Date(t.dhuhr - 30 * M), hm:hm(t.dhuhr, tz) });
