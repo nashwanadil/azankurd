@@ -153,7 +153,7 @@ ${css}
 <div class="wrap">
   <div class="top">
     <a class="brandmini" href="/?lang=${lang}"><img src="/icon-192.png" alt="" width="38" height="38">${esc(t.logo)}</a>
-    <div class="tr"><details class="langs"><summary><img class="flag" alt="" src="${flagSrc(lang)}">${esc(t.label)}<svg class="ic chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></summary><div class="menu">${langMenu}</div></details></div>
+    <div class="tr"><details class="langs"><summary aria-label="${esc(t.label)}"><img class="flag" alt="" src="${flagSrc(lang)}"><span class="lname">${esc(t.label)}</span><svg class="ic chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></summary><div class="menu">${langMenu}</div></details></div>
     ${NAV.bar(lang, (path || "").split("/")[1] || "")}
   </div>
 ${body}

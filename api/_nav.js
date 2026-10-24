@@ -53,6 +53,8 @@ const css = `
   .gb.gbhome{order:1}
   .top .langs{order:2;min-width:0}
   .top .langs summary{width:100%;justify-content:center;box-sizing:border-box;height:40px}
+  .top .langs .lname{display:none}
+  .top .langs summary .flag{width:30px;height:21px}
   .gbmore{order:3;display:block}
   .gb{width:100%;padding:8px 6px;min-width:0}
   .gb span{overflow:hidden;text-overflow:ellipsis}

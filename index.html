@@ -139,7 +139,8 @@ applyTheme();
     #gbHome{order:1}
     .topbar > .langwrap{order:2;margin:0;min-width:0}
     #langBtn{width:100%;justify-content:center;height:40px;box-sizing:border-box;padding:0 8px;min-width:0}
-    #langName{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    #langName{display:none}
+    #langBtn .flag{width:30px;height:21px}
     .gbmore{order:3;display:block}
     .gb{width:100%;padding:8px 6px;min-width:0}
     .gb span{overflow:hidden;text-overflow:ellipsis}
@@ -817,7 +818,7 @@ function applyLang(){
   document.title = t.logo === "AzanKurd" ? `AzanKurd | ${t.todayTimes}` : `${t.logo} | ${t.todayTimes} – AzanKurd`;
   const md = document.querySelector('meta[name="description"]'); if(md) md.content = t.tagline + " — AzanKurd";
   document.getElementById("logo").textContent = t.logo;
-  document.getElementById("langName").textContent = t.label;
+  document.getElementById("langName").textContent = t.label; document.getElementById("langBtn").setAttribute("aria-label", t.label);
   document.getElementById("allCountriesLink").href = `/${lang}/countries`;
   document.getElementById("langFlag").src = flagSrc(lang);
   document.querySelectorAll("[data-i]").forEach(el => el.textContent = t[el.dataset.i]);
