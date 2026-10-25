@@ -35,10 +35,27 @@ async function nameIn(city, lg){
   const j = await getJSON(`https://geocoding-api.open-meteo.com/v1/get?id=${city.gid}&language=${lg}`);
   return j && j.name ? { name:j.name, country:j.country || "" } : null;
 }
+// أسماء ثابتة لمدن لا تعطيها قاعدة الأسماء بالحروف العربية (أو ليس لها رقم فيها)
+const AR_SCRIPT = ["ar","ku","fa","ur","ps"];
+const FIXED_NAMES = {
+  zakho:{ ar:"زاخو", ku:"زاخۆ" }, amedi:{ ar:"العمادية", ku:"ئامێدی" }, ranya:{ ar:"رانية", ku:"ڕانیە" },
+  kalar:{ ar:"كلار", ku:"کەلار" }, shaqlawa:{ ar:"شقلاوة", ku:"شەقڵاوە" }, simele:{ ar:"سميل", ku:"سێمێل" }
+};
+function fixedName(city, lang){
+  const f = FIXED_NAMES[city.slug]; if(!f) return null;
+  const n = f[lang] || (AR_SCRIPT.includes(lang) ? f.ar : null);
+  return n ? { name:n, country:"" } : null;
+}
 async function localName(city, lang){
-  if(lang !== "ku") return nameIn(city, lang);
-  for(const lg of ["ku","ckb","ar"]){ const r = await nameIn(city, lg); if(r && hasAr(r.name)) return r; }
-  return null;
+  const f = fixedName(city, lang); if(f) return f;
+  if(lang === "ku"){
+    for(const lg of ["ku","ckb","ar"]){ const r = await nameIn(city, lg); if(r && hasAr(r.name)) return r; }
+    return null;
+  }
+  const r = await nameIn(city, lang);
+  // الفارسية والأردية والبشتو: الاسم العربي أقرب من اللاتيني
+  if(lang !== "ar" && AR_SCRIPT.includes(lang) && !(r && hasAr(r.name))){ const a = await nameIn(city, "ar"); if(a && hasAr(a.name)) return a; }
+  return r;
 }
 // فلسطين باسمها في كل اللغات (بدل «الأراضي الفلسطينية» الذي تعطيه المتصفحات وقواعد الأسماء)
 const PS_NAMES = { ar:"فلسطين", ku:"فەلەستین", en:"Palestine", de:"Palästina", tr:"Filistin", fa:"فلسطین", ur:"فلسطین",
@@ -191,4 +208,4 @@ function send(res, html, status = 200){
   res.end(html);
 }
 
-module.exports = { T, esc, fill, flagSrc, countryFlag, localName, countryName, PS_NAMES, REGIONS, nCitiesText, page, send };
+module.exports = { T, esc, fill, flagSrc, countryFlag, localName, fixedName, AR_SCRIPT, countryName, PS_NAMES, REGIONS, nCitiesText, page, send };

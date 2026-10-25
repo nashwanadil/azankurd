@@ -33,7 +33,13 @@ async function nameIn(city, lg){
   return hit ? { name:hit.name, country:hit.country || "" } : null;
 }
 async function localName(city, lang){
-  if(lang !== "ku") return nameIn(city, lang);
+  const f = fixedName(city, lang); if(f) return f;
+  if(lang !== "ku"){
+    const r = await nameIn(city, lang);
+    // الفارسية والأردية والبشتو: الاسم العربي أقرب من اللاتيني
+    if(lang !== "ar" && AR_SCRIPT.includes(lang) && !(r && hasAr(r.name))){ const a = await nameIn(city, "ar"); if(a && hasAr(a.name)) return a; }
+    return r;
+  }
   // الكوردية: نفضّل الكتابة بالحروف العربية، ثم العربية إن لم تتوفر
   for(const lg of ["ku","ckb","ar"]){
     const r = await nameIn(city, lg);
@@ -41,7 +47,7 @@ async function localName(city, lang){
   }
   return null;
 }
-const { PS_NAMES } = require("./_layout.js");
+const { PS_NAMES, fixedName, AR_SCRIPT } = require("./_layout.js");
 function countryName(cc, lang){
   if(cc === "PS" && PS_NAMES[lang]) return PS_NAMES[lang];
   for(const l of [intlLoc(lang), lang === "ku" ? "ar" : "en"]){
