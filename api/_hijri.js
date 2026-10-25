@@ -23,6 +23,8 @@ const CSS = `
 .cv .go{margin-top:12px;width:100%;background:var(--green);color:#fff;border:1px solid var(--green);border-radius:10px;padding:10px;font-family:inherit;font-size:1rem;font-weight:600;cursor:pointer}
 .cv .out{margin-top:14px;min-height:2.2em;font-size:1.15rem;line-height:1.8;color:var(--title);font-weight:600}
 .cv .out.err{color:#d0443c;font-size:.95rem;font-weight:400}
+.cv .out.hit{color:var(--gold);border:1.5px solid var(--gold);border-radius:14px;padding:12px 14px;animation:hitGlow 1.4s ease-out 2}
+@keyframes hitGlow{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--gold) 55%,transparent);background:color-mix(in srgb,var(--gold) 18%,transparent)}100%{box-shadow:0 0 0 14px color-mix(in srgb,var(--gold) 0%,transparent);background:color-mix(in srgb,var(--gold) 0%,transparent)}}
 .cv .today{font-size:1.05rem;line-height:1.9}
 .cv .today b{color:var(--gold)}
 .cv .muted{color:var(--muted);font-size:.85rem;margin-top:6px}`;
@@ -89,9 +91,10 @@ module.exports = (req, res) => {
     el.addEventListener("touchend",function(){ if(fresh){ setTimeout(function(){ try{ el.select(); }catch(x){} fresh=false; },10); } });
     el.addEventListener("keydown",function(e){ if(e.key==="Enter") document.getElementById(id==="gIn"?"g2h":"h2g").click(); }); });
   var th=toH(td); document.getElementById("hD").value=th.d; sel.value=th.m; document.getElementById("hY").value=th.y;
-  function show(id,txt,err){ var e=document.getElementById(id); e.textContent=txt; e.className="out"+(err?" err":""); }
+  function show(id,txt,err){ var e=document.getElementById(id); e.textContent=txt; e.className="out"; void e.offsetWidth; e.className="out"+(err?" err":" hit"); }
   document.getElementById("g2h").addEventListener("click",function(){
-    var v=gi.value.trim()?gi.value.split(".").map(Number):[td.getUTCDate(),td.getUTCMonth()+1,td.getUTCFullYear()];
+    if(!gi.value.trim()){ gi.focus(); return; }
+    var v=gi.value.split(".").map(Number);
     if(v.length!==3||!(v[0]>=1&&v[0]<=31&&v[1]>=1&&v[1]<=12&&v[2]>=1800)) return show("outH",X.err,1);
     var dt=new Date(Date.UTC(v[2],v[1]-1,v[0])); if(dt.getUTCDate()!==v[0]) return show("outH",X.err,1);
     var h=toH(dt);
