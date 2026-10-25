@@ -930,6 +930,7 @@ function render(data, label){
   if(!document.getElementById("setupStepWait").hidden){ store.set("setupDone","1"); document.getElementById("setupOverlay").hidden = true; }
   const t = L();
   timings = data.timings; tz = data.meta.timezone;
+  if(IS_APP) scheduleAppAlerts().catch(()=>{});
   const box = document.getElementById("times"); box.innerHTML = "";
   ORDER.forEach(k=>{
     const d = document.createElement("div"); d.className="t"; d.id="t-"+k;
@@ -951,8 +952,17 @@ function render(data, label){
   updateMonthly(label);
   loadWeek(data, label);
   syncNotify();
-  clearInterval(timer); tick(); timer = setInterval(tick, 1000);
+  startTick();
 }
+// المؤقت يعمل والصفحة ظاهرة فقط، فلا يستيقظ الهاتف في الخلفية
+function startTick(){
+  clearInterval(timer); tick();
+  if(!document.hidden) timer = setInterval(tick, 1000);
+}
+document.addEventListener("visibilitychange", ()=>{
+  if(document.hidden){ clearInterval(timer); timer = null; }
+  else if(timings) startTick();
+});
 
 function nowInTz(){ return new Date(new Date().toLocaleString("en-US",{timeZone:tz,hour12:false})); }
 
@@ -1525,6 +1535,7 @@ async function syncNotify(force){
 }
 async function setNotify(on){
   const t = L();
+  if(IS_APP) return setNotifyApp(on);
   if(!on){
     store.set("notify","0"); store.set("notifyKey",""); fillSettings(); notifyMsg("");
     try{
@@ -1547,6 +1558,68 @@ async function setNotify(on){
     store.set("notify","1"); store.set("notifyKey", JSON.stringify(info)); fillSettings();
     notifyMsg("");
   }catch(e){ notifyMsg(t.notifyNo, "err"); }
+}
+
+/* ---------- إشعارات الصلاة داخل التطبيق (إشعارات أندرويد الأصلية) ---------- */
+const appLN = () => (IS_APP && window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.LocalNotifications) || null;
+// وقت الصلاة بتوقيت المدينة، لا بتوقيت الهاتف
+function zonedTime(hm, tz, ymd){
+  const [h, m] = hm.split(":").map(Number);
+  const utc = Date.UTC(ymd[0], ymd[1]-1, ymd[2], h, m);
+  const p = Object.fromEntries(new Intl.DateTimeFormat("en-US", {timeZone:tz, hourCycle:"h23", year:"numeric", month:"2-digit", day:"2-digit", hour:"2-digit", minute:"2-digit", second:"2-digit"}).formatToParts(new Date(utc)).map(x=>[x.type, x.value]));
+  const asLocal = Date.UTC(+p.year, +p.month-1, +p.day, +p.hour, +p.minute, +p.second);
+  return new Date(utc - (asLocal - utc));
+}
+async function cancelAppAlerts(){
+  const LN = appLN(); if(!LN) return;
+  const pending = await LN.getPending();
+  const ids = (pending.notifications || []).filter(n => n.id >= 1000 && n.id < 3000).map(n => ({id:n.id}));
+  if(ids.length) await LN.cancel({notifications: ids});
+}
+// نجدول سنة كاملة من تقويم 13 شهرًا، فلا يُفتح التطبيق كل يوم ولا يتوقف التنبيه
+async function alertDays(){
+  const q = lastQuery, g = lastData && lastData.date && lastData.date.gregorian;
+  if(!q || !g || !usedMethod) return [];
+  const tz = lastData.meta.timezone, todayKey = new Intl.DateTimeFormat("en-CA", {timeZone:tz}).format(new Date());
+  const [, m, y] = g.date.split("-").map(Number);
+  const months = Array.from({length:13}, (_, i) => { const d = new Date(Date.UTC(y, m - 1 + i, 1)); return [d.getUTCFullYear(), d.getUTCMonth() + 1]; });
+  const get = async (yy, mm) => { const j = await (await fetch(calUrl(q, usedMethod, yy, mm))).json(); return j.code === 200 ? j.data : []; };
+  const all = (await Promise.all(months.map(([yy, mm]) => get(yy, mm)))).flat();
+  return all.filter(x => { const [dd, mm, yy] = x.date.gregorian.date.split("-"); return `${yy}-${mm}-${dd}` >= todayKey; }).slice(0, 365);
+}
+async function scheduleAppAlerts(){
+  const LN = appLN();
+  if(!LN || !lastData || !timings || !lastQuery || !usedMethod || store.get("notify","0") !== "1") return;
+  const tz = lastData.meta && lastData.meta.timezone; if(!tz) return;
+  const prefs = getPrefs();
+  const key = JSON.stringify([lastQuery, usedMethod, schoolFor(usedMethod), tz, prefs.p, lang]);
+  // الجدول محفوظ لدى نظام أندرويد ولم يتغير، فلا طلبات ولا إعادة جدولة
+  if(store.get("alertsKey","") === key && Date.now() - Number(store.get("alertsAt","0")) < 7*864e5) return;
+  let days;
+  try{ days = await alertDays(); }catch(e){ return; }   // بلا إنترنت تبقى التنبيهات السابقة كما هي
+  if(!days.length) return;
+  const t = L(), list = [];
+  days.forEach((day, di)=>{
+    const [dd, mm, yy] = day.date.gregorian.date.split("-").map(Number);
+    PKEYS.forEach((k, i)=>{
+      if(!prefs.p.includes(k)) return;
+      const name = t.names[PNAME[k]];
+      const at = zonedTime(day.timings[PNAME[k]].slice(0,5), tz, [yy, mm, dd]);
+      if(at > Date.now()) list.push({ id:1000 + di*5 + i, title:t.notifyTitle.replace("{p}", name), body:name, schedule:{ at } });
+    });
+  });
+  await cancelAppAlerts();
+  for(let i = 0; i < list.length; i += 100) await LN.schedule({ notifications: list.slice(i, i + 100) });
+  store.set("alertsKey", key); store.set("alertsAt", String(Date.now()));
+}
+async function setNotifyApp(on){
+  const LN = appLN(), t = L();
+  if(!on){ store.set("notify","0"); store.set("alertsKey",""); fillSettings(); notifyMsg(""); await cancelAppAlerts().catch(()=>{}); return; }
+  if(!LN) return notifyMsg(t.notifyNo, "err");
+  const r = await LN.requestPermissions().catch(()=>({display:"denied"}));
+  if(r.display !== "granted") return notifyMsg(t.notifyDenied, "err");
+  store.set("notify","1"); fillSettings(); notifyMsg(t.notifyOk);
+  await scheduleAppAlerts().catch(()=>{});
 }
 
 /* ---------- خيارات التنبيه المتقدمة ---------- */
