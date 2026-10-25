@@ -283,6 +283,16 @@ applyTheme();
   .install .ios{background:var(--inner);border:1px solid var(--line);border-radius:12px;padding:10px;color:var(--text)}
   .install .acts{display:flex;gap:10px;justify-content:center}
   .btn.wide{width:100%}
+  .setup .sheet{text-align:center;max-width:460px}
+  .setup img.logo{width:64px;height:64px;border-radius:16px;margin:0 auto 8px;display:block}
+  .setup h3{color:var(--gold);font-size:1.15rem;margin-bottom:14px}
+  .setup .langs{display:grid;grid-template-columns:1fr 1fr;gap:8px;text-align:start}
+  .setup .langs button{display:flex;align-items:center;gap:8px;background:var(--inner);border:1px solid var(--line);color:var(--text);border-radius:10px;padding:10px;font-family:inherit;font-size:.95rem;cursor:pointer}
+  .setup .langs button[aria-pressed=true]{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold)}
+  .setup .langs .flag{width:22px;height:16px;border-radius:3px;object-fit:cover;flex:none}
+  .setup .fmts{display:grid;gap:10px;margin-bottom:16px}
+  .setup .fmts button{background:var(--inner);border:1px solid var(--line);color:var(--text);border-radius:12px;padding:16px;font-family:'Noto Sans',sans-serif;font-size:1.4rem;direction:ltr;cursor:pointer}
+  .setup .fmts button[aria-pressed=true]{border-color:var(--gold);color:var(--gold);box-shadow:0 0 0 1px var(--gold)}
   .sheet-head h3{font-size:1.1rem;color:var(--gold);font-weight:600}
   .iconbtn{background:none;border:1px solid var(--line);color:var(--text);border-radius:10px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer}
   .iconbtn:hover{background:var(--hover)}
@@ -545,6 +555,22 @@ applyTheme();
     </div>
   </div>
 </div>
+<div class="overlay setup" id="setupOverlay" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="setupTitle">
+    <img class="logo" src="/icon-192.png" alt="">
+    <div id="setupStep1">
+      <h3 id="setupTitle">اختر اللغة · Choose language</h3>
+      <div class="langs" id="setupLangs"></div>
+    </div>
+    <div id="setupStep2" hidden>
+      <h3 data-i="timeFormat"></h3>
+      <div class="fmts">
+        <button type="button" data-sfmt="24">13:00</button>
+        <button type="button" data-sfmt="12">1:00 PM</button>
+      </div>
+    </div>
+  </div>
+</div>
 <div class="overlay install" id="installOverlay" hidden>
   <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="installTitle">
     <img src="/icon-192.png" alt="">
@@ -787,12 +813,15 @@ let timeFmt = store.get("fmt","24");
 const L = () => I18N[lang];
 
 /* ---------- اللغة ---------- */
+// داخل تطبيق أندرويد: العربية هي الافتراضية، لا لغة الهاتف
+const IS_APP = /AzanKurdApp/.test(navigator.userAgent) || !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
 function pickLang(){
   const q = new URLSearchParams(location.search).get("lang");
   if(q && I18N[q]) return q;
   const s = store.get("lang", null);
   if(s === "ckb" || s === "kmr") return "ku";
   if(s && I18N[s]) return s;
+  if(IS_APP) return "ar";
   for(const n of (navigator.languages || [navigator.language || "ar"])){
     const c = n.toLowerCase();
     if(c.startsWith("ckb") || c.startsWith("ku") || c.startsWith("kmr")) return "ku";
@@ -1629,13 +1658,37 @@ if(new URLSearchParams(location.search).get("settings") === "1"){
   openSettings();
 }
 
+/* ---------- الإعداد الأول في التطبيق: اللغة ثم صيغة الوقت ---------- */
+function openSetup(){
+  const box = document.getElementById("setupLangs"); box.innerHTML = "";
+  LANG_ORDER.forEach(code=>{ const t = I18N[code];
+    const b = document.createElement("button"); b.type = "button";
+    b.setAttribute("aria-pressed", code === lang ? "true" : "false");
+    b.innerHTML = `<img class="flag" alt="" src="${flagSrc(code)}"><span dir="${t.dir}">${t.label}</span>`;
+    b.onclick = ()=>{
+      setLang(code);
+      document.getElementById("setupStep1").hidden = true;
+      document.getElementById("setupStep2").hidden = false;
+      document.querySelectorAll("[data-sfmt]").forEach(x=> x.setAttribute("aria-pressed", x.dataset.sfmt === timeFmt ? "true" : "false"));
+    };
+    box.appendChild(b);
+  });
+  document.getElementById("setupOverlay").hidden = false;
+}
+document.querySelectorAll("[data-sfmt]").forEach(b=> b.addEventListener("click", ()=>{
+  timeFmt = b.dataset.sfmt; store.set("fmt", timeFmt); store.set("setupDone","1");
+  document.getElementById("setupOverlay").hidden = true;
+  fillSettings(); if(lastData) render(lastData, lastLabel);
+}));
+if(IS_APP && store.get("setupDone","0") !== "1") openSetup();
+
 /* ---------- تثبيت التطبيق ---------- */
 let deferredPrompt = null;
 const UA = navigator.userAgent;
 const isIOS = /iphone|ipad|ipod/i.test(UA) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
 const isMobile = /android|iphone|ipad|ipod/i.test(UA) || isIOS;
 const isStandalone = () => matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
-const canInstall = () => !isStandalone() && (!!deferredPrompt || isIOS);
+const canInstall = () => !IS_APP && !isStandalone() && (!!deferredPrompt || isIOS);
 function updateInstallUI(){ document.getElementById("installField").hidden = !canInstall(); }
 function openInstall(){
   document.getElementById("iosHelp").hidden = !(isIOS && !deferredPrompt);
