@@ -93,7 +93,8 @@ module.exports = (req, res) => {
   var th=toH(td); document.getElementById("hD").value=th.d; sel.value=th.m; document.getElementById("hY").value=th.y;
   function show(id,txt,err){ var e=document.getElementById(id); e.textContent=txt; e.className="out"; void e.offsetWidth; e.className="out"+(err?" err":" hit"); }
   document.getElementById("g2h").addEventListener("click",function(){
-    var v=gi.value.trim()?gi.value.split(".").map(Number):[td.getUTCDate(),td.getUTCMonth()+1,td.getUTCFullYear()];
+    if(!gi.value.trim()){ gi.focus(); return; }
+    var v=gi.value.split(".").map(Number);
     if(v.length!==3||!(v[0]>=1&&v[0]<=31&&v[1]>=1&&v[1]<=12&&v[2]>=1800)) return show("outH",X.err,1);
     var dt=new Date(Date.UTC(v[2],v[1]-1,v[0])); if(dt.getUTCDate()!==v[0]) return show("outH",X.err,1);
     var h=toH(dt);
