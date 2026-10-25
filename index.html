@@ -1739,7 +1739,8 @@ function fitBar(){
   const wide = [...document.querySelectorAll("#gbWide > a.gb")];
   if(!bar || innerWidth <= 760) return;
   wide.forEach(a => a.hidden = false);
-  if(barOpen){ more.classList.add("ov"); return; }
+  // مفتوح: تظهر كل الأزرار، ويختفي «المزيد» من مكانه، ويُغلق بالنقر خارج الشريط
+  if(barOpen){ more.classList.remove("ov"); return; }
   const oneLine = () => { const els = [...bar.querySelectorAll("a.gb, button.gb")].filter(e => e.getClientRects().length); const top = els[0].getBoundingClientRect().top; return els.every(e => Math.abs(e.getBoundingClientRect().top - top) < 2); };
   more.classList.add("ov");
   let over = false;
@@ -1747,6 +1748,7 @@ function fitBar(){
   more.classList.toggle("ov", over);
 }
 window.addEventListener("resize", fitBar);
+document.addEventListener("click", e=>{ if(barOpen && !e.target.closest("#gbar")){ barOpen = false; fitBar(); } });
 document.fonts && document.fonts.ready.then(fitBar);
 // أزرار الشريط بلغة الصفحة (تُستدعى عند تغيير اللغة)
 function setBar(){
