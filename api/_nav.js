@@ -45,6 +45,11 @@ const css = `
 .top > .brandmini{order:1}
 .top > .tr{order:3}
 .top > .gbar{order:4;flex-basis:100%;margin:6px 0 0}
+@media (min-width:761px){
+  /* الحاسوب: الصفان يبدآن من الطرف الأيسر معًا، فتحاذي حافة زر اللغة حافة المناسبات */
+  .top{justify-content:flex-end}
+  .top > .gbar{justify-content:flex-end}
+}
 .top > .setbtn{order:2}
 @media (max-width:760px){
   /* الهاتف: الشعار، الرئيسية، اللغة، المزيد في سطر واحد أعلى الصفحة */
