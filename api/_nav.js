@@ -45,6 +45,12 @@ const css = `
 .top > .brandmini{order:1}
 .top > .tr{order:2}
 .top > .gbar{order:3;flex-basis:100%;margin:6px 0 0}
+@media (min-width:761px){
+  /* الحاسوب: زر الإعدادات بجانب زر اللغة */
+  .top > .gbar{display:contents}
+  .top > .gbar > .gb{order:4}
+  .top > .gbar > a[href*="settings=1"]{order:3}
+}
 @media (max-width:760px){
   /* الهاتف: الشعار، الرئيسية، اللغة، المزيد في سطر واحد أعلى الصفحة */
   .top{display:grid;grid-template-columns:auto repeat(3,minmax(0,1fr));gap:8px;align-items:center}
