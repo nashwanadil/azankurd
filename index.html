@@ -122,8 +122,10 @@ applyTheme();
   .langwrap{position:relative}
   /* الشريط الأفقي بأزرار ذهبية */
   .topbar{max-width:980px;flex-wrap:wrap;gap:10px}
-  .gbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;order:2;flex-basis:100%;min-width:0}
-  .topbar > .langwrap{margin-inline-start:auto}
+  .gbar{display:contents}
+  /* الإعدادات بجانب زر اللغة في الطرف نفسه */
+  #settingsBtn{order:10;margin-inline-start:auto}
+  .topbar > .langwrap{order:11}
   .gbwide{display:contents}
   .gb{box-sizing:border-box;height:40px;line-height:1.3;display:inline-flex;align-items:center;justify-content:center;gap:7px;border:1.5px solid var(--gold);color:var(--gold);background:var(--card);border-radius:999px;padding:7px 13px;font-family:inherit;font-size:.88rem;font-weight:700;white-space:nowrap;text-decoration:none;cursor:pointer}
   .gb:hover{background:var(--hover)}
