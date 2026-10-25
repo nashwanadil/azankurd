@@ -1673,7 +1673,7 @@ function openSetup(){
   const box = document.getElementById("setupLangs"); box.innerHTML = "";
   LANG_ORDER.forEach(code=>{ const t = I18N[code];
     const b = document.createElement("button"); b.type = "button";
-    b.setAttribute("aria-pressed", code === lang ? "true" : "false");
+    b.setAttribute("aria-pressed", "false");
     b.innerHTML = `<img class="flag" alt="" src="${flagSrc(code)}"><span dir="${t.dir}">${t.label}</span>`;
     b.onclick = ()=>{
       setLang(code);
