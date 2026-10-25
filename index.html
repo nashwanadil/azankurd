@@ -421,7 +421,7 @@ applyTheme();
       <svg class="edit" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16v4zM14 6l4 4"/></svg>
     </button>
     <div class="next">
-      <div class="curline" id="curLine" hidden><i class="dot"></i><span id="curName"></span> <b id="curTime"></b></div>
+      <div class="curline" id="curLine" hidden><i class="dot"></i><span id="curLbl"></span><span id="curName"></span> <b id="curTime"></b></div>
       <div class="name"><span class="sub" data-i="nextPrayer"></span> <span id="nextName">—</span></div>
       <div class="count" id="countdown">--:--:--</div>
     </div>
@@ -936,6 +936,8 @@ function tick(){
   else { cur=evs[ci].k; start=evs[ci].d; end=ci+1<evs.length ? evs[ci+1].d : new Date(evs[0].d.getTime()+864e5); }
   const left=(end-now)/6e4, frac=left/Math.max(1,(end-start)/6e4);
   const col = cur==="Sunrise" || left<=20 ? "#d64545" : frac<=0.4 ? "#e8922e" : "#2e9e5b";
+  const CURLBL={ar:"الصلاة الآن:",ku:"نڤێژا نها:",en:"Now:",de:"Jetzt:",tr:"Şimdi:",fa:"اکنون:",ur:"ابھی:",fr:"Maintenant :",es:"Ahora:",it:"Ora:",nl:"Nu:",da:"Nu:",sv:"Nu:",ru:"Сейчас:",bs:"Sada:",id:"Sekarang:",ms:"Sekarang:",bn:"এখন:",ps:"اوس:",ha:"Yanzu:",sw:"Sasa:"};
+  document.getElementById("curLbl").textContent=(CURLBL[lang]||CURLBL.en)+" ";
   const cl=document.getElementById("curLine");
   cl.style.setProperty("--cur", col);
   document.getElementById("curName").textContent = L().names[cur];
