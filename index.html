@@ -927,7 +927,7 @@ function fmtTime(hhmm){
 function render(data, label){
   lastData = data; lastLabel = label;
   // الإعداد الأول ينتظر الموقع برسالة ترحيب، فنغلقه حين تصل المواقيت
-  if(!document.getElementById("setupStepWait").hidden) document.getElementById("setupOverlay").hidden = true;
+  if(!document.getElementById("setupStepWait").hidden){ store.set("setupDone","1"); document.getElementById("setupOverlay").hidden = true; }
   const t = L();
   timings = data.timings; tz = data.meta.timezone;
   const box = document.getElementById("times"); box.innerHTML = "";
@@ -1257,9 +1257,19 @@ async function runSearch(arg, statusEl){
 }
 function fallback(){
   if(lastQuery){ locState = null; renderNotice(); return; }   // نبقي آخر موقع محفوظ بدل مكة
+  // الإعداد الأول في التطبيق: لا نفتح مكة، بل ننتظر الموقع برسالة وزر تفعيل
+  if(IS_APP && store.get("setupDone","0") !== "1"){ showLocWait(); return; }
   renderNotice();
   getTimes({type:"coords", lat:21.42, lng:39.83, mecca:true}, {save:false})
     .catch(()=>{ document.getElementById("locText").textContent = L().notFound; });
+}
+
+function showLocWait(){
+  const t = L();
+  document.getElementById("setupWaitMsg").textContent = t.notFound;
+  document.getElementById("setupWaitGeo").textContent = t.btnEnable;
+  setupStep("setupStepWait");
+  document.getElementById("setupOverlay").hidden = false;
 }
 
 /* ---------- الاقتراحات أثناء الكتابة ---------- */
@@ -1703,6 +1713,7 @@ function setupStep(id){
 // الموقع: تلقائيًا (يطلب الإذن من المستخدم) أو بكتابة المدينة يدويًا
 document.getElementById("setupGeo").addEventListener("click", ()=>{ useLocation(); setupStep("setupStep2"); });
 document.getElementById("setupWaitGeo").addEventListener("click", ()=> useLocation());
+
 async function setupSearch(arg){
   const inp = document.getElementById("setupCityInput"), v = arg || inp.value.trim();
   const st = document.getElementById("setupStatus"), btn = document.getElementById("setupCityBtn");
