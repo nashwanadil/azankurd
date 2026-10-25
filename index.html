@@ -138,14 +138,18 @@ applyTheme();
   .navmenu a{color:var(--gold)!important;font-weight:600}
   @media (max-width:760px){
     /* الهاتف: الرئيسية، اللغة، المزيد في سطر واحد أعلى الصفحة */
-    .topbar{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+    .topbar{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
     .gbar{display:contents}
     #gbHome{order:1}
     .topbar > .langwrap{order:2;margin:0;min-width:0}
-    #langBtn{width:100%;justify-content:center;height:40px;box-sizing:border-box;padding:0 8px;min-width:0}
+    #langBtn{width:100%;justify-content:center;height:36px;box-sizing:border-box;padding:0 6px;min-width:0}
     #langName{display:none}
-    #langBtn .flag{width:25px;height:17px}
-    .gbmore{order:3;display:block}
+    #langBtn .flag{width:22px;height:15px}
+    /* الترس بين المزيد واللغة، وبلا نقاط في المزيد */
+    .topbar > #settingsBtn{display:flex;order:3;width:100%;padding:8px 6px;min-width:0;justify-content:center}
+    #settingsBtn span{display:none}
+    .gbmore{order:4;display:block}
+    #navBtn svg{display:none}
     .gb{width:100%;padding:8px 6px;min-width:0}
     .gb span{overflow:hidden;text-overflow:ellipsis}
     .gb.wide,.gbwide{display:none}
