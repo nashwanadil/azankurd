@@ -120,6 +120,7 @@ ${m(`/${lang}/qibla`, "qibla", lbl(QIBLABL, lang))}
 ${tools.map(([p, k, l]) => m(`/${lang}/${p}`, k, l)).join("\n")}
 ${m(`/?lang=${lang}&settings=1`, "gear", t.settings)}
 <hr>
+${m(`/${lang}/about`, "about", x.cAbout)}
 ${m(`/${lang}/privacy`, "privacy", x.cPrivacy)}
 ${m(`/${lang}/contact`, "contact", x.cContact)}
 </div></details></nav>`;

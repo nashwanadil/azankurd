@@ -451,7 +451,7 @@ applyTheme();
     </a>
   </section>
 
-  <nav class="icards" aria-label="links"><a data-page="contact" href="/ar/contact" class="icard"><span class="ii"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></span><span data-i="cContact"></span></a><a data-page="privacy" href="/ar/privacy" class="icard"><span class="ii"><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg></span><span data-i="cPrivacy"></span></a><button type="button" id="shareBtn" class="icard"><span class="ii"><svg viewBox="0 0 24 24"><path d="M21 3L10 14M21 3l-7 18-4-7-7-4z"/></svg></span><span data-i="cShare"></span></button></nav>
+  <nav class="icards" aria-label="links"><a data-page="about" href="/ar/about" class="icard"><span class="ii"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg></span><span data-i="cAbout"></span></a><a data-page="contact" href="/ar/contact" class="icard"><span class="ii"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></span><span data-i="cContact"></span></a><a data-page="privacy" href="/ar/privacy" class="icard"><span class="ii"><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg></span><span data-i="cPrivacy"></span></a><button type="button" id="shareBtn" class="icard"><span class="ii"><svg viewBox="0 0 24 24"><path d="M21 3L10 14M21 3l-7 18-4-7-7-4z"/></svg></span><span data-i="cShare"></span></button></nav>
   <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 
   <section class="azsec">
@@ -582,6 +582,7 @@ applyTheme();
     <div id="setupStepWait" hidden>
       <h3 id="setupWelcome"></h3>
       <div class="cstatus" id="setupWaitMsg"></div>
+      <button class="btn wide" type="button" id="setupWaitGeo"></button>
     </div>
   </div>
 </div>
@@ -603,7 +604,7 @@ applyTheme();
 <script>
 /* ---------- الترجمات ---------- */
 const I18N = {
-  ar:{home:"الرئيسية",atTimeLbl:"تنبيه عند دخول الوقت",cAbout:"عن الموقع",cContact:"اتصل بنا",cPrivacy:"سياسة الخصوصية",cShare:"أرسل لصديق",copied:"تم نسخ الرابط",advanced:"خيارات متقدمة",alertFor:"التنبيه للصلوات",beforeLbl:"تذكير قبل الصلاة (دقيقة)",iqamaLbl:"تذكير بالإقامة بعد الأذان (دقيقة)",extras:"تنبيهات إضافية",fajrEndLbl:"قبل نهاية وقت الفجر",jumuahLbl:"صلاة الجمعة",tBefore:"اقترب وقت صلاة {p}",tIqama:"حان وقت إقامة صلاة {p}",tFajrEnd:"اقترب الشروق، وينتهي وقت الفجر",tJumuah:"تذكير: صلاة الجمعة بعد نصف ساعة",tQiyam:"دخل الثلث الأخير من الليل",themes:{"earth": "العنابي والترابي", "emerald": "الزمردي", "night": "الأزرق الليلي", "royal": "البنفسجي", "teal": "الفيروزي", "onyx": "الرمادي والذهبي", "rose": "الوردي", "sand": "البرتقالي والرملي", "mono": "الأبيض والأسود", "sky": "السماوي"},notify:"تنبيه وقت الصلاة",on:"مفعّل",off:"متوقف",notifyOk:"سيصلك إشعار عند دخول وقت كل صلاة.",notifyDenied:"الإشعارات محجوبة في متصفحك. اسمح بها من إعدادات الموقع في المتصفح، ثم حاول مجددًا.",notifyIos:"على iPhone وiPad: ثبّت التطبيق على الشاشة الرئيسية أولًا، ثم فعّل التنبيه من داخله.",notifyNo:"الإشعارات غير متاحة على هذا الجهاز.",notifyTitle:"حان وقت صلاة {p}",thisWeek:"مواقيت الأسبوع",dir:"rtl",allCountries:"كل البلدان",monthly:"الجدول الشهري والطباعة",done:"تم",searchYourCity:"ابحث عن مدينتك",installTitle:"ثبّت التطبيق على هاتفك",installText:"افتحه بلمسة من الشاشة الرئيسية كأي تطبيق، ويعمل حتى دون إنترنت.",installBtn:"تثبيت",noThanks:"لا، شكرًا",iosHelp:"اضغط زر المشاركة في Safari، ثم اختر «إضافة إلى الشاشة الرئيسية».",installApp:"تثبيت التطبيق",mecca:"مكة المكرمة",tryLatin:"لم نجد هذه المدينة. جرّب كتابة الاسم بالأحرف الإنجليزية، مثل Duhok.",searching:"جارٍ البحث…",updated:"تم تحديث المدينة",cityLabel:"المدينة",noteDenied:"الوصول إلى موقعك محجوب، لذلك تظهر مواقيت مكة المكرمة. ابحث عن مدينتك أو استعد الموقع.",noteUnknown:"لم يُحدَّد موقعك بعد، لذلك تظهر مواقيت مكة المكرمة. ابحث عن مدينتك أو فعّل الموقع.",btnRestore:"استعادة الموقع",btnEnable:"تفعيل الموقع",helpDenied:"المتصفح يمنع الموقع. اضغط على رمز القفل بجانب عنوان الصفحة، واسمح بالموقع، ثم أعد تحميل الصفحة.",appearance:"المظهر",light:"فاتح",dark:"داكن",color:"اللون",label:"العربية",logo:"أذان كُرد",
+  ar:{home:"الرئيسية",atTimeLbl:"تنبيه عند دخول الوقت",cAbout:"عن الموقع",cContact:"اتصل بنا",cPrivacy:"سياسة الخصوصية",cShare:"أرسل لصديق",copied:"تم نسخ الرابط",advanced:"خيارات متقدمة",alertFor:"التنبيه للصلوات",beforeLbl:"تذكير قبل الصلاة (دقيقة)",iqamaLbl:"تذكير بالإقامة بعد الأذان (دقيقة)",extras:"تنبيهات إضافية",fajrEndLbl:"قبل نهاية وقت الفجر",jumuahLbl:"صلاة الجمعة",tBefore:"اقترب وقت صلاة {p}",tIqama:"حان وقت إقامة صلاة {p}",tFajrEnd:"اقترب الشروق، وينتهي وقت الفجر",tJumuah:"تذكير: صلاة الجمعة بعد نصف ساعة",tQiyam:"دخل الثلث الأخير من الليل",themes:{"earth": "العنابي والترابي", "emerald": "الزمردي", "night": "الأزرق الليلي", "royal": "البنفسجي", "teal": "الفيروزي", "onyx": "الرمادي والذهبي", "rose": "الوردي", "sand": "البرتقالي والرملي", "mono": "الأبيض والأسود", "sky": "السماوي"},notify:"تنبيه وقت الصلاة",on:"مفعّل",off:"متوقف",notifyOk:"سيصلك إشعار عند دخول وقت كل صلاة.",notifyDenied:"الإشعارات محجوبة في متصفحك. اسمح بها من إعدادات الموقع في المتصفح، ثم حاول مجددًا.",notifyIos:"على iPhone وiPad: ثبّت التطبيق على الشاشة الرئيسية أولًا، ثم فعّل التنبيه من داخله.",notifyNo:"الإشعارات غير متاحة على هذا الجهاز.",notifyTitle:"حان وقت صلاة {p}",thisWeek:"مواقيت الأسبوع",dir:"rtl",allCountries:"كل البلدان",monthly:"الجدول الشهري والطباعة",done:"تم",searchYourCity:"ابحث عن مدينتك",installTitle:"ثبّت التطبيق على هاتفك",installText:"افتحه بلمسة من الشاشة الرئيسية كأي تطبيق، ويعمل حتى دون إنترنت.",installBtn:"تثبيت",noThanks:"لا، شكرًا",iosHelp:"اضغط زر المشاركة في Safari، ثم اختر «إضافة إلى الشاشة الرئيسية».",installApp:"تثبيت التطبيق",mecca:"مكة المكرمة",tryLatin:"لم نجد هذه المدينة. جرّب كتابة الاسم بالأحرف الإنجليزية، مثل Duhok.",searching:"جارٍ البحث عن موقعك…",updated:"تم تحديث المدينة",cityLabel:"المدينة",noteDenied:"الوصول إلى موقعك محجوب، لذلك تظهر مواقيت مكة المكرمة. ابحث عن مدينتك أو استعد الموقع.",noteUnknown:"لم يُحدَّد موقعك بعد، لذلك تظهر مواقيت مكة المكرمة. ابحث عن مدينتك أو فعّل الموقع.",btnRestore:"استعادة الموقع",btnEnable:"تفعيل الموقع",helpDenied:"المتصفح يمنع الموقع. اضغط على رمز القفل بجانب عنوان الصفحة، واسمح بالموقع، ثم أعد تحميل الصفحة.",appearance:"المظهر",light:"فاتح",dark:"داكن",color:"اللون",label:"العربية",logo:"أذان كُرد",
     tagline:"الأذان ومواقيت الصلاة لكل مكان في العالم",todayTimes:"مواقيت الصلاة اليوم",nextPrayer:"الصلاة القادمة",
     locating:"جارٍ تحديد الموقع…",cityPh:"اكتب مدينتك (مثلاً: Dohuk)",search:"بحث",myLocation:"موقعي",
     adhanText:"نص الأذان",notFound:"لم نجد هذه المدينة، جرّب اسماً آخر.",yourLoc:"موقعك الحالي",
@@ -1612,7 +1613,7 @@ function buildNav(){
   const a = (href, ic, label) => `<a role="menuitem" href="${href}"><svg viewBox="0 0 24 24">${NAVIC[ic]}</svg><span>${String(label).replace(/</g,"&lt;")}</span></a>`;
   m.innerHTML = a(`/${lang}/qibla`, "qibla", toolLbl("qibla")) + BAR_TOOLS.map(([p, ic]) => a(`/${lang}/${p}`, ic, barLbl(p))).join("")
     + `<a role="menuitem" href="#" data-act="settings"><svg viewBox="0 0 24 24">${NAVIC.gear}</svg><span>${String(t.settings).replace(/</g,"&lt;")}</span></a>`
-    + "<hr>" + a(`/${lang}/privacy`, "privacy", t.cPrivacy) + a(`/${lang}/contact`, "contact", t.cContact);
+    + "<hr>" + a(`/${lang}/about`, "about", t.cAbout) + a(`/${lang}/privacy`, "privacy", t.cPrivacy) + a(`/${lang}/contact`, "contact", t.cContact);
 }
 document.getElementById("navMenu").addEventListener("click", e=>{
   const s = e.target.closest('[data-act="settings"]'); if(!s) return;
@@ -1696,6 +1697,7 @@ function setupStep(id){
 }
 // الموقع: تلقائيًا (يطلب الإذن من المستخدم) أو بكتابة المدينة يدويًا
 document.getElementById("setupGeo").addEventListener("click", ()=>{ useLocation(); setupStep("setupStep2"); });
+document.getElementById("setupWaitGeo").addEventListener("click", ()=> useLocation());
 async function setupSearch(arg){
   const inp = document.getElementById("setupCityInput"), v = arg || inp.value.trim();
   const st = document.getElementById("setupStatus"), btn = document.getElementById("setupCityBtn");
@@ -1714,6 +1716,7 @@ document.querySelectorAll("[data-sfmt]").forEach(b=> b.addEventListener("click",
   const WELCOME = { ar:"أهلًا بك", ku:"ب خێر هاتی", en:"Welcome", de:"Willkommen", tr:"Hoş geldiniz", fa:"خوش آمدید", ur:"خوش آمدید", fr:"Bienvenue", es:"Bienvenido", it:"Benvenuto", nl:"Welkom", da:"Velkommen", sv:"Välkommen", ru:"Добро пожаловать", bs:"Dobro došli", id:"Selamat datang", ms:"Selamat datang", bn:"স্বাগতম", ps:"ښه راغلاست", ha:"Barka da zuwa", sw:"Karibu" };
   document.getElementById("setupWelcome").textContent = WELCOME[lang] || WELCOME.en;
   document.getElementById("setupWaitMsg").textContent = L().searching || "";
+  document.getElementById("setupWaitGeo").textContent = L().btnEnable;
   setupStep("setupStepWait");
 }));
 if(IS_APP && store.get("setupDone","0") !== "1") openSetup();
