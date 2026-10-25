@@ -223,6 +223,7 @@ applyTheme();
   /* المواقيت */
   .next{text-align:center;margin-bottom:18px}
   .next .sub{font-weight:700}
+  .next .name .sub{display:inline;font-size:1rem;margin-inline-end:6px}
   .next .name{font-size:1.6rem;color:var(--title);font-weight:700}
   .next .count{font-size:3.2rem;font-variant-numeric:tabular-nums;letter-spacing:2px;direction:ltr;color:var(--gold);font-weight:800}
   /* الهاتف: نضغط المسافات قليلًا حتى يظهر صف المواقيت الأول كاملًا */
@@ -309,7 +310,7 @@ applyTheme();
   .cityline .clabel::after{content:":"}
   .cityline{flex-wrap:nowrap;max-width:100%}
   .cityline b{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .curline{display:flex;align-items:center;justify-content:center;gap:8px;margin:-6px auto 14px;font-size:1.05rem;font-weight:700;color:var(--cur,#2e9e5b)}
+  .curline{display:flex;align-items:center;justify-content:center;gap:8px;margin:0 auto 6px;font-size:1.05rem;font-weight:700;color:var(--cur,#2e9e5b)}
   .curline[hidden]{display:none}
   .curline .dot{width:10px;height:10px;border-radius:50%;background:var(--cur,#2e9e5b);flex:none}
   .curline b{font-variant-numeric:tabular-nums;direction:ltr;display:inline-block}
@@ -419,10 +420,9 @@ applyTheme();
       <b id="cityName"></b>
       <svg class="edit" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16v4zM14 6l4 4"/></svg>
     </button>
-    <div class="curline" id="curLine" hidden><i class="dot"></i><span id="curName"></span> <b id="curTime"></b></div>
     <div class="next">
-      <div class="sub" data-i="nextPrayer"></div>
-      <div class="name" id="nextName">—</div>
+      <div class="curline" id="curLine" hidden><i class="dot"></i><span id="curName"></span> <b id="curTime"></b></div>
+      <div class="name"><span class="sub" data-i="nextPrayer"></span> <span id="nextName">—</span></div>
       <div class="count" id="countdown">--:--:--</div>
     </div>
     <div class="times" id="times"></div>
