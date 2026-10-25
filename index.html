@@ -301,6 +301,8 @@ applyTheme();
   .sheet-head h3{font-size:1.1rem;color:var(--gold);font-weight:600}
   .iconbtn{background:none;border:1px solid var(--line);color:var(--text);border-radius:10px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer}
   .iconbtn:hover{background:var(--hover)}
+  .closebtn{width:40px;height:40px;border-radius:50%;background:var(--inner);border:1.5px solid var(--line);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+  .closebtn svg.ic{width:20px;height:20px;stroke-width:2.4}
   .field{margin-bottom:16px}
   .field label{display:block;color:var(--muted);font-size:.85rem;margin-bottom:6px}
   .field select{width:100%;background:var(--inner);color:var(--text);border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-family:inherit;font-size:.92rem}
@@ -470,7 +472,7 @@ applyTheme();
   <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
     <div class="sheet-head">
       <h3 id="settingsTitle" data-i="settings"></h3>
-      <button class="iconbtn" id="closeSettings" type="button"><svg class="ic" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+      <button class="iconbtn closebtn" id="closeSettings" type="button"><svg class="ic" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
     </div>
     <div class="field">
       <label for="citySelect" data-i="cityLabel"></label>
