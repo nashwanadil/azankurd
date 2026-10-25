@@ -53,9 +53,8 @@ const css = `
 .top > .setbtn{order:2}
 @media (max-width:760px){
   /* الهاتف: الشعار، الرئيسية، اللغة، المزيد في سطر واحد أعلى الصفحة */
-  .top{display:grid;grid-template-columns:auto repeat(3,minmax(0,1fr));gap:8px;align-items:center}
+  .top{display:grid;grid-template-columns:auto repeat(4,minmax(0,1fr));gap:8px;align-items:center}
   .top > .gbar,.top > .tr{display:contents}
-  .top > .setbtn{display:none}
   html .top > .brandmini{order:0;font-size:0!important;gap:0}
   html[dir=ltr] .gb{font-size:.8rem;gap:5px}
   .gb svg{width:16px;height:16px}
@@ -66,10 +65,15 @@ const css = `
   .top .langs summary{width:100%;justify-content:center;box-sizing:border-box;height:40px}
   .top .langs .lname{display:none}
   .top .langs summary .flag{width:25px;height:17px}
-  .gbmore{order:3;display:block}
+  .gbmore{order:4;display:block}
+  .gbmore > summary svg{display:none}
+  .top .langs summary{height:36px}
+  .top .langs summary .flag{width:22px;height:15px}
   .gb{width:100%;padding:8px 6px;min-width:0}
   .gb span{overflow:hidden;text-overflow:ellipsis}
   .gb.wide{display:none}
+  .top > .setbtn{display:flex;order:3;width:100%;padding:8px 6px;min-width:0;justify-content:center}
+  .top > .setbtn span{display:none}
 }
 
 .tr{display:flex;align-items:center;gap:8px}
