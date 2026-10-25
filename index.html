@@ -582,7 +582,7 @@ applyTheme();
     <div id="setupStepWait" hidden>
       <h3 id="setupWelcome"></h3>
       <div class="cstatus" id="setupWaitMsg"></div>
-      <button class="btn wide" type="button" id="setupWaitGeo"></button>
+      <button class="btn wide" type="button" id="setupWaitGeo" hidden></button>
     </div>
   </div>
 </div>
@@ -1268,6 +1268,7 @@ function showLocWait(){
   const t = L();
   document.getElementById("setupWaitMsg").textContent = t.noLoc || (locState === "denied" ? t.noteDenied : t.noteUnknown);
   document.getElementById("setupWaitGeo").textContent = t.btnEnable;
+  document.getElementById("setupWaitGeo").hidden = false;
   setupStep("setupStepWait");
   document.getElementById("setupOverlay").hidden = false;
 }
@@ -1732,7 +1733,7 @@ document.querySelectorAll("[data-sfmt]").forEach(b=> b.addEventListener("click",
   const WELCOME = { ar:"أهلًا بك", ku:"ب خێر هاتی", en:"Welcome", de:"Willkommen", tr:"Hoş geldiniz", fa:"خوش آمدید", ur:"خوش آمدید", fr:"Bienvenue", es:"Bienvenido", it:"Benvenuto", nl:"Welkom", da:"Velkommen", sv:"Välkommen", ru:"Добро пожаловать", bs:"Dobro došli", id:"Selamat datang", ms:"Selamat datang", bn:"স্বাগতম", ps:"ښه راغلاست", ha:"Barka da zuwa", sw:"Karibu" };
   document.getElementById("setupWelcome").textContent = WELCOME[lang] || WELCOME.en;
   document.getElementById("setupWaitMsg").textContent = L().searching || "";
-  document.getElementById("setupWaitGeo").textContent = L().btnEnable;
+  document.getElementById("setupWaitGeo").hidden = true;
   setupStep("setupStepWait");
 }));
 if(IS_APP && store.get("setupDone","0") !== "1") openSetup();
