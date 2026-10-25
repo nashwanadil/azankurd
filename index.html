@@ -290,6 +290,7 @@ applyTheme();
   .setup .langs button{display:flex;align-items:center;gap:8px;background:var(--inner);border:1px solid var(--line);color:var(--text);border-radius:10px;padding:10px;font-family:inherit;font-size:.95rem;cursor:pointer}
   .setup .langs button[aria-pressed=true]{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold)}
   .setup .langs .flag{width:22px;height:16px;border-radius:3px;object-fit:cover;flex:none}
+  .setup .cityrow{margin-top:10px}
   .setup .fmts{display:grid;gap:10px;margin-bottom:16px}
   .setup .fmts button{background:var(--inner);border:1px solid var(--line);color:var(--text);border-radius:12px;padding:16px;font-family:'Noto Sans',sans-serif;font-size:1.4rem;direction:ltr;cursor:pointer}
   .setup .fmts button[aria-pressed=true]{border-color:var(--gold);color:var(--gold);box-shadow:0 0 0 1px var(--gold)}
@@ -561,6 +562,15 @@ applyTheme();
     <div id="setupStep1">
       <h3 id="setupTitle">اختر اللغة · Choose language</h3>
       <div class="langs" id="setupLangs"></div>
+    </div>
+    <div id="setupStepLoc" hidden>
+      <h3 data-i="cityLabel"></h3>
+      <button class="btn wide" type="button" id="setupGeo"><span data-i="myLocation"></span></button>
+      <div class="cityrow">
+        <div class="acwrap"><input id="setupCityInput" autocomplete="off"><div class="aclist" id="acSetup" hidden></div></div>
+        <button class="btn" type="button" id="setupCityBtn" data-i="search"></button>
+      </div>
+      <div class="cstatus" id="setupStatus" role="status" aria-live="polite"></div>
     </div>
     <div id="setupStep2" hidden>
       <h3 data-i="timeFormat"></h3>
@@ -1640,7 +1650,7 @@ applyLang();
 })();
 (async ()=>{
   const saved = readJSON("lastQuery"), cache = readJSON("cache");
-  if(!saved){ useLocation(); return; }
+  if(!saved){ if(!(IS_APP && store.get("setupDone","0") !== "1")) useLocation(); return; }
   // اعرض المواقيت المحفوظة فوراً، ثم حدّثها في الخلفية
   if(cache && cache.data && JSON.stringify(cache.q) === JSON.stringify(saved)
      && cache.methodChoice === methodChoice && cache.asrChoice === asrChoice){
@@ -1667,14 +1677,29 @@ function openSetup(){
     b.innerHTML = `<img class="flag" alt="" src="${flagSrc(code)}"><span dir="${t.dir}">${t.label}</span>`;
     b.onclick = ()=>{
       setLang(code);
-      document.getElementById("setupStep1").hidden = true;
-      document.getElementById("setupStep2").hidden = false;
-      document.querySelectorAll("[data-sfmt]").forEach(x=> x.setAttribute("aria-pressed", x.dataset.sfmt === timeFmt ? "true" : "false"));
+      document.getElementById("setupCityInput").placeholder = L().cityPh;
+      setupStep("setupStepLoc");
     };
     box.appendChild(b);
   });
   document.getElementById("setupOverlay").hidden = false;
 }
+function setupStep(id){
+  ["setupStep1","setupStepLoc","setupStep2"].forEach(x=> document.getElementById(x).hidden = x !== id);
+  if(id === "setupStep2") document.querySelectorAll("[data-sfmt]").forEach(x=> x.setAttribute("aria-pressed", x.dataset.sfmt === timeFmt ? "true" : "false"));
+}
+// الموقع: تلقائيًا (يطلب الإذن من المستخدم) أو بكتابة المدينة يدويًا
+document.getElementById("setupGeo").addEventListener("click", ()=>{ useLocation(); setupStep("setupStep2"); });
+async function setupSearch(arg){
+  const inp = document.getElementById("setupCityInput"), v = arg || inp.value.trim();
+  const st = document.getElementById("setupStatus"), btn = document.getElementById("setupCityBtn");
+  if(!v) return;
+  hideAC("acSetup"); btn.disabled = true;
+  if(await runSearch(v, st)){ inp.value = ""; st.textContent = ""; st.className = "cstatus"; setupStep("setupStep2"); }
+  btn.disabled = false;
+}
+document.getElementById("setupCityBtn").addEventListener("click", ()=> setupSearch());
+attachAC("setupCityInput", "acSetup", p => setupSearch(p), ()=> setupSearch());
 document.querySelectorAll("[data-sfmt]").forEach(b=> b.addEventListener("click", ()=>{
   timeFmt = b.dataset.sfmt; store.set("fmt", timeFmt); store.set("setupDone","1");
   document.getElementById("setupOverlay").hidden = true;
