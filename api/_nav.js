@@ -54,6 +54,7 @@ const css = `
   .gb svg{width:16px;height:16px}
   .gb.gbhome{order:1}
   .gb.gbhome span{display:none}
+  .gb.gbhome svg{width:22px;height:22px}
   .top .langs{order:2;min-width:0}
   .top .langs summary{width:100%;justify-content:center;box-sizing:border-box;height:40px}
   .top .langs .lname{display:none}
