@@ -1576,7 +1576,7 @@ async function cancelAppAlerts(){
   const ids = (pending.notifications || []).filter(n => n.id >= 1000 && n.id < 3000).map(n => ({id:n.id}));
   if(ids.length) await LN.cancel({notifications: ids});
 }
-// نجدول سنة كاملة من تقويم 13 شهرًا، فلا يُفتح التطبيق كل يوم ولا يتوقف التنبيه
+// أندرويد يسمح بـ 500 منبّه كحد أقصى لكل تطبيق، فنجدول 90 يومًا (نحو 450 منبّهًا) ونتجدد عند كل فتح
 async function alertDays(){
   const q = lastQuery, g = lastData && lastData.date && lastData.date.gregorian;
   if(!q || !g || !usedMethod) return [];
@@ -1585,7 +1585,7 @@ async function alertDays(){
   const months = Array.from({length:13}, (_, i) => { const d = new Date(Date.UTC(y, m - 1 + i, 1)); return [d.getUTCFullYear(), d.getUTCMonth() + 1]; });
   const get = async (yy, mm) => { const j = await (await fetch(calUrl(q, usedMethod, yy, mm))).json(); return j.code === 200 ? j.data : []; };
   const all = (await Promise.all(months.map(([yy, mm]) => get(yy, mm)))).flat();
-  return all.filter(x => { const [dd, mm, yy] = x.date.gregorian.date.split("-"); return `${yy}-${mm}-${dd}` >= todayKey; }).slice(0, 365);
+  return all.filter(x => { const [dd, mm, yy] = x.date.gregorian.date.split("-"); return `${yy}-${mm}-${dd}` >= todayKey; }).slice(0, 90);
 }
 async function scheduleAppAlerts(){
   const LN = appLN();
@@ -1609,7 +1609,8 @@ async function scheduleAppAlerts(){
     });
   });
   await cancelAppAlerts();
-  for(let i = 0; i < list.length; i += 100) await LN.schedule({ notifications: list.slice(i, i + 100) });
+  const capped = list.slice(0, 450);   // سقف أندرويد 500، ونترك هامشًا
+  for(let i = 0; i < capped.length; i += 100) await LN.schedule({ notifications: capped.slice(i, i + 100) });
   store.set("alertsKey", key); store.set("alertsAt", String(Date.now()));
 }
 async function setNotifyApp(on){
