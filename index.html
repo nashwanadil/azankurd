@@ -346,7 +346,7 @@ applyTheme();
   .sw.more[aria-expanded=true] .chev{transform:rotate(180deg)}
   .sw .dots i{width:22px;height:22px;border-radius:50%;border:2px solid var(--card);box-shadow:0 0 0 1px var(--line)}
   .sw .dots i+i{margin-inline-start:-8px}
-  .sw .nm{flex:1;min-width:0;overflow-wrap:anywhere}
+  .sw .nm{flex:1;min-width:0;overflow-wrap:break-word}
   .sw .ok{width:16px;height:16px;flex:none;stroke:var(--green);fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;visibility:hidden}
   .sw[aria-pressed=true]{border-color:var(--green);box-shadow:0 0 0 1px var(--green) inset}
   .sw[aria-pressed=true] .ok{visibility:visible}
@@ -579,6 +579,10 @@ applyTheme();
         <button type="button" data-sfmt="12">1:00 PM</button>
       </div>
     </div>
+    <div id="setupStepWait" hidden>
+      <h3 id="setupWelcome"></h3>
+      <div class="cstatus" id="setupWaitMsg"></div>
+    </div>
   </div>
 </div>
 <div class="overlay install" id="installOverlay" hidden>
@@ -599,7 +603,7 @@ applyTheme();
 <script>
 /* ---------- الترجمات ---------- */
 const I18N = {
-  ar:{home:"الرئيسية",atTimeLbl:"تنبيه عند دخول الوقت",cAbout:"عن الموقع",cContact:"اتصل بنا",cPrivacy:"سياسة الخصوصية",cShare:"أرسل لصديق",copied:"تم نسخ الرابط",advanced:"خيارات متقدمة",alertFor:"التنبيه للصلوات",beforeLbl:"تذكير قبل الصلاة (دقيقة)",iqamaLbl:"تذكير بالإقامة بعد الأذان (دقيقة)",extras:"تنبيهات إضافية",fajrEndLbl:"قبل نهاية وقت الفجر",jumuahLbl:"صلاة الجمعة",tBefore:"اقترب وقت صلاة {p}",tIqama:"حان وقت إقامة صلاة {p}",tFajrEnd:"اقترب الشروق، وينتهي وقت الفجر",tJumuah:"تذكير: صلاة الجمعة بعد نصف ساعة",tQiyam:"دخل الثلث الأخير من الليل",themes:{"earth": "العنابي والترابي", "emerald": "الزمردي", "night": "الأزرق الليلي", "royal": "البنفسجي", "teal": "الفيروزي", "onyx": "الرمادي والذهبي", "rose": "الوردي", "sand": "البرتقالي والرملي", "mono": "الأبيض والأسود", "sky": "السماوي"},notify:"تنبيه وقت الصلاة",on:"مفعّل",off:"متوقف",notifyOk:"سيصلك إشعار عند دخول وقت كل صلاة.",notifyDenied:"الإشعارات محجوبة في متصفحك. اسمح بها من إعدادات الموقع في المتصفح، ثم حاول مجددًا.",notifyIos:"على iPhone وiPad: ثبّت التطبيق على الشاشة الرئيسية أولًا، ثم فعّل التنبيه من داخله.",notifyNo:"متصفحك لا يدعم الإشعارات.",notifyTitle:"حان وقت صلاة {p}",thisWeek:"مواقيت الأسبوع",dir:"rtl",allCountries:"كل البلدان",monthly:"الجدول الشهري والطباعة",done:"تم",searchYourCity:"ابحث عن مدينتك",installTitle:"ثبّت التطبيق على هاتفك",installText:"افتحه بلمسة من الشاشة الرئيسية كأي تطبيق، ويعمل حتى دون إنترنت.",installBtn:"تثبيت",noThanks:"لا، شكرًا",iosHelp:"اضغط زر المشاركة في Safari، ثم اختر «إضافة إلى الشاشة الرئيسية».",installApp:"تثبيت التطبيق",mecca:"مكة المكرمة",tryLatin:"لم نجد هذه المدينة. جرّب كتابة الاسم بالأحرف الإنجليزية، مثل Duhok.",searching:"جارٍ البحث…",updated:"تم تحديث المدينة",cityLabel:"المدينة",noteDenied:"الوصول إلى موقعك محجوب، لذلك تظهر مواقيت مكة المكرمة. ابحث عن مدينتك أو استعد الموقع.",noteUnknown:"لم يُحدَّد موقعك بعد، لذلك تظهر مواقيت مكة المكرمة. ابحث عن مدينتك أو فعّل الموقع.",btnRestore:"استعادة الموقع",btnEnable:"تفعيل الموقع",helpDenied:"المتصفح يمنع الموقع. اضغط على رمز القفل بجانب عنوان الصفحة، واسمح بالموقع، ثم أعد تحميل الصفحة.",appearance:"المظهر",light:"فاتح",dark:"داكن",color:"اللون",label:"العربية",logo:"أذان كُرد",
+  ar:{home:"الرئيسية",atTimeLbl:"تنبيه عند دخول الوقت",cAbout:"عن الموقع",cContact:"اتصل بنا",cPrivacy:"سياسة الخصوصية",cShare:"أرسل لصديق",copied:"تم نسخ الرابط",advanced:"خيارات متقدمة",alertFor:"التنبيه للصلوات",beforeLbl:"تذكير قبل الصلاة (دقيقة)",iqamaLbl:"تذكير بالإقامة بعد الأذان (دقيقة)",extras:"تنبيهات إضافية",fajrEndLbl:"قبل نهاية وقت الفجر",jumuahLbl:"صلاة الجمعة",tBefore:"اقترب وقت صلاة {p}",tIqama:"حان وقت إقامة صلاة {p}",tFajrEnd:"اقترب الشروق، وينتهي وقت الفجر",tJumuah:"تذكير: صلاة الجمعة بعد نصف ساعة",tQiyam:"دخل الثلث الأخير من الليل",themes:{"earth": "العنابي والترابي", "emerald": "الزمردي", "night": "الأزرق الليلي", "royal": "البنفسجي", "teal": "الفيروزي", "onyx": "الرمادي والذهبي", "rose": "الوردي", "sand": "البرتقالي والرملي", "mono": "الأبيض والأسود", "sky": "السماوي"},notify:"تنبيه وقت الصلاة",on:"مفعّل",off:"متوقف",notifyOk:"سيصلك إشعار عند دخول وقت كل صلاة.",notifyDenied:"الإشعارات محجوبة في متصفحك. اسمح بها من إعدادات الموقع في المتصفح، ثم حاول مجددًا.",notifyIos:"على iPhone وiPad: ثبّت التطبيق على الشاشة الرئيسية أولًا، ثم فعّل التنبيه من داخله.",notifyNo:"الإشعارات غير متاحة على هذا الجهاز.",notifyTitle:"حان وقت صلاة {p}",thisWeek:"مواقيت الأسبوع",dir:"rtl",allCountries:"كل البلدان",monthly:"الجدول الشهري والطباعة",done:"تم",searchYourCity:"ابحث عن مدينتك",installTitle:"ثبّت التطبيق على هاتفك",installText:"افتحه بلمسة من الشاشة الرئيسية كأي تطبيق، ويعمل حتى دون إنترنت.",installBtn:"تثبيت",noThanks:"لا، شكرًا",iosHelp:"اضغط زر المشاركة في Safari، ثم اختر «إضافة إلى الشاشة الرئيسية».",installApp:"تثبيت التطبيق",mecca:"مكة المكرمة",tryLatin:"لم نجد هذه المدينة. جرّب كتابة الاسم بالأحرف الإنجليزية، مثل Duhok.",searching:"جارٍ البحث…",updated:"تم تحديث المدينة",cityLabel:"المدينة",noteDenied:"الوصول إلى موقعك محجوب، لذلك تظهر مواقيت مكة المكرمة. ابحث عن مدينتك أو استعد الموقع.",noteUnknown:"لم يُحدَّد موقعك بعد، لذلك تظهر مواقيت مكة المكرمة. ابحث عن مدينتك أو فعّل الموقع.",btnRestore:"استعادة الموقع",btnEnable:"تفعيل الموقع",helpDenied:"المتصفح يمنع الموقع. اضغط على رمز القفل بجانب عنوان الصفحة، واسمح بالموقع، ثم أعد تحميل الصفحة.",appearance:"المظهر",light:"فاتح",dark:"داكن",color:"اللون",label:"العربية",logo:"أذان كُرد",
     tagline:"الأذان ومواقيت الصلاة لكل مكان في العالم",todayTimes:"مواقيت الصلاة اليوم",nextPrayer:"الصلاة القادمة",
     locating:"جارٍ تحديد الموقع…",cityPh:"اكتب مدينتك (مثلاً: Dohuk)",search:"بحث",myLocation:"موقعي",
     adhanText:"نص الأذان",notFound:"لم نجد هذه المدينة، جرّب اسماً آخر.",yourLoc:"موقعك الحالي",
@@ -921,6 +925,8 @@ function fmtTime(hhmm){
 /* ---------- المواقيت ---------- */
 function render(data, label){
   lastData = data; lastLabel = label;
+  // الإعداد الأول ينتظر الموقع برسالة ترحيب، فنغلقه حين تصل المواقيت
+  if(!document.getElementById("setupStepWait").hidden) document.getElementById("setupOverlay").hidden = true;
   const t = L();
   timings = data.timings; tz = data.meta.timezone;
   const box = document.getElementById("times"); box.innerHTML = "";
@@ -1673,7 +1679,7 @@ function openSetup(){
   const box = document.getElementById("setupLangs"); box.innerHTML = "";
   LANG_ORDER.forEach(code=>{ const t = I18N[code];
     const b = document.createElement("button"); b.type = "button";
-    b.setAttribute("aria-pressed", code === lang ? "true" : "false");
+    b.setAttribute("aria-pressed", "false");
     b.innerHTML = `<img class="flag" alt="" src="${flagSrc(code)}"><span dir="${t.dir}">${t.label}</span>`;
     b.onclick = ()=>{
       setLang(code);
@@ -1685,7 +1691,7 @@ function openSetup(){
   document.getElementById("setupOverlay").hidden = false;
 }
 function setupStep(id){
-  ["setupStep1","setupStepLoc","setupStep2"].forEach(x=> document.getElementById(x).hidden = x !== id);
+  ["setupStep1","setupStepLoc","setupStep2","setupStepWait"].forEach(x=> document.getElementById(x).hidden = x !== id);
   if(id === "setupStep2") document.querySelectorAll("[data-sfmt]").forEach(x=> x.setAttribute("aria-pressed", x.dataset.sfmt === timeFmt ? "true" : "false"));
 }
 // الموقع: تلقائيًا (يطلب الإذن من المستخدم) أو بكتابة المدينة يدويًا
@@ -1702,8 +1708,13 @@ document.getElementById("setupCityBtn").addEventListener("click", ()=> setupSear
 attachAC("setupCityInput", "acSetup", p => setupSearch(p), ()=> setupSearch());
 document.querySelectorAll("[data-sfmt]").forEach(b=> b.addEventListener("click", ()=>{
   timeFmt = b.dataset.sfmt; store.set("fmt", timeFmt); store.set("setupDone","1");
-  document.getElementById("setupOverlay").hidden = true;
-  fillSettings(); if(lastData) render(lastData, lastLabel);
+  fillSettings();
+  if(lastData){ document.getElementById("setupOverlay").hidden = true; render(lastData, lastLabel); return; }
+  // لم يُعرف الموقع بعد: رسالة ترحيب بدل الشاشة الرئيسية إلى أن تصل المواقيت
+  const WELCOME = { ar:"أهلًا بك", ku:"ب خێر هاتی", en:"Welcome", de:"Willkommen", tr:"Hoş geldiniz", fa:"خوش آمدید", ur:"خوش آمدید", fr:"Bienvenue", es:"Bienvenido", it:"Benvenuto", nl:"Welkom", da:"Velkommen", sv:"Välkommen", ru:"Добро пожаловать", bs:"Dobro došli", id:"Selamat datang", ms:"Selamat datang", bn:"স্বাগতম", ps:"ښه راغلاست", ha:"Barka da zuwa", sw:"Karibu" };
+  document.getElementById("setupWelcome").textContent = WELCOME[lang] || WELCOME.en;
+  document.getElementById("setupWaitMsg").textContent = L().searching || "";
+  setupStep("setupStepWait");
 }));
 if(IS_APP && store.get("setupDone","0") !== "1") openSetup();
 
