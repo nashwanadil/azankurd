@@ -121,9 +121,12 @@ applyTheme();
   .pill[aria-expanded=true] .chev{transform:rotate(180deg)}
   .langwrap{position:relative}
   /* الشريط الأفقي بأزرار ذهبية */
-  .topbar{max-width:980px;flex-wrap:wrap;gap:10px}
+  .topbar{max-width:980px;flex-wrap:wrap;gap:10px;justify-content:flex-start}
   .gbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;order:2;flex-basis:100%;min-width:0}
-  .topbar > .langwrap{margin-inline-start:auto}
+  /* الحاسوب: زر الإعدادات على يمين زر اللغة مباشرة، وشريط الأزرار في صف مستقل */
+  .topbar > .gbar{order:3}
+  .topbar > .langwrap{order:2}
+  .topbar > #settingsBtn{order:1}
   .gbwide{display:contents}
   .gb{box-sizing:border-box;height:40px;line-height:1.3;display:inline-flex;align-items:center;justify-content:center;gap:7px;border:1.5px solid var(--gold);color:var(--gold);background:var(--card);border-radius:999px;padding:7px 13px;font-family:inherit;font-size:.88rem;font-weight:700;white-space:nowrap;text-decoration:none;cursor:pointer}
   .gb:hover{background:var(--hover)}
@@ -396,12 +399,12 @@ applyTheme();
     <a class="gb on" id="gbHome"><svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7M5 10v10h14V10"/></svg><span></span></a>
     <a class="gb wide" id="gbQibla"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg><span></span></a>
     <span id="gbWide" class="gbwide"></span>
-    <button class="gb wide" id="settingsBtn" type="button"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 0 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 0 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 0 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 0 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg><span data-i="settings"></span></button>
     <div class="langwrap navwrap gbmore">
       <button class="gb" id="navBtn" type="button" aria-haspopup="menu" aria-expanded="false"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg><span id="gbMoreT"></span></button>
       <div class="menu navmenu" id="navMenu" role="menu" hidden></div>
     </div>
   </nav>
+  <button class="gb wide" id="settingsBtn" type="button"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 0 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 0 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 0 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 0 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg><span data-i="settings"></span></button>
   <div class="langwrap">
     <button class="pill" id="langBtn" type="button" aria-haspopup="menu" aria-expanded="false">
       <img class="flag" id="langFlag" alt="">
