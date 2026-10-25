@@ -43,12 +43,14 @@ const css = `
 .gbmore .menu a{color:var(--gold);font-weight:600}
 .top{flex-wrap:wrap;gap:8px}
 .top > .brandmini{order:1}
-.top > .tr{order:2}
-.top > .gbar{order:3;flex-basis:100%;margin:6px 0 0}
+.top > .tr{order:3}
+.top > .gbar{order:4;flex-basis:100%;margin:6px 0 0}
+.top > .setbtn{order:2}
 @media (max-width:760px){
   /* الهاتف: الشعار، الرئيسية، اللغة، المزيد في سطر واحد أعلى الصفحة */
   .top{display:grid;grid-template-columns:auto repeat(3,minmax(0,1fr));gap:8px;align-items:center}
   .top > .gbar,.top > .tr{display:contents}
+  .top > .setbtn{display:none}
   html .top > .brandmini{order:0;font-size:0!important;gap:0}
   html[dir=ltr] .gb{font-size:.8rem;gap:5px}
   .gb svg{width:16px;height:16px}
@@ -114,7 +116,6 @@ function bar(lang, cur){
   return `<nav class="gbar">
 ${b(`/?lang=${lang}`, "home", HOMESHORT[lang] || t.home, " gbhome")}${b(`/${lang}/qibla`, "qibla", QSHORT[lang] || t.qibla, " wide")}
 ${tools.map(([p, k, l]) => b(`/${lang}/${p}`, k, (SHORT[lang] && SHORT[lang][p]) || l, " wide").replace(cur === p ? 'class="gb wide"' : "@@", 'class="gb wide on"')).join("")}
-<a class="gb wide" href="/?lang=${lang}&settings=1">${ic("gear")}<span>${esc(t.settings)}</span></a>
 <details class="gbmore navm"><summary class="gb">${ic("more")}<span>${esc(MORE[lang] || MORE.en)}</span></summary><div class="menu">
 ${m(`/${lang}/qibla`, "qibla", lbl(QIBLABL, lang))}
 ${tools.map(([p, k, l]) => m(`/${lang}/${p}`, k, l)).join("\n")}
@@ -151,4 +152,9 @@ function js(lang){
 })();`;
 }
 
-module.exports = { css, html, bar, js, settings };
+// زر الإعدادات يوضع بجانب زر اللغة (خارج شريط الأزرار)
+function settingsLink(lang){
+  const t = T[lang];
+  return `<a class="gb wide setbtn" href="/?lang=${lang}&settings=1">${ic("gear")}<span>${esc(t.settings)}</span></a>`;
+}
+module.exports = { css, html, bar, js, settings, settingsLink };
