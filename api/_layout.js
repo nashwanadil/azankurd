@@ -158,7 +158,7 @@ ${css}
     ${NAV.bar(lang, (path || "").split("/")[1] || "")}
   </div>
 ${body}
-  <footer>© ${new Date().getUTCFullYear()} <a href="/?lang=${lang}">azankurd.com</a> · <a href="/${lang}/countries">${esc(t.allCountries)}</a> · <a href="/${lang}/privacy">${esc(INFO[lang].cPrivacy)}</a> · <a href="/${lang}/contact">${esc(INFO[lang].cContact)}</a></footer>
+  <footer>© ${new Date().getUTCFullYear()} <a href="/?lang=${lang}">azankurd.com</a> · <a href="/${lang}/countries">${esc(t.allCountries)}</a> · <a href="/${lang}/about">${esc(INFO[lang].cAbout)}</a> · <a href="/${lang}/privacy">${esc(INFO[lang].cPrivacy)}</a> · <a href="/${lang}/contact">${esc(INFO[lang].cContact)}</a></footer>
 </div>
 <script>
 (function(){
