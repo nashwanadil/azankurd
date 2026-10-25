@@ -952,8 +952,17 @@ function render(data, label){
   updateMonthly(label);
   loadWeek(data, label);
   syncNotify();
-  clearInterval(timer); tick(); timer = setInterval(tick, 1000);
+  startTick();
 }
+// المؤقت يعمل والصفحة ظاهرة فقط، فلا يستيقظ الهاتف في الخلفية
+function startTick(){
+  clearInterval(timer); tick();
+  if(!document.hidden) timer = setInterval(tick, 1000);
+}
+document.addEventListener("visibilitychange", ()=>{
+  if(document.hidden){ clearInterval(timer); timer = null; }
+  else if(timings) startTick();
+});
 
 function nowInTz(){ return new Date(new Date().toLocaleString("en-US",{timeZone:tz,hour12:false})); }
 
@@ -1564,29 +1573,32 @@ function zonedTime(hm, tz, ymd){
 async function cancelAppAlerts(){
   const LN = appLN(); if(!LN) return;
   const pending = await LN.getPending();
-  const ids = (pending.notifications || []).filter(n => n.id >= 1000 && n.id < 1300).map(n => ({id:n.id}));
+  const ids = (pending.notifications || []).filter(n => n.id >= 1000 && n.id < 3000).map(n => ({id:n.id}));
   if(ids.length) await LN.cancel({notifications: ids});
 }
-// نجدول 30 يومًا قادمة من جدول الشهر الحالي والقادم، فلا يتوقف التنبيه إن لم يُفتح التطبيق في يوم جديد
+// نجدول سنة كاملة من تقويم 13 شهرًا، فلا يُفتح التطبيق كل يوم ولا يتوقف التنبيه
 async function alertDays(){
   const q = lastQuery, g = lastData && lastData.date && lastData.date.gregorian;
   if(!q || !g || !usedMethod) return [];
   const tz = lastData.meta.timezone, todayKey = new Intl.DateTimeFormat("en-CA", {timeZone:tz}).format(new Date());
   const [, m, y] = g.date.split("-").map(Number);
-  const nm = m === 12 ? 1 : m + 1, ny = m === 12 ? y + 1 : y;
+  const months = Array.from({length:13}, (_, i) => { const d = new Date(Date.UTC(y, m - 1 + i, 1)); return [d.getUTCFullYear(), d.getUTCMonth() + 1]; });
   const get = async (yy, mm) => { const j = await (await fetch(calUrl(q, usedMethod, yy, mm))).json(); return j.code === 200 ? j.data : []; };
-  const all = (await get(y, m)).concat(await get(ny, nm));
-  return all.filter(x => { const [dd, mm, yy] = x.date.gregorian.date.split("-"); return `${yy}-${mm}-${dd}` >= todayKey; }).slice(0, 30);
+  const all = (await Promise.all(months.map(([yy, mm]) => get(yy, mm)))).flat();
+  return all.filter(x => { const [dd, mm, yy] = x.date.gregorian.date.split("-"); return `${yy}-${mm}-${dd}` >= todayKey; }).slice(0, 365);
 }
 async function scheduleAppAlerts(){
   const LN = appLN();
-  if(!LN || !lastData || !timings || store.get("notify","0") !== "1") return;
+  if(!LN || !lastData || !timings || !lastQuery || !usedMethod || store.get("notify","0") !== "1") return;
   const tz = lastData.meta && lastData.meta.timezone; if(!tz) return;
-  let days = [];
-  try{ days = await alertDays(); }catch(e){}
-  if(!days.length) days = [{ date:{ gregorian:{ date: (() => { const [yy,mm,dd] = new Intl.DateTimeFormat("en-CA", {timeZone:tz}).format(new Date()).split("-"); return `${dd}-${mm}-${yy}`; })() } }, timings }];
-  await cancelAppAlerts();
-  const t = L(), prefs = getPrefs(), list = [];
+  const prefs = getPrefs();
+  const key = JSON.stringify([lastQuery, usedMethod, schoolFor(usedMethod), tz, prefs.p, lang]);
+  // الجدول محفوظ لدى نظام أندرويد ولم يتغير، فلا طلبات ولا إعادة جدولة
+  if(store.get("alertsKey","") === key && Date.now() - Number(store.get("alertsAt","0")) < 7*864e5) return;
+  let days;
+  try{ days = await alertDays(); }catch(e){ return; }   // بلا إنترنت تبقى التنبيهات السابقة كما هي
+  if(!days.length) return;
+  const t = L(), list = [];
   days.forEach((day, di)=>{
     const [dd, mm, yy] = day.date.gregorian.date.split("-").map(Number);
     PKEYS.forEach((k, i)=>{
@@ -1596,11 +1608,13 @@ async function scheduleAppAlerts(){
       if(at > Date.now()) list.push({ id:1000 + di*5 + i, title:t.notifyTitle.replace("{p}", name), body:name, schedule:{ at } });
     });
   });
-  for(let i = 0; i < list.length; i += 50) await LN.schedule({ notifications: list.slice(i, i + 50) });
+  await cancelAppAlerts();
+  for(let i = 0; i < list.length; i += 100) await LN.schedule({ notifications: list.slice(i, i + 100) });
+  store.set("alertsKey", key); store.set("alertsAt", String(Date.now()));
 }
 async function setNotifyApp(on){
   const LN = appLN(), t = L();
-  if(!on){ store.set("notify","0"); fillSettings(); notifyMsg(""); await cancelAppAlerts().catch(()=>{}); return; }
+  if(!on){ store.set("notify","0"); store.set("alertsKey",""); fillSettings(); notifyMsg(""); await cancelAppAlerts().catch(()=>{}); return; }
   if(!LN) return notifyMsg(t.notifyNo, "err");
   const r = await LN.requestPermissions().catch(()=>({display:"denied"}));
   if(r.display !== "granted") return notifyMsg(t.notifyDenied, "err");
