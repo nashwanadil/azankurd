@@ -1281,8 +1281,10 @@ function fallback(){
     .catch(()=>{ document.getElementById("locText").textContent = L().notFound; });
 }
 
+const WELCOME = { ar:"أهلًا بك", ku:"ب خێر هاتی", en:"Welcome", de:"Willkommen", tr:"Hoş geldiniz", fa:"خوش آمدید", ur:"خوش آمدید", fr:"Bienvenue", es:"Bienvenido", it:"Benvenuto", nl:"Welkom", da:"Velkommen", sv:"Välkommen", ru:"Добро пожаловать", bs:"Dobro došli", id:"Selamat datang", ms:"Selamat datang", bn:"স্বাগতম", ps:"ښه راغلاست", ha:"Barka da zuwa", sw:"Karibu" };
 function showLocWait(){
   const t = L();
+  document.getElementById("setupWelcome").textContent = WELCOME[lang] || WELCOME.en;
   document.getElementById("setupWaitMsg").textContent = t.noLoc || (locState === "denied" ? t.noteDenied : t.noteUnknown);
   document.getElementById("setupWaitGeo").textContent = t.btnEnable;
   document.getElementById("setupWaitGeo").hidden = false;
@@ -1817,7 +1819,6 @@ document.querySelectorAll("[data-sfmt]").forEach(b=> b.addEventListener("click",
   fillSettings();
   if(lastData){ document.getElementById("setupOverlay").hidden = true; render(lastData, lastLabel); return; }
   // لم يُعرف الموقع بعد: رسالة ترحيب بدل الشاشة الرئيسية إلى أن تصل المواقيت
-  const WELCOME = { ar:"أهلًا بك", ku:"ب خێر هاتی", en:"Welcome", de:"Willkommen", tr:"Hoş geldiniz", fa:"خوش آمدید", ur:"خوش آمدید", fr:"Bienvenue", es:"Bienvenido", it:"Benvenuto", nl:"Welkom", da:"Velkommen", sv:"Välkommen", ru:"Добро пожаловать", bs:"Dobro došli", id:"Selamat datang", ms:"Selamat datang", bn:"স্বাগতম", ps:"ښه راغلاست", ha:"Barka da zuwa", sw:"Karibu" };
   document.getElementById("setupWelcome").textContent = WELCOME[lang] || WELCOME.en;
   document.getElementById("setupWaitMsg").textContent = L().searching || "";
   document.getElementById("setupWaitGeo").hidden = true;
