@@ -877,7 +877,7 @@ function closeLangMenu(){
   document.getElementById("langMenu").hidden = true;
   document.getElementById("langBtn").setAttribute("aria-expanded","false");
 }
-function setLang(code){ lang = code; store.set("lang", code); applyLang(); }
+function setLang(code){ lang = code; store.set("lang", code); applyLang(); relabelPlace(); }
 
 function applyLang(){
   try{ setBar(); }catch(e){}
@@ -1180,6 +1180,30 @@ async function reverseName(lat, lng){
     return name ? {name, country:fixCountry(j.countryCode, j.countryName || "")} : {};
   }catch(e){ return {}; }
 }
+// اسم المكان بلغة الزائر: إن جاء بحروف لا تناسب اللغة (Duhok والعربية مختارة) نأخذ اسم أقرب مدينة مترجمًا
+const SCRIPT = { ar:/[\u0600-\u06FF]/, ku:/[\u0600-\u06FF]/, fa:/[\u0600-\u06FF]/, ur:/[\u0600-\u06FF]/, ps:/[\u0600-\u06FF]/, ru:/[\u0400-\u04FF]/, bn:/[\u0980-\u09FF]/ };
+async function placeName(lat, lng){
+  const nm = await reverseName(lat, lng);
+  if(nm.name && (!SCRIPT[lang] || SCRIPT[lang].test(nm.name))) return { ...nm, lang };
+  try{
+    const ctl = new AbortController(); setTimeout(()=>ctl.abort(), 4000);
+    const j = await (await fetch(`/api/nearest?lat=${lat}&lng=${lng}&lang=${lang}`, {signal:ctl.signal})).json();
+    if(j.local && j.km <= 12) return { name:j.local, country:fixCountry(j.cc, j.country || nm.country || ""), lang };
+  }catch(e){}
+  return nm.name ? { ...nm, lang } : nm;
+}
+// عند تغيير اللغة نعيد تسمية المكان المحفوظ باللغة الجديدة
+async function relabelPlace(){
+  const q = lastQuery;
+  if(!q || q.type !== "coords" || q.mecca || q.lang === lang) return;
+  const nm = await placeName(q.lat, q.lng);
+  if(nm.name && lastQuery === q){
+    Object.assign(q, nm);
+    store.set("lastQuery", JSON.stringify(q));
+    const c = readJSON("cache"); if(c){ c.q = q; store.set("cache", JSON.stringify(c)); }
+    if(lastData) render(lastData, q);
+  }
+}
 // لا نعتمد على بحث Aladhan بالاسم لأنه قد يعيد مواقيت خاطئة لاسم غير معروف
 async function placeFromText(text){
   const r = await geocode(text);
@@ -1218,9 +1242,9 @@ async function byCoords(lat, lng){
   const r = n => Math.round(n*100)/100;
   const q = {type:"coords", lat:r(lat), lng:r(lng)};
   // اسم المدينة يُطلب بالتوازي مع المواقيت، لا قبلها، فتظهر المواقيت أسرع
-  const naming = reverseName(q.lat, q.lng);
+  const naming = placeName(q.lat, q.lng);
   const saved = readJSON("lastQuery");
-  if(saved && saved.type === "coords" && saved.name && Math.abs(saved.lat - q.lat) < .05 && Math.abs(saved.lng - q.lng) < .05){ q.name = saved.name; q.country = saved.country; }
+  if(saved && saved.type === "coords" && saved.name && saved.lang === lang && Math.abs(saved.lat - q.lat) < .05 && Math.abs(saved.lng - q.lng) < .05){ q.name = saved.name; q.country = saved.country; q.lang = saved.lang; }
   try{ await getTimes(q); }catch(e){ fallback(); return; }
   const nm = await naming;
   if(nm.name && (nm.name !== q.name || nm.country !== q.country) && lastQuery === q){
