@@ -1315,16 +1315,21 @@ let locState = null, showHelp = false;   // locState: null | "denied" | "unknown
 async function permState(){
   try{ return (await navigator.permissions.query({name:"geolocation"})).state; }catch(e){ return "unknown"; }
 }
-function useLocation(){
+function useLocation(retry = true){
   if(!navigator.geolocation){ locState = "unknown"; return fallback(); }
   navigator.geolocation.getCurrentPosition(
     p=>{ locState = null; showHelp = false; renderNotice(); byCoords(p.coords.latitude, p.coords.longitude); },
     async err=>{
+      // داخل التطبيق يحتاج تحديد الموقع وقتًا أطول أحيانًا، فنعيد المحاولة مرة واحدة بدقة أعلى
+      if(err.code === 3 && retry){ return navigator.geolocation.getCurrentPosition(
+        p=>{ locState = null; showHelp = false; renderNotice(); byCoords(p.coords.latitude, p.coords.longitude); },
+        ()=> { locState = "unknown"; fallback(); },
+        {enableHighAccuracy:true, maximumAge:60*1000, timeout:20000}); }
       locState = (err.code === 1 && await permState() === "denied") ? "denied" : "unknown";
       fallback();
     },
     // يكفينا موقع على مستوى المدينة: نقبل موقعًا معروفًا من آخر 15 دقيقة فيأتي فورًا، ولا نطلب دقة GPS العالية
-    {enableHighAccuracy:false, maximumAge:15*60*1000, timeout:8000});
+    {enableHighAccuracy:false, maximumAge:15*60*1000, timeout:15000});
 }
 function renderNotice(){
   const box = document.getElementById("locNotice"), t = L();
