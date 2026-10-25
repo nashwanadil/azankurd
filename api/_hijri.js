@@ -91,7 +91,7 @@ module.exports = (req, res) => {
     el.addEventListener("touchend",function(){ if(fresh){ setTimeout(function(){ try{ el.select(); }catch(x){} fresh=false; },10); } });
     el.addEventListener("keydown",function(e){ if(e.key==="Enter") document.getElementById(id==="gIn"?"g2h":"h2g").click(); }); });
   var th=toH(td); document.getElementById("hD").value=th.d; sel.value=th.m; document.getElementById("hY").value=th.y;
-  function show(id,txt,err){ var e=document.getElementById(id); e.textContent=txt; e.className="out"+(err?" err":" hit"); void e.offsetWidth; }
+  function show(id,txt,err){ var e=document.getElementById(id); e.textContent=txt; e.className="out"; void e.offsetWidth; e.className="out"+(err?" err":" hit"); }
   document.getElementById("g2h").addEventListener("click",function(){
     var v=gi.value.trim()?gi.value.split(".").map(Number):[td.getUTCDate(),td.getUTCMonth()+1,td.getUTCFullYear()];
     if(v.length!==3||!(v[0]>=1&&v[0]<=31&&v[1]>=1&&v[1]<=12&&v[2]>=1800)) return show("outH",X.err,1);
