@@ -121,7 +121,7 @@ applyTheme();
   .pill[aria-expanded=true] .chev{transform:rotate(180deg)}
   .langwrap{position:relative}
   /* الشريط الأفقي بأزرار ذهبية */
-  .topbar{max-width:980px;flex-wrap:wrap;gap:10px;justify-content:flex-end}
+  .topbar{width:100%;max-width:980px;flex-wrap:wrap;gap:10px;justify-content:flex-end}
   .gbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:flex-end;order:2;flex-basis:100%;min-width:0}
   /* الحاسوب: زر الإعدادات على يمين زر اللغة مباشرة، وشريط الأزرار في صف مستقل */
   .topbar > .gbar{order:3}
@@ -134,6 +134,8 @@ applyTheme();
   .gb.on{background:var(--green);border-color:var(--green);color:#fff}
   .gb.on svg{stroke:#f3d58a}
   .gbmore{display:none}
+  .gbmore.ov{display:block}
+  .gb[hidden]{display:none}
   .gbmore .menu{inset-inline-start:auto!important;inset-inline-end:0!important}
   .navmenu a{color:var(--gold)!important;font-weight:600}
   @media (max-width:760px){
@@ -1730,6 +1732,22 @@ const BAR_SHORT = { ar:{countries:"البلدان",hijri:"التاريخ",zakat:
   ku:{countries:"وەلات",hijri:"بەروار",zakat:"زەکات",azkar:"زکر",ramadan:"ڕەمەزان",occasions:"بۆنە"},
   en:{countries:"Countries",hijri:"Dates",zakat:"Zakat",azkar:"Adhkar",ramadan:"Ramadan",occasions:"Occasions"} };
 const barShort = k => (BAR_SHORT[lang] && BAR_SHORT[lang][k]) || barLbl(k);
+// الحاسوب: أزرار الشريط في سطر واحد، والزائد يخفى خلف «المزيد» في آخره
+let barOpen = false;
+function fitBar(){
+  const bar = document.getElementById("gbar"), more = bar.querySelector(".gbmore");
+  const wide = [...document.querySelectorAll("#gbWide > a.gb")];
+  if(!bar || innerWidth <= 760) return;
+  wide.forEach(a => a.hidden = false);
+  if(barOpen){ more.classList.add("ov"); return; }
+  const oneLine = () => { const els = [...bar.querySelectorAll("a.gb, button.gb")].filter(e => e.getClientRects().length); const top = els[0].getBoundingClientRect().top; return els.every(e => Math.abs(e.getBoundingClientRect().top - top) < 2); };
+  more.classList.add("ov");
+  let over = false;
+  while(!oneLine()){ const vis = wide.filter(a => !a.hidden); if(!vis.length) break; vis[vis.length-1].hidden = true; over = true; }
+  more.classList.toggle("ov", over);
+}
+window.addEventListener("resize", fitBar);
+document.fonts && document.fonts.ready.then(fitBar);
 // أزرار الشريط بلغة الصفحة (تُستدعى عند تغيير اللغة)
 function setBar(){
   const t = L(), esc = x => String(x).replace(/</g,"&lt;");
@@ -1737,7 +1755,9 @@ function setBar(){
   document.getElementById("gbHome").querySelector("span").textContent = HOMESHORT[lang] || t.home;
   const q = document.getElementById("gbQibla"); q.href = `/${lang}/qibla`; q.querySelector("span").textContent = QSHORT[lang] || toolLbl("qibla");
   document.getElementById("gbMoreT").textContent = MORE_LBL[lang] || MORE_LBL.en;
+  barOpen = false;
   document.getElementById("gbWide").innerHTML = BAR_TOOLS.map(([p, ic]) => `<a class="gb wide" href="/${lang}/${p}"><svg viewBox="0 0 24 24">${NAVIC[ic]}</svg><span>${esc(barShort(p))}</span></a>`).join("");
+  fitBar();
 }
 function buildNav(){
   const t = L(), m = document.getElementById("navMenu");
@@ -1754,6 +1774,8 @@ setBar();
 function closeNav(){ document.getElementById("navMenu").hidden = true; document.getElementById("navBtn").setAttribute("aria-expanded","false"); }
 document.getElementById("navBtn").addEventListener("click", e=>{
   e.stopPropagation();
+  // الحاسوب: «المزيد» يُظهر الأزرار المخفية في الشريط نفسه، لا القائمة
+  if(document.querySelector("#gbar .gbmore").classList.contains("ov") && innerWidth > 760){ barOpen = !barOpen; fitBar(); return; }
   const m = document.getElementById("navMenu");
   if(m.hidden){ closeLangMenu(); buildNav(); m.hidden = false; document.getElementById("navBtn").setAttribute("aria-expanded","true"); }
   else closeNav();
