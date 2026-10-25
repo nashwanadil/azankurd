@@ -43,11 +43,17 @@ const css = `
 .gbmore .menu a{color:var(--gold);font-weight:600}
 .top{flex-wrap:wrap;gap:8px}
 .top > .brandmini{order:1}
-.top > .tr{order:2}
-.top > .gbar{order:3;flex-basis:100%;margin:6px 0 0}
+.top > .tr{order:3}
+.top > .gbar{order:4;flex-basis:100%;margin:6px 0 0}
+@media (min-width:761px){
+  /* الحاسوب: الصفان يبدآن من الطرف الأيسر معًا، فتحاذي حافة زر اللغة حافة المناسبات */
+  .top{justify-content:flex-end}
+  .top > .gbar{justify-content:flex-end}
+}
+.top > .setbtn{order:2}
 @media (max-width:760px){
   /* الهاتف: الشعار، الرئيسية، اللغة، المزيد في سطر واحد أعلى الصفحة */
-  .top{display:grid;grid-template-columns:auto repeat(3,minmax(0,1fr));gap:8px;align-items:center}
+  .top{display:grid;grid-template-columns:auto repeat(4,minmax(0,1fr));gap:8px;align-items:center}
   .top > .gbar,.top > .tr{display:contents}
   html .top > .brandmini{order:0;font-size:0!important;gap:0}
   html[dir=ltr] .gb{font-size:.8rem;gap:5px}
@@ -59,10 +65,15 @@ const css = `
   .top .langs summary{width:100%;justify-content:center;box-sizing:border-box;height:40px}
   .top .langs .lname{display:none}
   .top .langs summary .flag{width:25px;height:17px}
-  .gbmore{order:3;display:block}
+  .gbmore{order:4;display:block}
+  .gbmore > summary svg{display:none}
+  .top .langs summary{height:36px}
+  .top .langs summary .flag{width:22px;height:15px}
   .gb{width:100%;padding:8px 6px;min-width:0}
   .gb span{overflow:hidden;text-overflow:ellipsis}
   .gb.wide{display:none}
+  .top > .setbtn{display:flex;order:3;width:100%;padding:8px 6px;min-width:0;justify-content:center}
+  .top > .setbtn span{display:none}
 }
 
 .tr{display:flex;align-items:center;gap:8px}
@@ -114,7 +125,6 @@ function bar(lang, cur){
   return `<nav class="gbar">
 ${b(`/?lang=${lang}`, "home", HOMESHORT[lang] || t.home, " gbhome")}${b(`/${lang}/qibla`, "qibla", QSHORT[lang] || t.qibla, " wide")}
 ${tools.map(([p, k, l]) => b(`/${lang}/${p}`, k, (SHORT[lang] && SHORT[lang][p]) || l, " wide").replace(cur === p ? 'class="gb wide"' : "@@", 'class="gb wide on"')).join("")}
-<a class="gb wide" href="/?lang=${lang}&settings=1">${ic("gear")}<span>${esc(t.settings)}</span></a>
 <details class="gbmore navm"><summary class="gb">${ic("more")}<span>${esc(MORE[lang] || MORE.en)}</span></summary><div class="menu">
 ${m(`/${lang}/qibla`, "qibla", lbl(QIBLABL, lang))}
 ${tools.map(([p, k, l]) => m(`/${lang}/${p}`, k, l)).join("\n")}
@@ -151,4 +161,9 @@ function js(lang){
 })();`;
 }
 
-module.exports = { css, html, bar, js, settings };
+// زر الإعدادات يوضع بجانب زر اللغة (خارج شريط الأزرار)
+function settingsLink(lang){
+  const t = T[lang];
+  return `<a class="gb wide setbtn" href="/?lang=${lang}&settings=1">${ic("gear")}<span>${esc(t.settings)}</span></a>`;
+}
+module.exports = { css, html, bar, js, settings, settingsLink };
