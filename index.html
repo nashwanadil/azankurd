@@ -579,6 +579,10 @@ applyTheme();
         <button type="button" data-sfmt="12">1:00 PM</button>
       </div>
     </div>
+    <div id="setupStepWait" hidden>
+      <h3 id="setupWelcome"></h3>
+      <div class="cstatus" id="setupWaitMsg"></div>
+    </div>
   </div>
 </div>
 <div class="overlay install" id="installOverlay" hidden>
@@ -921,6 +925,8 @@ function fmtTime(hhmm){
 /* ---------- المواقيت ---------- */
 function render(data, label){
   lastData = data; lastLabel = label;
+  // الإعداد الأول ينتظر الموقع برسالة ترحيب، فنغلقه حين تصل المواقيت
+  if(!document.getElementById("setupStepWait").hidden) document.getElementById("setupOverlay").hidden = true;
   const t = L();
   timings = data.timings; tz = data.meta.timezone;
   const box = document.getElementById("times"); box.innerHTML = "";
@@ -1685,7 +1691,7 @@ function openSetup(){
   document.getElementById("setupOverlay").hidden = false;
 }
 function setupStep(id){
-  ["setupStep1","setupStepLoc","setupStep2"].forEach(x=> document.getElementById(x).hidden = x !== id);
+  ["setupStep1","setupStepLoc","setupStep2","setupStepWait"].forEach(x=> document.getElementById(x).hidden = x !== id);
   if(id === "setupStep2") document.querySelectorAll("[data-sfmt]").forEach(x=> x.setAttribute("aria-pressed", x.dataset.sfmt === timeFmt ? "true" : "false"));
 }
 // الموقع: تلقائيًا (يطلب الإذن من المستخدم) أو بكتابة المدينة يدويًا
@@ -1702,8 +1708,13 @@ document.getElementById("setupCityBtn").addEventListener("click", ()=> setupSear
 attachAC("setupCityInput", "acSetup", p => setupSearch(p), ()=> setupSearch());
 document.querySelectorAll("[data-sfmt]").forEach(b=> b.addEventListener("click", ()=>{
   timeFmt = b.dataset.sfmt; store.set("fmt", timeFmt); store.set("setupDone","1");
-  document.getElementById("setupOverlay").hidden = true;
-  fillSettings(); if(lastData) render(lastData, lastLabel);
+  fillSettings();
+  if(lastData){ document.getElementById("setupOverlay").hidden = true; render(lastData, lastLabel); return; }
+  // لم يُعرف الموقع بعد: رسالة ترحيب بدل الشاشة الرئيسية إلى أن تصل المواقيت
+  const WELCOME = { ar:"أهلًا بك", ku:"ب خێر هاتی", en:"Welcome", de:"Willkommen", tr:"Hoş geldiniz", fa:"خوش آمدید", ur:"خوش آمدید", fr:"Bienvenue", es:"Bienvenido", it:"Benvenuto", nl:"Welkom", da:"Velkommen", sv:"Välkommen", ru:"Добро пожаловать", bs:"Dobro došli", id:"Selamat datang", ms:"Selamat datang", bn:"স্বাগতম", ps:"ښه راغلاست", ha:"Barka da zuwa", sw:"Karibu" };
+  document.getElementById("setupWelcome").textContent = WELCOME[lang] || WELCOME.en;
+  document.getElementById("setupWaitMsg").textContent = L().searching || "";
+  setupStep("setupStepWait");
 }));
 if(IS_APP && store.get("setupDone","0") !== "1") openSetup();
 
