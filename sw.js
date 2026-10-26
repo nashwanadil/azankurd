@@ -1,5 +1,5 @@
 // AzanKurd service worker: يجعل الموقع قابلاً للتثبيت ويعمل دون إنترنت
-const CACHE = 'azankurd-v3';
+const CACHE = 'azankurd-v4';
 const CORE = ['/', '/index.html', '/manifest.json', '/icon-192.png', '/icon-512.png'];
 
 self.addEventListener('install', e => {
