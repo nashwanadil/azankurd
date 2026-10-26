@@ -639,6 +639,14 @@ applyTheme();
         <button type="button" data-sfmt="12">12:00 PM</button>
       </div>
     </div>
+    <div id="setupStepBat" hidden>
+      <h3 id="batTitle"></h3>
+      <p class="tnote" id="batText"></p>
+      <div class="fmts">
+        <button type="button" id="batYes"></button>
+        <button type="button" id="batNo"></button>
+      </div>
+    </div>
     <div id="setupStepWait" hidden>
       <h3 id="setupWelcome"></h3>
       <div class="spin" id="setupSpin" aria-hidden="true"></div>
@@ -1168,7 +1176,9 @@ function getRecent(){
   const raw = (readJSON("recent") || []).filter(x => x && typeof x === "object" && x.type === "coords");
   const out = [];
   raw.forEach(q => { const i = out.findIndex(x => samePlace(x, q)); if(i < 0) out.push(q); else out[i] = betterName(out[i], q); });
-  return out;
+  // المدينة الواحدة تظهر مرة واحدة حتى لو حُفظت بإحداثيات مختلفة قليلًا
+  const seen = new Set();
+  return out.filter(q => { if(!q.name) return true; const k = placeLabel(q).toLowerCase(); if(seen.has(k)) return false; seen.add(k); return true; });
 }
 function addRecent(q){
   let list = getRecent();
@@ -2091,16 +2101,36 @@ function openSetup(){
   document.getElementById("setupOverlay").hidden = false;
 }
 // زر الرجوع: خطوة واحدة إلى الوراء
-const SETUP_PREV = { setupStepLoc: "setupStep1", setupStep2: "setupStepLoc", setupStepWait: "setupStep2" };
+const SETUP_PREV = { setupStepLoc: "setupStep1", setupStep2: "setupStepLoc", setupStepBat: "setupStep2", setupStepWait: "setupStep2" };
+const SETUP_IDS = ["setupStep1","setupStepLoc","setupStep2","setupStepBat","setupStepWait"];
 document.getElementById("setupBack").addEventListener("click", ()=>{
-  const cur = ["setupStep1","setupStepLoc","setupStep2","setupStepWait"].find(x => !document.getElementById(x).hidden);
+  const cur = SETUP_IDS.find(x => !document.getElementById(x).hidden);
   if(SETUP_PREV[cur]) setupStep(SETUP_PREV[cur]);
 });
+// خطوة البطارية (التطبيق فقط): لماذا نطلبها، وأن الخيارين لا يغيّران استهلاك البطارية
+const BAT = {
+  ar: { title:"التنبيه في وقته", text:"لكي تصل تنبيهات الصلاة في وقتها والهاتف في وضع السكون، اسمح للتطبيق بالعمل دون قيود توفير البطارية. هذا لا يستهلك بطارية أكثر: التطبيق لا يعمل إلا في أوقات الصلاة، والإذن فقط يمنع الهاتف من إيقافه.", yes:"حسناً", no:"لا شكراً" },
+  ku: { title:"ئاگاداری لە کاتی خۆیدا", text:"بۆ ئەوەی ئاگاداریی نوێژ لە کاتی خۆیدا بگات کاتێک مۆبایلەکە نوستووە، ڕێگە بە ئەپەکە بدە بێ سنووردانانی پاشەکەوتکردنی باتری. ئەمە باتری زیاتر بەکارناهێنێت: ئەپەکە تەنها لە کاتی نوێژدا کار دەکات، و ئەم ڕێگەپێدانە تەنها ڕێگری دەکات لە داخستنی.", yes:"باشە", no:"نەخێر" },
+  en: { title:"Alerts on time", text:"To get prayer alerts on time while the phone sleeps, let the app run without battery restrictions. It does not use more battery: the app only works at prayer times, and this permission only stops the phone from shutting it down.", yes:"OK", no:"No thanks" }
+};
 function setupStep(id){
-  ["setupStep1","setupStepLoc","setupStep2","setupStepWait"].forEach(x=> document.getElementById(x).hidden = x !== id);
+  SETUP_IDS.forEach(x=> document.getElementById(x).hidden = x !== id);
   document.getElementById("setupBack").hidden = id === "setupStep1";
   if(id === "setupStep2") document.querySelectorAll("[data-sfmt]").forEach(x=> x.setAttribute("aria-pressed", x.dataset.sfmt === timeFmt ? "true" : "false"));
+  if(id === "setupStepBat"){
+    const b = BAT[lang] || BAT.en;
+    document.getElementById("batTitle").textContent = b.title;
+    document.getElementById("batText").textContent = b.text;
+    document.getElementById("batYes").textContent = b.yes;
+    document.getElementById("batNo").textContent = b.no;
+  }
 }
+document.getElementById("batYes").addEventListener("click", ()=>{
+  store.set("batAsked","1");
+  const AA = appAA(); if(AA) AA.requestBatteryExemption().catch(()=>{});
+  finishSetup();
+});
+document.getElementById("batNo").addEventListener("click", ()=>{ store.set("batAsked","1"); finishSetup(); });
 // الموقع: تلقائيًا (يطلب الإذن من المستخدم) أو بكتابة المدينة يدويًا
 document.getElementById("setupGeo").addEventListener("click", ()=>{ useLocation(); setupStep("setupStep2"); });
 document.getElementById("setupWaitGeo").addEventListener("click", ()=>{
@@ -2123,6 +2153,10 @@ attachAC("setupCityInput", "acSetup", p => setupSearch(p), ()=> setupSearch());
 document.querySelectorAll("[data-sfmt]").forEach(b=> b.addEventListener("click", ()=>{
   timeFmt = b.dataset.sfmt; store.set("fmt", timeFmt); store.set("setupDone","1");
   fillSettings();
+  if(IS_APP && appAA() && store.get("batAsked","0") !== "1"){ setupStep("setupStepBat"); return; }
+  finishSetup();
+}));
+function finishSetup(){
   if(lastData){ document.getElementById("setupOverlay").hidden = true; render(lastData, lastLabel); return; }
   // لم يُعرف الموقع بعد: رسالة ترحيب بدل الشاشة الرئيسية إلى أن تصل المواقيت
   document.getElementById("setupWelcome").textContent = WELCOME[lang] || WELCOME.en;
@@ -2130,7 +2164,7 @@ document.querySelectorAll("[data-sfmt]").forEach(b=> b.addEventListener("click",
   document.getElementById("setupWaitGeo").hidden = true;
   document.getElementById("setupSpin").hidden = false;
   setupStep("setupStepWait");
-}));
+}
 if(IS_APP && store.get("setupDone","0") !== "1") openSetup();
 
 /* ---------- تثبيت التطبيق ---------- */
