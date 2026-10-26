@@ -301,6 +301,10 @@ applyTheme();
   .setup .langs .flag{width:22px;height:16px;border-radius:3px;object-fit:cover;flex:none}
   .setup .cityrow{margin-top:10px}
   .setup .fmts{display:grid;gap:10px;margin-bottom:16px}
+  .sndrow{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.6fr) 44px;gap:8px;align-items:center;margin:8px 0}
+  .sndrow span{font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .sndrow select{width:100%;min-width:0}
+  .sndplay{width:44px;height:40px;padding:0;display:flex;align-items:center;justify-content:center}
   .spin{width:44px;height:44px;margin:8px auto 16px;border-radius:50%;border:4px solid var(--line);border-top-color:var(--gold);animation:spin .9s linear infinite}
   .spin[hidden]{display:none}
   @keyframes spin{to{transform:rotate(360deg)}}
@@ -502,17 +506,13 @@ applyTheme();
       <div class="seg mini" id="advBefore"></div>
       <label class="sublbl" data-i="atTimeLbl"></label>
       <div class="chips" id="advPrayers"></div>
-      <details class="fold" id="notifyAdv">
-        <summary><span data-i="advanced"></span><svg class="chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></summary>
-        <div class="adv">
-          <label>صوت الأذان</label>
-          <div class="seg mini" id="advSound"></div>
-          <label data-i="iqamaLbl"></label>
-          <div class="seg mini" id="advIqama"></div>
-          <label data-i="extras"></label>
-          <div class="chips" id="advExtras"></div>
-        </div>
-      </details>
+      <label data-i="iqamaLbl"></label>
+      <div class="seg mini" id="advIqama"></div>
+      <label data-i="extras"></label>
+      <div class="chips" id="advExtras"></div>
+      <label>صوت الأذان لكل صلاة</label>
+      <div id="soundRows"></div>
+      <div class="cbtns"><button class="btn" id="soundSave" type="button"></button><div class="cstatus" id="soundMsg" role="status"></div></div>
       <div class="cstatus" id="notifyMsg" role="status" aria-live="polite"></div>
     </div>
     <div class="field">
@@ -1420,15 +1420,40 @@ document.getElementById("noticeBtn").addEventListener("click", async ()=>{
 /* ---------- الإعدادات ---------- */
 // أصوات الإشعار: القناة في أندرويد تحمل الصوت، فلكل صوت قناة مستقلة
 const ADHAN_SOUNDS = [["", "الافتراضي للهاتف"], ["adhan_makkah", "أذان مكة"], ["adhan_madinah", "أذان المدينة"], ["adhan_quds", "أذان القدس"]];
-function renderSound(){
-  const box = document.getElementById("advSound"); if(!box) return;
-  const cur = store.get("adhanSound", "");
-  box.innerHTML = ADHAN_SOUNDS.map(([k, l]) => `<button type="button" aria-pressed="${k === cur}">${l}</button>`).join("");
-  box.querySelectorAll("button").forEach((b, i) => b.onclick = ()=>{ store.set("adhanSound", ADHAN_SOUNDS[i][0]); renderSound(); scheduleAppAlerts().catch(()=>{}); });
+const SAVE_LBL = { ar:"حفظ", ku:"هەڵگرتن", en:"Save" };
+const PRAYERS_SND = [["fajr", "Fajr"], ["dhuhr", "Dhuhr"], ["asr", "Asr"], ["maghrib", "Maghrib"], ["isha", "Isha"]];
+let sndDraft = null;
+const soundOf = k => store.get("snd_" + k, "");
+// قناة لكل صوت، والإشعار العادي يستعمل صوت الهاتف القصير
+async function ensureChannels(LN){
+  for(const [k] of ADHAN_SOUNDS) await LN.createChannel({ id: k ? "prayer_" + k : "prayer_default", name: "أوقات الصلاة", importance: 4, visibility: 1, sound: k || undefined }).catch(()=>{});
+  // زر «إيقاف» داخل الإشعار يلغي الإشعار، فيتوقف الأذان
+  await LN.registerActionTypes({ types:[{ id:"STOP", actions:[{ id:"stop", title:"إيقاف" }] }] }).catch(()=>{});
+  if(!ensureChannels.listening){ ensureChannels.listening = true; LN.addListener("localNotificationActionPerformed", e => LN.cancel({ notifications:[{ id:e.notification.id }] }).catch(()=>{})); }
 }
+function renderSoundRows(){
+  const box = document.getElementById("soundRows"); if(!box) return;
+  const t = L();
+  if(!sndDraft) sndDraft = Object.fromEntries(PRAYERS_SND.map(([k]) => [k, soundOf(k)]));
+  box.innerHTML = PRAYERS_SND.map(([k, p]) => `<div class="sndrow"><span>${t.names[p]}</span><select data-k="${k}">${ADHAN_SOUNDS.map(([v, l]) => `<option value="${v}"${v === sndDraft[k] ? " selected" : ""}>${l}</option>`).join("")}</select><button type="button" class="btn sndplay" data-k="${k}">▶</button></div>`).join("");
+  box.querySelectorAll("select").forEach(sel => sel.onchange = ()=>{ sndDraft[sel.dataset.k] = sel.value; });
+  box.querySelectorAll(".sndplay").forEach(b => b.onclick = ()=> testSound(sndDraft[b.dataset.k]));
+  document.getElementById("soundSave").textContent = SAVE_LBL[lang] || SAVE_LBL.en;
+}
+// تجربة: إشعار فوري بالصوت المختار، يُوقف بزر «إيقاف» أو بإغلاقه
+async function testSound(sound){
+  const LN = appLN(); if(!LN) return;
+  await ensureChannels(LN);
+  await LN.schedule({ notifications:[{ id:9000, title:"أذان كُرد", body:"", channelId: sound ? "prayer_" + sound : "prayer_default", actionTypeId:"STOP", schedule:{ at: new Date(Date.now() + 1000) } }] }).catch(()=>{});
+}
+document.getElementById("soundSave").addEventListener("click", ()=>{
+  PRAYERS_SND.forEach(([k]) => store.set("snd_" + k, sndDraft[k]));
+  document.getElementById("soundMsg").textContent = L().done;
+  scheduleAppAlerts().catch(()=>{});
+});
 function fillSettings(){
   const t = L();
-  renderSound();
+  renderSoundRows();
   const cs = document.getElementById("citySelect");
   const recent = getRecent();
   let ch = `<option value="here">${t.myLocation}</option>`;
@@ -1646,22 +1671,23 @@ async function scheduleAppAlerts(){
   if(!LN || !lastData || !timings || !lastQuery || !usedMethod || store.get("notify","0") !== "1") return;
   const tz = lastData.meta && lastData.meta.timezone; if(!tz) return;
   const prefs = getPrefs();
-  const sound = store.get("adhanSound", "");
-  const key = JSON.stringify([lastQuery, usedMethod, schoolFor(usedMethod), tz, prefs.p, lang, sound]);
+  const sounds = PRAYERS_SND.map(([k]) => soundOf(k));
+  const key = JSON.stringify([lastQuery, usedMethod, schoolFor(usedMethod), tz, prefs.p, lang, sounds]);
   // الجدول محفوظ لدى نظام أندرويد ولم يتغير، فلا طلبات ولا إعادة جدولة
   if(store.get("alertsKey","") === key && Date.now() - Number(store.get("alertsAt","0")) < 7*864e5) return;
   let days;
   try{ days = await alertDays(); }catch(e){ return; }   // بلا إنترنت تبقى التنبيهات السابقة كما هي
   if(!days.length) return;
   const t = L(), list = [];
-  for(const [k] of ADHAN_SOUNDS) await LN.createChannel({ id: k ? "prayer_" + k : "prayer_default", name: "أوقات الصلاة", importance: 4, visibility: 1, sound: k || undefined }).catch(()=>{});
+  await ensureChannels(LN);
   days.forEach((day, di)=>{
     const [dd, mm, yy] = day.date.gregorian.date.split("-").map(Number);
     PKEYS.forEach((k, i)=>{
       if(!prefs.p.includes(k)) return;
       const name = t.names[PNAME[k]];
       const at = zonedTime(day.timings[PNAME[k]].slice(0,5), tz, [yy, mm, dd]);
-      if(at > Date.now()) list.push({ id:1000 + di*5 + i, title:t.notifyTitle.replace("{p}", name), body:"", channelId: sound ? "prayer_" + sound : "prayer_default", schedule:{ at } });
+      const sound = soundOf(k);
+      if(at > Date.now()) list.push({ id:1000 + di*5 + i, title:t.notifyTitle.replace("{p}", name), body:"", channelId: sound ? "prayer_" + sound : "prayer_default", actionTypeId:"STOP", schedule:{ at } });
     });
   });
   await cancelAppAlerts();
