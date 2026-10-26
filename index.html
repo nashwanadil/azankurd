@@ -523,8 +523,6 @@ applyTheme();
       <div class="chips" id="advBeforeP"></div>
       <div class="seg mini" id="advBefore"></div>
       <p class="tnote">نغمة هذا التذكير هي نغمة الإشعارات الافتراضية في هاتفك، وتغيّرها من إعدادات الهاتف.</p>
-      <label data-i="iqamaLbl"></label>
-      <div class="seg mini" id="advIqama"></div>
       <label data-i="extras"></label>
       <div class="chips" id="advExtras"></div>
       <label>صوت الأذان لكل صلاة</label>
@@ -1806,9 +1804,8 @@ function fillAdvanced(){
     vals.forEach(v => { const b = chip(v ? String(v) : t.off, p[key] === v, ()=>{ const q = getPrefs(); q[key] = v; setPrefs(q); }); el.appendChild(b); });
   };
   seg("advBefore", "b", [0,5,10,15,20,30]);
-  seg("advIqama", "i", [0,5,10,15,20]);
   const ex = document.getElementById("advExtras"); ex.innerHTML = "";
-  [["fe", t.fajrEndLbl], ["j", t.jumuahLbl], ["q", t.qiyam]].forEach(([k, label]) => ex.appendChild(chip(label, !!p[k], ()=>{ const q = getPrefs(); q[k] = q[k] ? 0 : 1; setPrefs(q); })));
+  [["j", t.jumuahLbl], ["q", t.qiyam]].forEach(([k, label]) => ex.appendChild(chip(label, !!p[k], ()=>{ const q = getPrefs(); q[k] = q[k] ? 0 : 1; setPrefs(q); })));
 }
 
 /* ---------- قائمة التنقل ---------- */
