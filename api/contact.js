@@ -46,7 +46,7 @@ module.exports = async (req, res) => {
     body:JSON.stringify({
       from:process.env.RESEND_FROM || "AzanKurd <onboarding@resend.dev>",
       to:[TO], reply_to:email,
-      subject:`أذان كُرد · رسالة من ${name || email}`,
+      subject:`أذان كورد · رسالة من ${name || email}`,
       html:`<div dir="auto" style="font-family:sans-serif;line-height:1.8"><p><b>${esc(name || "—")}</b> &lt;${esc(email)}&gt; · ${esc(lang)}</p><p style="white-space:pre-wrap">${esc(msg)}</p></div>`,
       text:`${name} <${email}> (${lang})\n\n${msg}`
     })
