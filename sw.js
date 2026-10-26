@@ -36,7 +36,7 @@ self.addEventListener('push', e => {
     icon: '/icon-192.png',
     badge: '/icon-192.png',
     tag: d.tag || 'prayer',
-    renotify: true,
+    renotify: false,
     data: { url: d.url || '/' }
   }));
 });
