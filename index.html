@@ -1434,9 +1434,9 @@ document.getElementById("noticeBtn").addEventListener("click", async ()=>{
 
 /* ---------- الإعدادات ---------- */
 // أصوات الإشعار: القناة في أندرويد تحمل الصوت، فلكل صوت قناة مستقلة
-const ADHAN_SOUNDS = [["", "الافتراضي"], ["silent", "صامت"], ["adhan_quds", "أذان القدس"], ["adhan_makkah", "أذان مكة"], ["adhan_madinah", "أذان المدينة"]];
-// في المتصفح: القدس أولًا ثم صامت ثم الباقي (لا خيار «الافتراضي للهاتف» هنا)
-const WEB_ORDER = ["adhan_quds", "silent", "adhan_makkah", "adhan_madinah"];
+const ADHAN_SOUNDS = [["silent", "صامت"], ["", "الافتراضي"], ["adhan_quds", "أذان القدس"], ["adhan_makkah", "أذان مكة"], ["adhan_madinah", "أذان المدينة"]];
+// في المتصفح: صامت أولًا ثم القدس ثم الباقي (لا خيار «الافتراضي للهاتف» هنا)
+const WEB_ORDER = ["silent", "adhan_quds", "adhan_makkah", "adhan_madinah"];
 const PRAYERS_SND = [["fajr", "Fajr"], ["dhuhr", "Dhuhr"], ["asr", "Asr"], ["maghrib", "Maghrib"], ["isha", "Isha"]];
 let sndDraft = null, sndMute = null, playingKey = null;
 const soundOf = k => store.get("snd_" + k, "");
