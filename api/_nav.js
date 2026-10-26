@@ -38,6 +38,23 @@ const css = `
 .gb.on{background:var(--green);border-color:var(--green);color:#fff}
 .gb.on svg{stroke:#f3d58a}
 .gbmore{position:relative;display:none}
+/* نموذج «اتصل بنا» يفتح فوق الصفحة بدل الانتقال إلى صفحة أخرى */
+.cov{position:fixed;inset:0;z-index:95;background:rgba(20,12,8,.5);display:flex;align-items:center;justify-content:center;padding:16px}
+.cov[hidden]{display:none}
+.cbox{width:min(440px,100%);max-height:90vh;overflow:auto;background:var(--card);color:var(--text);border:1px solid var(--line);border-radius:22px;padding:20px 22px 24px;box-shadow:0 20px 50px rgba(0,0,0,.35)}
+.chead{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+.chead h2{font-size:1.25rem;font-weight:700;margin:0;color:var(--text)}
+.cx{width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:none;font-size:1.4rem;line-height:1;cursor:pointer;color:var(--text)}
+.cfld{display:block;margin-bottom:14px}
+.cfld > span{display:block;font-size:.95rem;margin-bottom:6px;color:var(--text)}
+.cfld input,.cfld textarea{box-sizing:border-box;width:100%;border:1px solid var(--line);border-radius:14px;background:var(--inner);padding:12px 14px;font:inherit;color:var(--text)}
+.cfld textarea{min-height:140px;resize:vertical}
+.cs{width:100%;padding:14px;border:0;border-radius:14px;background:var(--green);color:#fff;font:inherit;font-weight:700;cursor:pointer}
+.cs:disabled{opacity:.6}
+.cst{min-height:1.4em;margin-top:10px;font-size:.92rem}
+.cst.ok{color:#2e7d4f}
+.cst.err{color:#b3261e}
+.cov .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
 .gbmore .menu{inset-inline-start:auto!important;inset-inline-end:0!important}
 .gbmore > summary.gb{width:100%;height:auto;border-radius:999px;background:var(--card);border:1.5px solid var(--gold);display:flex}
 .gbmore .menu a{color:var(--gold);font-weight:600}
@@ -146,6 +163,7 @@ function settings(lang){
 
 // يملأ بلدك ومدينتك من موقعك المحفوظ (تحفظه الصفحة الرئيسية)، ويغلق القوائم عند الضغط خارجها
 function js(lang){
+  const x = INFO[lang];
   return `(function(){
   var L=${JSON.stringify(lang)}, PS=${JSON.stringify({ ar:"فلسطين", ku:"فەلەستین", fa:"فلسطین", ur:"فلسطین", ps:"فلسطین" })};
   try{
@@ -161,6 +179,53 @@ function js(lang){
   var all=[].slice.call(document.querySelectorAll("details.navm, details.langs"));
   all.forEach(function(d){ d.addEventListener("toggle",function(){ if(d.open) all.forEach(function(o){ if(o!==d) o.open=false; }); }); });
   document.addEventListener("click",function(e){ all.forEach(function(d){ if(d.open && !d.contains(e.target)) d.open=false; }); });
+  // «اتصل بنا»: أي رابط إليها (في القائمة أو التذييل) يفتح النموذج بدل الصفحة
+  var C=${JSON.stringify({ title:x.contTitle, name:x.fName, email:x.fEmail, msg:x.fMsg, send:x.fSend, sending:x.fSending, ok:x.fOk, err:x.fErr, req:x.fReq })};
+  var ov=null, f=null, bt=null, st=null, t0=0;
+  function el(tag, cls, txt){ var e=document.createElement(tag); if(cls) e.className=cls; if(txt!=null) e.textContent=txt; return e; }
+  function field(label, input){ var w=el("label","cfld"); w.appendChild(el("span","",label)); w.appendChild(input); return w; }
+  function close(){ if(ov) ov.hidden=true; document.body.style.overflow=""; }
+  function submit(e){
+    e.preventDefault();
+    var d={ name:f.elements.namedItem("name").value.trim(), email:f.elements.namedItem("email").value.trim(), message:f.elements.namedItem("message").value.trim(), website:f.elements.namedItem("website").value, ms:Date.now()-t0, lang:L };
+    var at=d.email.indexOf("@");
+    if(at<1 || d.email.indexOf(".",at)<0 || d.message.length<2){ st.className="cst err"; st.textContent=C.req; return; }
+    bt.disabled=true; bt.textContent=C.sending; st.className="cst"; st.textContent="";
+    fetch("/api/contact",{ method:"POST", headers:{ "Content-Type":"application/json" }, body:JSON.stringify(d) })
+      .then(function(r){ if(!r.ok) throw 0; st.className="cst ok"; st.textContent=C.ok; f.reset(); t0=Date.now(); })
+      .catch(function(){ st.className="cst err"; st.textContent=C.err; })
+      .then(function(){ bt.disabled=false; bt.textContent=C.send; });
+  }
+  function build(){
+    ov=el("div","cov"); ov.hidden=true;
+    var box=el("div","cbox"); box.setAttribute("role","dialog"); box.setAttribute("aria-modal","true");
+    var head=el("div","chead"); var x=el("button","cx","×"); x.type="button"; x.onclick=close;
+    head.appendChild(el("h2","",C.title)); head.appendChild(x); box.appendChild(head);
+    f=el("form"); f.noValidate=true;
+    var n=el("input"); n.name="name"; n.maxLength=80; n.autocomplete="name";
+    var m=el("input"); m.name="email"; m.type="email"; m.maxLength=120; m.autocomplete="email"; m.dir="ltr";
+    var t=el("textarea"); t.name="message"; t.maxLength=4000;
+    var hp=el("div","hp"); hp.setAttribute("aria-hidden","true"); var w=el("input"); w.name="website"; w.tabIndex=-1; w.autocomplete="off"; hp.appendChild(w);
+    bt=el("button","cs",C.send); bt.type="submit";
+    st=el("div","cst"); st.setAttribute("role","status"); st.setAttribute("aria-live","polite");
+    f.appendChild(field(C.name,n)); f.appendChild(field(C.email,m)); f.appendChild(field(C.msg,t));
+    f.appendChild(hp); f.appendChild(bt); f.appendChild(st);
+    f.addEventListener("submit", submit);
+    box.appendChild(f); ov.appendChild(box); document.body.appendChild(ov);
+    ov.addEventListener("click", function(e){ if(e.target===ov) close(); });
+  }
+  function open(){
+    if(!ov) build();
+    t0=Date.now(); ov.hidden=false; document.body.style.overflow="hidden";
+    ov.querySelector("input").focus();
+  }
+  document.addEventListener("keydown", function(e){ if(e.key==="Escape" && ov && !ov.hidden) close(); });
+  document.addEventListener("click", function(e){
+    var a=e.target.closest ? e.target.closest('a[href$="/'+L+'/contact"]') : null; if(!a) return;
+    e.preventDefault();
+    document.querySelectorAll("details.navm[open]").forEach(function(d){ d.open=false; });
+    open();
+  });
 })();`;
 }
 
