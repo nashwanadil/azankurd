@@ -1483,7 +1483,22 @@ async function stopPlay(){
   else if(LN) await LN.cancel({ notifications:[{ id:9000 }] }).catch(()=>{});
   playingKey = null;
 }
+// المتصفح: يشغّل ملف الأذان من الموقع نفسه، والضغط مرة أخرى يوقفه
+let webAudio = null;
+async function testSoundWeb(sound, k){
+  if(playingKey){
+    const same = playingKey === k;
+    if(webAudio) webAudio.pause();
+    webAudio = null; playingKey = null;
+    if(same){ renderSoundRows(); return; }
+  }
+  if(!sound){ await showPrayerWeb(k === "all" ? "fajr" : k); return; }
+  webAudio = new Audio("/" + sound + ".mp3");
+  webAudio.onended = ()=>{ webAudio = null; playingKey = null; renderSoundRows(); };
+  try{ await webAudio.play(); playingKey = k; renderSoundRows(); }catch(e){ webAudio = null; }
+}
 async function testSound(sound, k){
+  if(!IS_APP) return testSoundWeb(sound, k);
   const same = playingKey === k;
   await stopPlay();
   if(same){ renderSoundRows(); return; }
