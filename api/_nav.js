@@ -49,6 +49,8 @@ const css = `
   /* الحاسوب: الصفان يبدآن من الطرف الأيسر معًا، فتحاذي حافة زر اللغة حافة المناسبات */
   .top{justify-content:flex-end}
   .top > .gbar{justify-content:flex-end}
+  /* الشعار يبقى في طرف الصفحة اليمين، ولا ينزاح مع الأزرار */
+  .top > .brandmini{margin-inline-end:auto}
 }
 .top > .setbtn{order:2}
 @media (max-width:760px){
