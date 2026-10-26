@@ -409,6 +409,7 @@ applyTheme();
   .chips button[aria-pressed=true]{background:var(--green);border-color:var(--green);color:#fff}
   .seg.mini button{font-size:.82rem;padding:6px 2px}
   .sublbl{display:block;margin:12px 0 6px;color:var(--muted);font-size:.85rem}
+  .sechead{font-weight:700;color:var(--gold)}
   #advBeforeP,#advBefore{margin-bottom:4px}
   /* الصلوات الخمس في سطر واحد حتى على الهاتف */
   #advPrayers,#advBeforeP{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px}
@@ -519,11 +520,11 @@ applyTheme();
     </div>
     <div class="field">
       <label data-i="notify"></label>
-      <label class="sublbl" data-i="beforeLbl"></label>
+      <label class="sublbl sechead" data-i="beforeLbl"></label>
       <div class="chips" id="advBeforeP"></div>
       <div class="seg mini" id="advBefore"></div>
       <p class="tnote">نغمة هذا التذكير هي نغمة الإشعارات الافتراضية في هاتفك، وتغيّرها من إعدادات الهاتف.</p>
-      <label>صوت الأذان لكل صلاة</label>
+      <label class="sublbl sechead">صوت الأذان لكل صلاة</label>
       <div id="soundRows"></div>
       <label data-i="extras"></label>
       <div class="chips" id="advExtras"></div>
