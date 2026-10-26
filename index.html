@@ -1434,7 +1434,7 @@ document.getElementById("noticeBtn").addEventListener("click", async ()=>{
 
 /* ---------- الإعدادات ---------- */
 // أصوات الإشعار: القناة في أندرويد تحمل الصوت، فلكل صوت قناة مستقلة
-const ADHAN_SOUNDS = [["", "الافتراضي"], ["adhan_makkah", "أذان مكة"], ["adhan_madinah", "أذان المدينة"], ["adhan_quds", "أذان القدس"]];
+const ADHAN_SOUNDS = [["", "الافتراضي"], ["adhan_quds", "أذان القدس"], ["adhan_makkah", "أذان مكة"], ["adhan_madinah", "أذان المدينة"]];
 const PRAYERS_SND = [["fajr", "Fajr"], ["dhuhr", "Dhuhr"], ["asr", "Asr"], ["maghrib", "Maghrib"], ["isha", "Isha"]];
 let sndDraft = null, sndMute = null, playingKey = null;
 const soundOf = k => store.get("snd_" + k, "");
@@ -1456,10 +1456,10 @@ function renderSoundRows(){
   if(sndMute === null) sndMute = mutedOf();
   if(sndAllOn === null){ sndAllOn = store.get("snd_all_on", "") === "1"; sndAllVal = store.get("snd_all_v", ""); }
   if(!sndDraft) sndDraft = Object.fromEntries(PRAYERS_SND.map(([k]) => [k, soundOf(k)]));
-  // المتصفح لا يملك صوت الهاتف، فلا خيار «الافتراضي» هنا، والافتراضي هو أذان مكة
+  // المتصفح لا يملك صوت الهاتف، فلا خيار «الافتراضي» هنا، والأول والافتراضي هو أذان القدس
   if(!IS_APP){
-    PRAYERS_SND.forEach(([k]) => { if(!sndDraft[k]) sndDraft[k] = "adhan_makkah"; });
-    if(!sndAllVal) sndAllVal = "adhan_makkah";
+    PRAYERS_SND.forEach(([k]) => { if(!sndDraft[k]) sndDraft[k] = "adhan_quds"; });
+    if(!sndAllVal) sndAllVal = "adhan_quds";
   }
   const dis = sndMute ? " disabled" : "";
   const list = IS_APP ? ADHAN_SOUNDS : ADHAN_SOUNDS.filter(([val]) => val !== "");
@@ -1490,18 +1490,17 @@ async function stopPlay(){
   playingKey = null;
 }
 // المتصفح: يشغّل ملف الأذان من الموقع نفسه، والضغط مرة أخرى يوقفه
-let webAudio = null;
+// عنصر صوت واحد: لا يمكن أن يعمل صوتان معًا
+const webPlayer = new Audio();
+webPlayer.onended = ()=>{ playingKey = null; renderSoundRows(); };
 async function testSoundWeb(sound, k){
-  if(playingKey){
-    const same = playingKey === k;
-    if(webAudio) webAudio.pause();
-    webAudio = null; playingKey = null;
-    if(same){ renderSoundRows(); return; }
-  }
-  if(!sound){ await showPrayerWeb(k === "all" ? "fajr" : k); return; }
-  webAudio = new Audio("/" + sound + ".mp3");
-  webAudio.onended = ()=>{ webAudio = null; playingKey = null; renderSoundRows(); };
-  try{ await webAudio.play(); playingKey = k; renderSoundRows(); }catch(e){ webAudio = null; }
+  const same = playingKey === k && !webPlayer.paused;
+  webPlayer.pause(); playingKey = null;
+  if(same){ renderSoundRows(); return; }
+  if(!sound){ await showPrayerWeb(k === "all" ? "fajr" : k); renderSoundRows(); return; }
+  webPlayer.src = "/" + sound + ".mp3";
+  try{ await webPlayer.play(); playingKey = k; }catch(e){ playingKey = null; }
+  renderSoundRows();
 }
 async function testSound(sound, k){
   if(!IS_APP) return testSoundWeb(sound, k);
