@@ -1456,9 +1456,10 @@ function renderSoundRows(){
   const pdis = sndMute || sndAllOn ? " disabled" : "";
   const rows = PRAYERS_SND.map(([k, p]) => `<div class="sndrow${sndMute || sndAllOn ? " muted" : ""}"><span>${t.names[p]}</span><select data-k="${k}"${pdis}>${opts(sndDraft[k])}</select><button type="button" class="btn sndplay" data-k="${k}"${pdis}>${playingKey === k ? "❚❚" : "▶"}</button></div>`).join("");
   box.innerHTML = `<div class="sndmode"><button type="button" class="sw-on" data-m="0" aria-pressed="${!sndMute}">${SND_ON[lang] || SND_ON.en}</button><button type="button" class="sw-off" data-m="1" aria-pressed="${sndMute}">${SND_OFF[lang] || SND_OFF.en}</button></div>` + allRow + rows;
-  box.querySelectorAll(".sndmode button").forEach(b => b.onclick = ()=>{ sndMute = b.dataset.m === "1"; renderSoundRows(); saveSounds(); });
+  box.querySelectorAll(".sndmode button").forEach(b => b.onclick = async ()=>{ await stopPlay(); sndMute = b.dataset.m === "1"; renderSoundRows(); saveSounds(); });
   box.querySelector("select[data-all]").onchange = e => { sndAllVal = e.target.value; saveSounds(); };
-  box.querySelector("[data-allsw]").onclick = ()=>{
+  box.querySelector("[data-allsw]").onclick = async ()=>{
+    await stopPlay();
     sndAllOn = !sndAllOn;
     if(!sndAllOn) sndDraft = Object.fromEntries(PRAYERS_SND.map(([k]) => [k, ""]));
     renderSoundRows(); saveSounds();
@@ -1467,19 +1468,27 @@ function renderSoundRows(){
   box.querySelectorAll(".sndplay").forEach(b => b.onclick = ()=> b.dataset.k === "all" ? testSound(sndAllVal, "fajr") : testSound(sndDraft[b.dataset.k], b.dataset.k));
 }
 // تجربة: إشعار فوري بالصوت المختار، يُوقف بزر «إيقاف» أو بإغلاقه
+// إيقاف الصوت الجاري أيًا كان مصدره
+async function stopPlay(){
+  if(!playingKey) return;
+  const AA = appAA(), LN = appLN();
+  if(AA) await AA.stop().catch(()=>{});
+  else if(LN) await LN.cancel({ notifications:[{ id:9000 }] }).catch(()=>{});
+  playingKey = null;
+}
 async function testSound(sound, k){
+  const same = playingKey === k;
+  await stopPlay();
+  if(same){ renderSoundRows(); return; }
   const AA = appAA();
   if(AA){
-    if(playingKey){ await AA.stop().catch(()=>{}); playingKey = null; renderSoundRows(); return; }
     const t = L();
-    await AA.play({ sound, title: t.notifyTitle.replace("{p}", t.names[PNAME[k]]) }).catch(()=>{});
+    await AA.play({ sound, title: t.notifyTitle.replace("{p}", t.names[PNAME[k === "all" ? "fajr" : k]]) }).catch(()=>{});
     playingKey = k; renderSoundRows(); return;
   }
   const LN = appLN(); if(!LN) return;
-  // إن كان يعمل صوت الآن فالضغط يوقفه
-  if(playingKey){ await LN.cancel({ notifications:[{ id:9000 }] }).catch(()=>{}); playingKey = null; renderSoundRows(); return; }
   await ensureChannels(LN);
-  const t = L(), name = t.names[PNAME[k]];
+  const t = L(), name = t.names[PNAME[k === "all" ? "fajr" : k]];
   await LN.schedule({ notifications:[{ id:9000, title:t.notifyTitle.replace("{p}", name), body:"", channelId: chanOf(sound), schedule:{ at: new Date(Date.now() + 1000) } }] }).catch(()=>{});
   playingKey = k; renderSoundRows();
 }
