@@ -73,5 +73,11 @@ module.exports = (req, res) => {
   });
 })();`;
   }
+  // النموذج داخل الصفحة الرئيسية: صفحة خفيفة بلا شريط التنقل، وتأخذ ألوان الصفحة الأم
+  if(which === "contact" && u.searchParams.get("embed") === "1"){
+    res.setHeader("Content-Type", "text/html; charset=utf-8");
+    res.setHeader("Cache-Control", "public, s-maxage=86400");
+    return res.end(`<!doctype html><html lang="${lang}" dir="${(T[lang] && T[lang].dir) || "rtl"}"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex"><link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@400;600;700&family=Noto+Sans:wght@400;600;700&display=swap" rel="stylesheet"><style>:root{--card:#fbf7f1;--text:#2a1d17;--line:#e6d6c2;--inner:#fffdf9;--green:#8f2a39;--gold:#946512;--muted:#7a6a5c;--hover:#f3ebe0}body{margin:0;padding:54px 18px 18px;background:var(--card);color:var(--text);font-family:'Noto Kufi Arabic','Noto Sans',sans-serif}h1{font-size:1.2rem;margin:0 0 6px;color:var(--gold)}.lead{color:var(--muted);font-size:.92rem;margin:0 0 6px}nav,.crumbs{display:none}.btn{background:var(--green);color:#fff;border:0;border-radius:12px;padding:12px;width:100%;font:inherit;font-weight:700;cursor:pointer}${CSS}</style></head><body>${body}<script>try{var p=parent.document.documentElement,m=document.documentElement;m.dataset.mode=p.dataset.mode||"light";for(var i=0;i<p.style.length;i++){var k=p.style[i];if(k.indexOf("--")===0)m.style.setProperty(k,p.style.getPropertyValue(k));}}catch(e){}</script><script>${js}</script></body></html>`);
+  }
   send(res, page({ lang, title:`${title} | ${t.logo}`, desc, path:`/${which}`, body, css:CSS, js }));
 };

@@ -160,6 +160,11 @@ applyTheme();
     #langMenu{inset-inline-end:auto;inset-inline-start:0;max-width:calc(100vw - 24px)}
   }
 
+  .ctc-ov{position:fixed;inset:0;z-index:95;background:rgba(20,12,8,.5);display:flex;align-items:center;justify-content:center;padding:16px}
+  .ctc-ov[hidden]{display:none}
+  .ctc-box{position:relative;width:min(460px,100%);height:min(640px,90vh);background:var(--card);border:1px solid var(--line);border-radius:22px;overflow:hidden;box-shadow:0 20px 50px rgba(0,0,0,.35)}
+  .ctc-box iframe{width:100%;height:100%;border:0;display:block}
+  .ctc-x{position:absolute;top:10px;inset-inline-end:10px;z-index:2;width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--text);font-size:1.4rem;line-height:1;cursor:pointer}
   .pill.round{width:38px;height:38px;padding:0;justify-content:center}
   .navwrap .menu{inset-inline-end:auto;inset-inline-start:0}
   .navmenu a{display:flex;align-items:center;gap:10px;padding:7px 12px;border-radius:9px;font-size:.95rem;color:var(--text);text-decoration:none}
@@ -1705,6 +1710,7 @@ document.addEventListener("keydown", e=>{
   if(!document.getElementById("picker").hidden){ closePicker(); return; }
   if(!document.getElementById("langMenu").hidden){ closeLangMenu(); document.getElementById("langBtn").focus(); }
   if(!document.getElementById("settingsOverlay").hidden) closeSettings();
+  closeContact();
   if(!document.getElementById("installOverlay").hidden) closeInstall();
 });
 
@@ -2019,13 +2025,30 @@ function buildNav(){
   const a = (href, ic, label) => `<a role="menuitem" href="${href}"><svg viewBox="0 0 24 24">${NAVIC[ic]}</svg><span>${String(label).replace(/</g,"&lt;")}</span></a>`;
   m.innerHTML = a(`/${lang}/qibla`, "qibla", toolLbl("qibla")) + BAR_TOOLS.map(([p, ic]) => a(`/${lang}/${p}`, ic, barLbl(p))).join("")
     + `<a role="menuitem" href="#" data-act="settings"><svg viewBox="0 0 24 24">${NAVIC.gear}</svg><span>${String(t.settings).replace(/</g,"&lt;")}</span></a>`
-    + "<hr>" + a(`/${lang}/about`, "about", t.cAbout) + a(`/${lang}/privacy`, "privacy", t.cPrivacy) + a(`/${lang}/contact`, "contact", t.cContact);
+    + "<hr>" + a(`/${lang}/about`, "about", t.cAbout) + a(`/${lang}/privacy`, "privacy", t.cPrivacy)
+    + `<a role="menuitem" href="#" data-act="contact"><svg viewBox="0 0 24 24">${NAVIC.contact}</svg><span>${String(t.cContact).replace(/</g,"&lt;")}</span></a>`;
 }
 document.getElementById("navMenu").addEventListener("click", e=>{
-  const s = e.target.closest('[data-act="settings"]'); if(!s) return;
-  e.preventDefault(); closeNav(); openSettings();
+  const s = e.target.closest('[data-act="settings"],[data-act="contact"]'); if(!s) return;
+  e.preventDefault(); closeNav();
+  if(s.dataset.act === "contact") openContact(); else openSettings();
 });
 setBar();
+// «اتصل بنا» من القائمة: النموذج نفسه من صفحة الاتصال يفتح داخل نافذة فوق الصفحة
+function openContact(){
+  let ov = document.getElementById("contactOv");
+  if(!ov){
+    ov = document.createElement("div"); ov.id = "contactOv"; ov.className = "ctc-ov"; ov.hidden = true;
+    ov.innerHTML = '<div class="ctc-box"><button type="button" class="ctc-x" aria-label="close">×</button><iframe title="" loading="lazy"></iframe></div>';
+    document.body.appendChild(ov);
+    ov.addEventListener("click", e=>{ if(e.target === ov || e.target.closest(".ctc-x")) closeContact(); });
+  }
+  const fr = ov.querySelector("iframe");
+  fr.title = L().cContact || "";
+  fr.src = `/${lang}/contact?embed=1`;
+  ov.hidden = false;
+}
+function closeContact(){ const ov = document.getElementById("contactOv"); if(ov) ov.hidden = true; }
 function closeNav(){ document.getElementById("navMenu").hidden = true; document.getElementById("navBtn").setAttribute("aria-expanded","false"); }
 document.getElementById("navBtn").addEventListener("click", e=>{
   e.stopPropagation();
