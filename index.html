@@ -518,7 +518,6 @@ applyTheme();
       <div class="chips" id="advExtras"></div>
       <label>صوت الأذان لكل صلاة</label>
       <div id="soundRows"></div>
-      <div class="cstatus" id="soundMsg" role="status"></div>
       <div class="cstatus" id="notifyMsg" role="status" aria-live="polite"></div>
     </div>
     <div class="field">
@@ -1418,7 +1417,7 @@ document.getElementById("noticeBtn").addEventListener("click", async ()=>{
 // أصوات الإشعار: القناة في أندرويد تحمل الصوت، فلكل صوت قناة مستقلة
 const ADHAN_SOUNDS = [["", "الافتراضي"], ["adhan_makkah", "أذان مكة"], ["adhan_madinah", "أذان المدينة"], ["adhan_quds", "أذان القدس"]];
 const PRAYERS_SND = [["fajr", "Fajr"], ["dhuhr", "Dhuhr"], ["asr", "Asr"], ["maghrib", "Maghrib"], ["isha", "Isha"]];
-let sndDraft = null, sndMute = null;
+let sndDraft = null, sndMute = null, playingKey = null;
 const soundOf = k => store.get("snd_" + k, "");
 const mutedOf = () => store.get("mute_all", "") === "1";   // تشغيل/صامت عام لكل الصلوات
 const SND_ON = { ar:"تشغيل", ku:"لێدان", en:"On" }, SND_OFF = { ar:"صامت", ku:"بێ دەنگ", en:"Muted" };
@@ -1428,9 +1427,6 @@ async function ensureChannels(LN){
   // أندرويد يثبّت صوت القناة عند إنشائها، فنستعمل أسماء جديدة لكل صوت، ونحذف القنوات القديمة
   for(const id of ["prayer_adhan_makkah","prayer_adhan_madinah","prayer_adhan_quds","prayer_default"]) await LN.deleteChannel({ id }).catch(()=>{});
   for(const k of [...ADHAN_SOUNDS.map(([v]) => v), "silent"]) await LN.createChannel({ id: chanOf(k), name: "Prayer times", importance: k === "silent" ? 2 : 4, visibility: 1, sound: k && k !== "silent" ? k : undefined }).catch(()=>{});
-  // زر «إيقاف» داخل الإشعار يلغي الإشعار، فيتوقف الأذان
-  await LN.registerActionTypes({ types:[{ id:"STOP", actions:[{ id:"stop", title:"إيقاف" }] }] }).catch(()=>{});
-  if(!ensureChannels.listening){ ensureChannels.listening = true; LN.addListener("localNotificationActionPerformed", e => LN.cancel({ notifications:[{ id:e.notification.id }] }).catch(()=>{})); }
 }
 function renderSoundRows(){
   const box = document.getElementById("soundRows"); if(!box) return;
@@ -1438,7 +1434,7 @@ function renderSoundRows(){
   if(sndMute === null) sndMute = mutedOf();
   if(!sndDraft) sndDraft = Object.fromEntries(PRAYERS_SND.map(([k]) => [k, soundOf(k)]));
   const dis = sndMute ? " disabled" : "";
-  box.innerHTML = `<div class="sndmode"><button type="button" class="sw-on" data-m="0" aria-pressed="${!sndMute}">${SND_ON[lang] || SND_ON.en}</button><button type="button" class="sw-off" data-m="1" aria-pressed="${sndMute}">${SND_OFF[lang] || SND_OFF.en}</button></div>` + PRAYERS_SND.map(([k, p]) => `<div class="sndrow${sndMute ? " muted" : ""}"><span>${t.names[p]}</span><select data-k="${k}"${dis}>${ADHAN_SOUNDS.map(([v, l]) => `<option value="${v}"${v === sndDraft[k] ? " selected" : ""}>${l}</option>`).join("")}</select><button type="button" class="btn sndplay" data-k="${k}"${dis}>▶</button></div>`).join("");
+  box.innerHTML = `<div class="sndmode"><button type="button" class="sw-on" data-m="0" aria-pressed="${!sndMute}">${SND_ON[lang] || SND_ON.en}</button><button type="button" class="sw-off" data-m="1" aria-pressed="${sndMute}">${SND_OFF[lang] || SND_OFF.en}</button></div>` + PRAYERS_SND.map(([k, p]) => `<div class="sndrow${sndMute ? " muted" : ""}"><span>${t.names[p]}</span><select data-k="${k}"${dis}>${ADHAN_SOUNDS.map(([v, l]) => `<option value="${v}"${v === sndDraft[k] ? " selected" : ""}>${l}</option>`).join("")}</select><button type="button" class="btn sndplay" data-k="${k}"${dis}>${playingKey === k ? "❚❚" : "▶"}</button></div>`).join("");
   box.querySelectorAll("select").forEach(sel => sel.onchange = ()=>{ sndDraft[sel.dataset.k] = sel.value; saveSounds(); });
   box.querySelectorAll(".sndplay").forEach(b => b.onclick = ()=> testSound(sndDraft[b.dataset.k], b.dataset.k));
   box.querySelectorAll(".sndmode button").forEach(b => b.onclick = ()=>{ sndMute = b.dataset.m === "1"; renderSoundRows(); saveSounds(); });
@@ -1446,15 +1442,17 @@ function renderSoundRows(){
 // تجربة: إشعار فوري بالصوت المختار، يُوقف بزر «إيقاف» أو بإغلاقه
 async function testSound(sound, k){
   const LN = appLN(); if(!LN) return;
+  // إن كان يعمل صوت الآن فالضغط يوقفه
+  if(playingKey){ await LN.cancel({ notifications:[{ id:9000 }] }).catch(()=>{}); playingKey = null; renderSoundRows(); return; }
   await ensureChannels(LN);
   const t = L(), name = t.names[PNAME[k]];
-  await LN.schedule({ notifications:[{ id:9000, title:t.notifyTitle.replace("{p}", name), body:"", channelId: chanOf(sound), actionTypeId:"STOP", schedule:{ at: new Date(Date.now() + 1000) } }] }).catch(()=>{});
+  await LN.schedule({ notifications:[{ id:9000, title:t.notifyTitle.replace("{p}", name), body:"", channelId: chanOf(sound), schedule:{ at: new Date(Date.now() + 1000) } }] }).catch(()=>{});
+  playingKey = k; renderSoundRows();
 }
 // الحفظ تلقائي عند كل تغيير
 function saveSounds(){
   PRAYERS_SND.forEach(([k]) => store.set("snd_" + k, sndDraft[k]));
   store.set("mute_all", sndMute ? "1" : "");
-  document.getElementById("soundMsg").textContent = L().done;
   scheduleAppAlerts().catch(()=>{});
 }
 function fillSettings(){
@@ -1692,7 +1690,7 @@ async function scheduleAppAlerts(){
       const name = t.names[PNAME[k]];
       const at = zonedTime(day.timings[PNAME[k]].slice(0,5), tz, [yy, mm, dd]);
       const sound = mutedOf() ? "silent" : soundOf(k);
-      if(at > Date.now()) list.push({ id:1000 + di*5 + i, title:t.notifyTitle.replace("{p}", name), body:"", channelId: chanOf(sound), actionTypeId:"STOP", schedule:{ at } });
+      if(at > Date.now()) list.push({ id:1000 + di*5 + i, title:t.notifyTitle.replace("{p}", name), body:"", channelId: chanOf(sound), schedule:{ at } });
     });
   });
   await cancelAppAlerts();
