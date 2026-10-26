@@ -140,15 +140,15 @@ applyTheme();
   .navmenu a{color:var(--gold)!important;font-weight:600}
   @media (max-width:760px){
     /* الهاتف: الرئيسية، اللغة، المزيد في سطر واحد أعلى الصفحة */
-    .topbar{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+    .topbar{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,.8fr) minmax(0,.7fr) minmax(0,.9fr);gap:8px}
     .gbar{display:contents}
     #gbHome{order:1}
     .topbar > .langwrap{order:2;margin:0;min-width:0}
-    #langBtn{width:100%;justify-content:center;height:36px;box-sizing:border-box;padding:0 6px;min-width:0}
+    #langBtn{width:100%;justify-content:center;height:36px;box-sizing:border-box;padding:0 4px;min-width:0}
     #langName{display:none}
     #langBtn .flag{width:22px;height:15px}
     /* الترس بين المزيد واللغة، وبلا نقاط في المزيد */
-    .topbar > #settingsBtn{display:flex;order:3;width:100%;padding:8px 6px;min-width:0;justify-content:center}
+    .topbar > #settingsBtn{display:flex;order:3;width:100%;padding:8px 4px;min-width:0;justify-content:center}
     #settingsBtn span{display:none}
     .gbmore{order:4;display:block}
     #navBtn svg{display:none}
@@ -292,7 +292,8 @@ applyTheme();
   .install .ios{background:var(--inner);border:1px solid var(--line);border-radius:12px;padding:10px;color:var(--text)}
   .install .acts{display:flex;gap:10px;justify-content:center}
   .btn.wide{width:100%}
-  .setup .sheet{text-align:center;max-width:460px}
+  .setup .sheet{text-align:center;max-width:460px;position:relative}
+  #setupBack{position:absolute;top:12px;inset-inline-start:12px;width:36px;height:36px;border-radius:50%;padding:0}
   .setup img.logo{width:64px;height:64px;border-radius:16px;margin:0 auto 8px;display:block}
   .setup h3{color:var(--gold);font-size:1.15rem;margin-bottom:14px}
   .setup .langs{display:grid;grid-template-columns:1fr 1fr;gap:8px;text-align:start}
@@ -580,6 +581,7 @@ applyTheme();
 </div>
 <div class="overlay setup" id="setupOverlay" hidden>
   <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="setupTitle">
+    <button class="iconbtn" id="setupBack" type="button" hidden aria-label="back"><svg class="ic" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>
     <img class="logo" src="/icon-192.png" alt="">
     <div id="setupStep1">
       <h3 id="setupTitle">اختر اللغة · Choose language</h3>
@@ -1911,8 +1913,15 @@ function openSetup(){
   });
   document.getElementById("setupOverlay").hidden = false;
 }
+// زر الرجوع: خطوة واحدة إلى الوراء
+const SETUP_PREV = { setupStepLoc: "setupStep1", setupStep2: "setupStepLoc", setupStepWait: "setupStep2" };
+document.getElementById("setupBack").addEventListener("click", ()=>{
+  const cur = ["setupStep1","setupStepLoc","setupStep2","setupStepWait"].find(x => !document.getElementById(x).hidden);
+  if(SETUP_PREV[cur]) setupStep(SETUP_PREV[cur]);
+});
 function setupStep(id){
   ["setupStep1","setupStepLoc","setupStep2","setupStepWait"].forEach(x=> document.getElementById(x).hidden = x !== id);
+  document.getElementById("setupBack").hidden = id === "setupStep1";
   if(id === "setupStep2") document.querySelectorAll("[data-sfmt]").forEach(x=> x.setAttribute("aria-pressed", x.dataset.sfmt === timeFmt ? "true" : "false"));
 }
 // الموقع: تلقائيًا (يطلب الإذن من المستخدم) أو بكتابة المدينة يدويًا
