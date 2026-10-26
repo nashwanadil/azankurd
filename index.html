@@ -1090,7 +1090,7 @@ async function loadWeek(data, q){
       const nm = m === 12 ? 1 : m + 1, ny = m === 12 ? y + 1 : y;
       days = days.concat((await get(ny, nm)).slice(0, 7 - days.length));
     }
-    if(weekKey === key){ weekDays = days; renderWeek(); }
+    if(weekKey === key){ weekDays = days; renderWeek(); scheduleWebTimers(); }
   }catch(e){ if(weekKey === key){ weekDays = null; syncWeekSec(); } }
 }
 // أسماء الأيام بالكوردية (بهدينانية) للجدول الأسبوعي؛ Intl يعطيها بالعربية لأن الكوردية غير مدعومة فيه
@@ -1655,7 +1655,33 @@ async function pushSend(body){
   return r.json();
 }
 // نرسل للخادم مدينة المشترك وإعداداته كلما تغيّرت (المدينة أو الطريقة أو اللغة…)
+// تنبيه المتصفح بدقة ساعته والموقع مفتوح. يحمل الوسم نفسه الذي تستعمله خدمة الخلفية، فلا يتكرر التنبيه
+var webTimers = [];
+function scheduleWebTimers(){
+  try{
+    webTimers.forEach(clearTimeout); webTimers = [];
+    if(IS_APP || store.get("notify","0") !== "1" || !("Notification" in window) || Notification.permission !== "granted") return;
+    if(!weekDays || !lastData || !lastData.meta) return;
+    const tz = lastData.meta.timezone, prefs = getPrefs(), now = Date.now();
+    weekDays.forEach(day => {
+      const [dd, mm, yy] = day.date.gregorian.date.split("-").map(Number);
+      PKEYS.forEach(k => {
+        if(!prefs.p.includes(k)) return;
+        const at = zonedTime(day.timings[PNAME[k]].slice(0,5), tz, [yy, mm, dd]).getTime();
+        if(at > now && at - now < 864e5 * 2) webTimers.push(setTimeout(() => showPrayerWeb(k), at - now));
+      });
+    });
+  }catch(e){}
+}
+async function showPrayerWeb(k){
+  const t = L();
+  try{
+    const reg = await navigator.serviceWorker.ready;
+    await reg.showNotification(t.notifyTitle.replace("{p}", t.names[PNAME[k]]), { body:"", icon:"/icon-192.png", badge:"/icon-192.png", tag:"adhan-" + k, renotify:false, data:{ url:"/" } });
+  }catch(e){}
+}
 async function syncNotify(force){
+  scheduleWebTimers();
   if(store.get("notify","0") !== "1" || !("serviceWorker" in navigator)) return;
   const info = notifyInfo(); if(!info) return;
   const key = JSON.stringify(info);
