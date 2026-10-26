@@ -308,8 +308,8 @@ applyTheme();
   .sndrow.muted{opacity:.85}
   .sndmode{margin-bottom:10px}
   .sndrow{grid-template-columns:minmax(0,.8fr) minmax(0,1.4fr) 40px auto}
-  .sndmode{display:flex;border:1.5px solid var(--line);border-radius:10px;overflow:hidden}
-  .sndmode button{border:0;background:transparent;padding:6px 8px;font-size:.8rem;color:var(--muted);font-family:inherit;cursor:pointer;white-space:nowrap}
+  .sndmode{display:grid;grid-template-columns:1fr 1fr;border:1.5px solid var(--line);border-radius:10px;overflow:hidden}
+  .sndmode button{border:0;background:transparent;padding:8px 6px;font-size:.9rem;color:var(--muted);font-family:inherit;cursor:pointer;white-space:nowrap;width:100%}
   .sndmode .sw-on[aria-pressed=true]{background:#2f6fd6;color:#fff}
   .sndmode .sw-off[aria-pressed=true]{background:#8a8a8a;color:#fff}
   .sndplay{width:44px;height:40px;padding:0;display:flex;align-items:center;justify-content:center}
