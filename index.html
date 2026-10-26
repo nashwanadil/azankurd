@@ -504,8 +504,6 @@ applyTheme();
       <label class="sublbl" data-i="beforeLbl"></label>
       <div class="chips" id="advBeforeP"></div>
       <div class="seg mini" id="advBefore"></div>
-      <label class="sublbl" data-i="atTimeLbl"></label>
-      <div class="chips" id="advPrayers"></div>
       <label data-i="iqamaLbl"></label>
       <div class="seg mini" id="advIqama"></div>
       <label data-i="extras"></label>
@@ -1419,7 +1417,7 @@ document.getElementById("noticeBtn").addEventListener("click", async ()=>{
 
 /* ---------- الإعدادات ---------- */
 // أصوات الإشعار: القناة في أندرويد تحمل الصوت، فلكل صوت قناة مستقلة
-const ADHAN_SOUNDS = [["", "الافتراضي للهاتف"], ["adhan_makkah", "أذان مكة"], ["adhan_madinah", "أذان المدينة"], ["adhan_quds", "أذان القدس"]];
+const ADHAN_SOUNDS = [["", "الافتراضي للهاتف"], ["silent", "صامت"], ["adhan_makkah", "أذان مكة"], ["adhan_madinah", "أذان المدينة"], ["adhan_quds", "أذان القدس"]];
 const SAVE_LBL = { ar:"حفظ", ku:"هەڵگرتن", en:"Save" };
 const PRAYERS_SND = [["fajr", "Fajr"], ["dhuhr", "Dhuhr"], ["asr", "Asr"], ["maghrib", "Maghrib"], ["isha", "Isha"]];
 let sndDraft = null;
@@ -1429,7 +1427,7 @@ const chanOf = sound => sound ? "adhan2_" + sound : "prayer2_default";
 async function ensureChannels(LN){
   // أندرويد يثبّت صوت القناة عند إنشائها، فنستعمل أسماء جديدة لكل صوت، ونحذف القنوات القديمة
   for(const id of ["prayer_adhan_makkah","prayer_adhan_madinah","prayer_adhan_quds","prayer_default"]) await LN.deleteChannel({ id }).catch(()=>{});
-  for(const [k] of ADHAN_SOUNDS) await LN.createChannel({ id: chanOf(k), name: "أوقات الصلاة", importance: 4, visibility: 1, sound: k || undefined }).catch(()=>{});
+  for(const [k] of ADHAN_SOUNDS) await LN.createChannel({ id: chanOf(k), name: "أوقات الصلاة", importance: k === "silent" ? 2 : 4, visibility: 1, sound: k && k !== "silent" ? k : undefined }).catch(()=>{});
   // زر «إيقاف» داخل الإشعار يلغي الإشعار، فيتوقف الأذان
   await LN.registerActionTypes({ types:[{ id:"STOP", actions:[{ id:"stop", title:"إيقاف" }] }] }).catch(()=>{});
   if(!ensureChannels.listening){ ensureChannels.listening = true; LN.addListener("localNotificationActionPerformed", e => LN.cancel({ notifications:[{ id:e.notification.id }] }).catch(()=>{})); }
@@ -1687,7 +1685,6 @@ async function scheduleAppAlerts(){
   days.forEach((day, di)=>{
     const [dd, mm, yy] = day.date.gregorian.date.split("-").map(Number);
     PKEYS.forEach((k, i)=>{
-      if(!prefs.p.includes(k)) return;
       const name = t.names[PNAME[k]];
       const at = zonedTime(day.timings[PNAME[k]].slice(0,5), tz, [yy, mm, dd]);
       const sound = soundOf(k);
@@ -1738,7 +1735,6 @@ function fillAdvanced(){
       const q = getPrefs(); q[key] = toggle(q[key], k); if(extra) extra(q); setPrefs(q);
     })));
   };
-  row("advPrayers", "p");
   row("advBeforeP", "pb", q => { if(!q.b) q.b = 10; });
   const seg = (id, key, vals) => {
     const el = document.getElementById(id); el.innerHTML = "";
