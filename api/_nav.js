@@ -71,6 +71,7 @@ const css = `
   .gbmore > summary svg{display:none}
   .top .langs summary{height:36px}
   .top .langs summary .flag{width:22px;height:15px}
+  .top .langs .menu{inset-inline-end:auto;inset-inline-start:0;max-width:calc(100vw - 24px)}
   .gb{width:100%;padding:8px 6px;min-width:0}
   .gb span{overflow:hidden;text-overflow:ellipsis}
   .gb.wide{display:none}
