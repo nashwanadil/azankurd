@@ -1968,6 +1968,7 @@ function fillAdvanced(){
 
 /* ---------- قائمة التنقل ---------- */
 const NAVIC = {
+  download:'<path d="M12 4v11M7 10l5 5 5-5M5 20h14"/>',
   gear:'<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/>',
   home:'<path d="M3 11l9-7 9 7M5 10v10h14V10"/>', globe:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',
   flag:'<path d="M5 21V4M5 4h11l-2 4 2 4H5"/>', pin:'<path d="M12 22s7-6.2 7-12a7 7 0 0 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/>',
@@ -2020,12 +2021,13 @@ function setBar(){
   document.getElementById("gbWide").innerHTML = BAR_TOOLS.map(([p, ic]) => `<a class="gb wide" href="/${lang}/${p}"><svg viewBox="0 0 24 24">${NAVIC[ic]}</svg><span>${esc(barShort(p))}</span></a>`).join("");
   fitBar();
 }
+const DL = {"ar":"تحميل التطبيق","ku":"داگرتنی ئەپ","en":"Download app","de":"App herunterladen","tr":"Uygulamayı indir","fa":"دانلود برنامه","ur":"ایپ ڈاؤن لوڈ کریں","fr":"Télécharger l’app","es":"Descargar la app","it":"Scarica l’app","nl":"App downloaden","da":"Download app","sv":"Ladda ner appen","ru":"Скачать приложение","bs":"Preuzmi aplikaciju","id":"Unduh aplikasi","bn":"অ্যাপ ডাউনলোড করুন","ps":"اپلیکیشن ډاونلوډ کړئ","ha":"Zazzage app","sw":"Pakua programu"};
 function buildNav(){
   const t = L(), m = document.getElementById("navMenu");
   const a = (href, ic, label) => `<a role="menuitem" href="${href}"><svg viewBox="0 0 24 24">${NAVIC[ic]}</svg><span>${String(label).replace(/</g,"&lt;")}</span></a>`;
   m.innerHTML = a(`/${lang}/qibla`, "qibla", toolLbl("qibla")) + BAR_TOOLS.map(([p, ic]) => a(`/${lang}/${p}`, ic, barLbl(p))).join("")
     + `<a role="menuitem" href="#" data-act="settings"><svg viewBox="0 0 24 24">${NAVIC.gear}</svg><span>${String(t.settings).replace(/</g,"&lt;")}</span></a>`
-    + "<hr>" + a(`/${lang}/about`, "about", t.cAbout) + a(`/${lang}/privacy`, "privacy", t.cPrivacy)
+    + a("/download.html", "download", DL[lang] || DL.en) + "<hr>" + a(`/${lang}/about`, "about", t.cAbout) + a(`/${lang}/privacy`, "privacy", t.cPrivacy)
     + `<a role="menuitem" href="#" data-act="contact"><svg viewBox="0 0 24 24">${NAVIC.contact}</svg><span>${String(t.cContact).replace(/</g,"&lt;")}</span></a>`;
 }
 document.getElementById("navMenu").addEventListener("click", e=>{

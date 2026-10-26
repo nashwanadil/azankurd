@@ -12,6 +12,7 @@ const I = {
   pin:'<path d="M12 22s7-6.2 7-12a7 7 0 0 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/>',
   about:'<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/>',
   privacy:'<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/>',
+  download:'<path d="M12 4v11M7 10l5 5 5-5M5 20h14"/>',
   contact:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/>',
   qibla:'<circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/>',
   ramadan:'<path d="M15 4a8 8 0 1 0 5 12.5A6.5 6.5 0 0 1 15 4z"/><path d="M18 3l.6 1.4L20 5l-1.4.6L18 7l-.6-1.4L16 5l1.4-.6z"/>',
@@ -137,6 +138,7 @@ function html(lang){
 }
 
 // الشريط الأفقي: الرئيسية والقبلة دائمًا؛ في الحاسوب بقية الأدوات والإعدادات، وفي الهاتف زر «المزيد» يفتح القائمة
+const DLBL = {"ar":"تحميل التطبيق","ku":"داگرتنی ئەپ","en":"Download app","de":"App herunterladen","tr":"Uygulamayı indir","fa":"دانلود برنامه","ur":"ایپ ڈاؤن لوڈ کریں","fr":"Télécharger l’app","es":"Descargar la app","it":"Scarica l’app","nl":"App downloaden","da":"Download app","sv":"Ladda ner appen","ru":"Скачать приложение","bs":"Preuzmi aplikaciju","id":"Unduh aplikasi","bn":"অ্যাপ ডাউনলোড করুন","ps":"اپلیکیشن ډاونلوډ کړئ","ha":"Zazzage app","sw":"Pakua programu"};
 function bar(lang, cur){
   const t = T[lang], x = INFO[lang];
   const b = (href, k, label, cls = "") => `<a class="gb${cls}${cur === k ? " on" : ""}" href="${href}">${ic(k)}<span>${esc(label)}</span></a>`;
@@ -149,6 +151,7 @@ ${tools.map(([p, k, l]) => b(`/${lang}/${p}`, k, (SHORT[lang] && SHORT[lang][p])
 ${m(`/${lang}/qibla`, "qibla", lbl(QIBLABL, lang))}
 ${tools.map(([p, k, l]) => m(`/${lang}/${p}`, k, l)).join("\n")}
 ${m(`/?lang=${lang}&settings=1`, "gear", t.settings)}
+${m("/download.html", "download", DLBL[lang] || DLBL.en)}
 <hr>
 ${m(`/${lang}/about`, "about", x.cAbout)}
 ${m(`/${lang}/privacy`, "privacy", x.cPrivacy)}
