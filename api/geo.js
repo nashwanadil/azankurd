@@ -7,5 +7,7 @@ module.exports = (req, res) => {
   const r = String(req.headers["x-vercel-ip-country-region"] || "").toUpperCase();
   res.setHeader("Content-Type", "application/json; charset=utf-8");
   res.setHeader("Cache-Control", "private, no-store");
-  res.end(JSON.stringify({ krd: cc === "IQ" && KRD.includes(r) }));
+  // موقع تقريبي من عنوان الاتصال (يظهر فورًا قبل GPS)
+  const lat = parseFloat(req.headers["x-vercel-ip-latitude"]), lng = parseFloat(req.headers["x-vercel-ip-longitude"]);
+  res.end(JSON.stringify({ krd: cc === "IQ" && KRD.includes(r), lat: isFinite(lat) ? lat : null, lng: isFinite(lng) ? lng : null }));
 };
