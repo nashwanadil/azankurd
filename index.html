@@ -1478,7 +1478,7 @@ function renderSoundRows(){
     renderSoundRows(); saveSounds();
   };
   box.querySelectorAll("select[data-k]").forEach(sel => sel.onchange = ()=>{ sndDraft[sel.dataset.k] = sel.value; saveSounds(); });
-  box.querySelectorAll(".sndplay").forEach(b => b.onclick = ()=> b.dataset.k === "all" ? testSound(sndAllVal, "fajr") : testSound(sndDraft[b.dataset.k], b.dataset.k));
+  box.querySelectorAll(".sndplay").forEach(b => b.onclick = ()=> b.dataset.k === "all" ? testSound(sndAllVal, "all") : testSound(sndDraft[b.dataset.k], b.dataset.k));
 }
 // تجربة: إشعار فوري بالصوت المختار، يُوقف بزر «إيقاف» أو بإغلاقه
 // إيقاف الصوت الجاري أيًا كان مصدره
