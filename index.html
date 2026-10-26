@@ -1442,6 +1442,13 @@ function renderSoundRows(){
 }
 // تجربة: إشعار فوري بالصوت المختار، يُوقف بزر «إيقاف» أو بإغلاقه
 async function testSound(sound, k){
+  const AA = appAA();
+  if(AA){
+    if(playingKey){ await AA.stop().catch(()=>{}); playingKey = null; renderSoundRows(); return; }
+    const t = L();
+    await AA.play({ sound, title: t.notifyTitle.replace("{p}", t.names[PNAME[k]]) }).catch(()=>{});
+    playingKey = k; renderSoundRows(); return;
+  }
   const LN = appLN(); if(!LN) return;
   // إن كان يعمل صوت الآن فالضغط يوقفه
   if(playingKey){ await LN.cancel({ notifications:[{ id:9000 }] }).catch(()=>{}); playingKey = null; renderSoundRows(); return; }
@@ -1645,6 +1652,7 @@ async function setNotify(on){
 }
 
 /* ---------- إشعارات الصلاة داخل التطبيق (إشعارات أندرويد الأصلية) ---------- */
+const appAA = () => (IS_APP && window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.AdhanAlarm) || null;
 const appLN = () => (IS_APP && window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.LocalNotifications) || null;
 // وقت الصلاة بتوقيت المدينة، لا بتوقيت الهاتف
 function zonedTime(hm, tz, ymd){
@@ -1677,13 +1685,28 @@ async function scheduleAppAlerts(){
   const tz = lastData.meta && lastData.meta.timezone; if(!tz) return;
   const prefs = getPrefs();
   const sounds = PRAYERS_SND.map(([k]) => mutedOf() ? "silent" : soundOf(k));
-  const key = JSON.stringify([lastQuery, usedMethod, schoolFor(usedMethod), tz, prefs.p, lang, sounds, "ch3"]);
+  const key = JSON.stringify([lastQuery, usedMethod, schoolFor(usedMethod), tz, prefs.p, lang, sounds, "native1"]);
   // الجدول محفوظ لدى نظام أندرويد ولم يتغير، فلا طلبات ولا إعادة جدولة
   if(store.get("alertsKey","") === key && Date.now() - Number(store.get("alertsAt","0")) < 7*864e5) return;
   let days;
   try{ days = await alertDays(); }catch(e){ return; }   // بلا إنترنت تبقى التنبيهات السابقة كما هي
   if(!days.length) return;
   const t = L(), list = [];
+  const AA = appAA();
+  if(AA){
+    const alerts = [];
+    days.forEach(day=>{
+      const [dd, mm, yy] = day.date.gregorian.date.split("-").map(Number);
+      PKEYS.forEach(k=>{
+        const at = zonedTime(day.timings[PNAME[k]].slice(0,5), tz, [yy, mm, dd]);
+        if(at > Date.now()) alerts.push({ t: at.getTime(), s: mutedOf() ? "silent" : soundOf(k), n: t.notifyTitle.replace("{p}", t.names[PNAME[k]]) });
+      });
+    });
+    await cancelAppAlerts().catch(()=>{});
+    await AA.setAlerts({ alerts }).catch(()=>{});
+    store.set("alertsKey", key); store.set("alertsAt", String(Date.now()));
+    return;
+  }
   await ensureChannels(LN);
   days.forEach((day, di)=>{
     const [dd, mm, yy] = day.date.gregorian.date.split("-").map(Number);
