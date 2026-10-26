@@ -1388,17 +1388,18 @@ async function permState(){
   try{ return (await navigator.permissions.query({name:"geolocation"})).state; }catch(e){ return "unknown"; }
 }
 // موقع تقريبي فوري من عنوان الاتصال؛ يُعرض قبل GPS ولا ينتظره
+let gpsDone = false;   // إذا وصل GPS لا يكتب عليه الموقع التقريبي
 async function ipLocate(){
   try{
     const r = await (await fetch("/api/geo")).json();
-    if(typeof r.lat === "number" && typeof r.lng === "number" && !lastData) byCoords(r.lat, r.lng);
+    if(typeof r.lat === "number" && typeof r.lng === "number" && !lastData && !gpsDone) byCoords(r.lat, r.lng);
   }catch(e){}
 }
 function useLocation(retry = true){
   ipLocate();
   if(!navigator.geolocation){ locState = "unknown"; return fallback(); }
   navigator.geolocation.getCurrentPosition(
-    p=>{ locState = null; showHelp = false; renderNotice(); byCoords(p.coords.latitude, p.coords.longitude); },
+    p=>{ gpsDone = true; locState = null; showHelp = false; renderNotice(); byCoords(p.coords.latitude, p.coords.longitude); },
     async err=>{
       // داخل التطبيق يحتاج تحديد الموقع وقتًا أطول أحيانًا، فنعيد المحاولة مرة واحدة بدقة أعلى
       if(err.code === 3 && retry){ return navigator.geolocation.getCurrentPosition(
