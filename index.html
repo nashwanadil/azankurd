@@ -505,6 +505,8 @@ applyTheme();
       <details class="fold" id="notifyAdv">
         <summary><span data-i="advanced"></span><svg class="chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></summary>
         <div class="adv">
+          <label>صوت الأذان</label>
+          <div class="seg mini" id="advSound"></div>
           <label data-i="iqamaLbl"></label>
           <div class="seg mini" id="advIqama"></div>
           <label data-i="extras"></label>
@@ -1416,8 +1418,17 @@ document.getElementById("noticeBtn").addEventListener("click", async ()=>{
 })();
 
 /* ---------- الإعدادات ---------- */
+// أصوات الإشعار: القناة في أندرويد تحمل الصوت، فلكل صوت قناة مستقلة
+const ADHAN_SOUNDS = [["", "الافتراضي للهاتف"], ["adhan_makkah", "أذان مكة"], ["adhan_madinah", "أذان المدينة"], ["adhan_quds", "أذان القدس"]];
+function renderSound(){
+  const box = document.getElementById("advSound"); if(!box) return;
+  const cur = store.get("adhanSound", "");
+  box.innerHTML = ADHAN_SOUNDS.map(([k, l]) => `<button type="button" aria-pressed="${k === cur}">${l}</button>`).join("");
+  box.querySelectorAll("button").forEach((b, i) => b.onclick = ()=>{ store.set("adhanSound", ADHAN_SOUNDS[i][0]); renderSound(); scheduleAppAlerts().catch(()=>{}); });
+}
 function fillSettings(){
   const t = L();
+  renderSound();
   const cs = document.getElementById("citySelect");
   const recent = getRecent();
   let ch = `<option value="here">${t.myLocation}</option>`;
@@ -1635,20 +1646,22 @@ async function scheduleAppAlerts(){
   if(!LN || !lastData || !timings || !lastQuery || !usedMethod || store.get("notify","0") !== "1") return;
   const tz = lastData.meta && lastData.meta.timezone; if(!tz) return;
   const prefs = getPrefs();
-  const key = JSON.stringify([lastQuery, usedMethod, schoolFor(usedMethod), tz, prefs.p, lang]);
+  const sound = store.get("adhanSound", "");
+  const key = JSON.stringify([lastQuery, usedMethod, schoolFor(usedMethod), tz, prefs.p, lang, sound]);
   // الجدول محفوظ لدى نظام أندرويد ولم يتغير، فلا طلبات ولا إعادة جدولة
   if(store.get("alertsKey","") === key && Date.now() - Number(store.get("alertsAt","0")) < 7*864e5) return;
   let days;
   try{ days = await alertDays(); }catch(e){ return; }   // بلا إنترنت تبقى التنبيهات السابقة كما هي
   if(!days.length) return;
   const t = L(), list = [];
+  for(const [k] of ADHAN_SOUNDS) await LN.createChannel({ id: k ? "prayer_" + k : "prayer_default", name: "أوقات الصلاة", importance: 4, visibility: 1, sound: k || undefined }).catch(()=>{});
   days.forEach((day, di)=>{
     const [dd, mm, yy] = day.date.gregorian.date.split("-").map(Number);
     PKEYS.forEach((k, i)=>{
       if(!prefs.p.includes(k)) return;
       const name = t.names[PNAME[k]];
       const at = zonedTime(day.timings[PNAME[k]].slice(0,5), tz, [yy, mm, dd]);
-      if(at > Date.now()) list.push({ id:1000 + di*5 + i, title:t.notifyTitle.replace("{p}", name), body:"", schedule:{ at } });
+      if(at > Date.now()) list.push({ id:1000 + di*5 + i, title:t.notifyTitle.replace("{p}", name), body:"", channelId: sound ? "prayer_" + sound : "prayer_default", schedule:{ at } });
     });
   });
   await cancelAppAlerts();
