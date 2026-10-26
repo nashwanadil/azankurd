@@ -306,6 +306,7 @@ applyTheme();
   .sndrow select{width:100%;min-width:0}
   .sndrow select:disabled,.sndplay:disabled{opacity:.45}
   .sndrow.muted{opacity:.85}
+  .sndmode{margin-bottom:10px}
   .sndrow{grid-template-columns:minmax(0,.8fr) minmax(0,1.4fr) 40px auto}
   .sndmode{display:flex;border:1.5px solid var(--line);border-radius:10px;overflow:hidden}
   .sndmode button{border:0;background:transparent;padding:6px 8px;font-size:.8rem;color:var(--muted);font-family:inherit;cursor:pointer;white-space:nowrap}
@@ -1427,9 +1428,9 @@ document.getElementById("noticeBtn").addEventListener("click", async ()=>{
 const ADHAN_SOUNDS = [["", "الافتراضي للهاتف"], ["adhan_makkah", "أذان مكة"], ["adhan_madinah", "أذان المدينة"], ["adhan_quds", "أذان القدس"]];
 const SAVE_LBL = { ar:"حفظ", ku:"هەڵگرتن", en:"Save" };
 const PRAYERS_SND = [["fajr", "Fajr"], ["dhuhr", "Dhuhr"], ["asr", "Asr"], ["maghrib", "Maghrib"], ["isha", "Isha"]];
-let sndDraft = null;
+let sndDraft = null, sndMute = null;
 const soundOf = k => store.get("snd_" + k, "");
-const mutedOf = k => store.get("mute_" + k, "") === "1";
+const mutedOf = () => store.get("mute_all", "") === "1";   // تشغيل/صامت عام لكل الصلوات
 const SND_ON = { ar:"تشغيل", ku:"لێدان", en:"On" }, SND_OFF = { ar:"صامت", ku:"بێ دەنگ", en:"Muted" };
 const chanOf = sound => sound ? "adhan2_" + sound : "prayer2_default";
 // قناة لكل صوت، والإشعار العادي يستعمل صوت الهاتف القصير
@@ -1444,11 +1445,13 @@ async function ensureChannels(LN){
 function renderSoundRows(){
   const box = document.getElementById("soundRows"); if(!box) return;
   const t = L();
-  if(!sndDraft) sndDraft = Object.fromEntries(PRAYERS_SND.map(([k]) => [k, { s: soundOf(k), m: mutedOf(k) }]));
-  box.innerHTML = PRAYERS_SND.map(([k, p]) => { const d = sndDraft[k], dis = d.m ? " disabled" : ""; return `<div class="sndrow${d.m ? " muted" : ""}"><span>${t.names[p]}</span><select data-k="${k}"${dis}>${ADHAN_SOUNDS.map(([v, l]) => `<option value="${v}"${v === d.s ? " selected" : ""}>${l}</option>`).join("")}</select><button type="button" class="btn sndplay" data-k="${k}"${dis}>▶</button><div class="sndmode"><button type="button" class="sw-on" data-k="${k}" data-m="0" aria-pressed="${!d.m}">${SND_ON[lang] || SND_ON.en}</button><button type="button" class="sw-off" data-k="${k}" data-m="1" aria-pressed="${d.m}">${SND_OFF[lang] || SND_OFF.en}</button></div></div>`; }).join("");
-  box.querySelectorAll("select").forEach(sel => sel.onchange = ()=>{ sndDraft[sel.dataset.k].s = sel.value; });
-  box.querySelectorAll(".sndplay").forEach(b => b.onclick = ()=> testSound(sndDraft[b.dataset.k].s, b.dataset.k));
-  box.querySelectorAll(".sndmode button").forEach(b => b.onclick = ()=>{ sndDraft[b.dataset.k].m = b.dataset.m === "1"; renderSoundRows(); });
+  if(sndMute === null) sndMute = mutedOf();
+  if(!sndDraft) sndDraft = Object.fromEntries(PRAYERS_SND.map(([k]) => [k, soundOf(k)]));
+  const dis = sndMute ? " disabled" : "";
+  box.innerHTML = `<div class="sndmode"><button type="button" class="sw-on" data-m="0" aria-pressed="${!sndMute}">${SND_ON[lang] || SND_ON.en}</button><button type="button" class="sw-off" data-m="1" aria-pressed="${sndMute}">${SND_OFF[lang] || SND_OFF.en}</button></div>` + PRAYERS_SND.map(([k, p]) => `<div class="sndrow${sndMute ? " muted" : ""}"><span>${t.names[p]}</span><select data-k="${k}"${dis}>${ADHAN_SOUNDS.map(([v, l]) => `<option value="${v}"${v === sndDraft[k] ? " selected" : ""}>${l}</option>`).join("")}</select><button type="button" class="btn sndplay" data-k="${k}"${dis}>▶</button></div>`).join("");
+  box.querySelectorAll("select").forEach(sel => sel.onchange = ()=>{ sndDraft[sel.dataset.k] = sel.value; });
+  box.querySelectorAll(".sndplay").forEach(b => b.onclick = ()=> testSound(sndDraft[b.dataset.k], b.dataset.k));
+  box.querySelectorAll(".sndmode button").forEach(b => b.onclick = ()=>{ sndMute = b.dataset.m === "1"; renderSoundRows(); });
   document.getElementById("soundSave").textContent = SAVE_LBL[lang] || SAVE_LBL.en;
 }
 // تجربة: إشعار فوري بالصوت المختار، يُوقف بزر «إيقاف» أو بإغلاقه
@@ -1459,7 +1462,8 @@ async function testSound(sound, k){
   await LN.schedule({ notifications:[{ id:9000, title:t.notifyTitle.replace("{p}", name), body:"", channelId: chanOf(sound), actionTypeId:"STOP", schedule:{ at: new Date(Date.now() + 1000) } }] }).catch(()=>{});
 }
 document.getElementById("soundSave").addEventListener("click", ()=>{
-  PRAYERS_SND.forEach(([k]) => { store.set("snd_" + k, sndDraft[k].s); store.set("mute_" + k, sndDraft[k].m ? "1" : ""); });
+  PRAYERS_SND.forEach(([k]) => store.set("snd_" + k, sndDraft[k]));
+  store.set("mute_all", sndMute ? "1" : "");
   document.getElementById("soundMsg").textContent = L().done;
   scheduleAppAlerts().catch(()=>{});
 });
@@ -1683,7 +1687,7 @@ async function scheduleAppAlerts(){
   if(!LN || !lastData || !timings || !lastQuery || !usedMethod || store.get("notify","0") !== "1") return;
   const tz = lastData.meta && lastData.meta.timezone; if(!tz) return;
   const prefs = getPrefs();
-  const sounds = PRAYERS_SND.map(([k]) => mutedOf(k) ? "silent" : soundOf(k));
+  const sounds = PRAYERS_SND.map(([k]) => mutedOf() ? "silent" : soundOf(k));
   const key = JSON.stringify([lastQuery, usedMethod, schoolFor(usedMethod), tz, prefs.p, lang, sounds]);
   // الجدول محفوظ لدى نظام أندرويد ولم يتغير، فلا طلبات ولا إعادة جدولة
   if(store.get("alertsKey","") === key && Date.now() - Number(store.get("alertsAt","0")) < 7*864e5) return;
@@ -1697,7 +1701,7 @@ async function scheduleAppAlerts(){
     PKEYS.forEach((k, i)=>{
       const name = t.names[PNAME[k]];
       const at = zonedTime(day.timings[PNAME[k]].slice(0,5), tz, [yy, mm, dd]);
-      const sound = mutedOf(k) ? "silent" : soundOf(k);
+      const sound = mutedOf() ? "silent" : soundOf(k);
       if(at > Date.now()) list.push({ id:1000 + di*5 + i, title:t.notifyTitle.replace("{p}", name), body:"", channelId: chanOf(sound), actionTypeId:"STOP", schedule:{ at } });
     });
   });
