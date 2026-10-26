@@ -1421,11 +1421,12 @@ let sndDraft = null, sndMute = null, playingKey = null;
 const soundOf = k => store.get("snd_" + k, "");
 const mutedOf = () => store.get("mute_all", "") === "1";   // تشغيل/صامت عام لكل الصلوات
 const SND_ON = { ar:"تشغيل", ku:"لێدان", en:"On" }, SND_OFF = { ar:"صامت", ku:"بێ دەنگ", en:"Muted" };
-const chanOf = sound => sound ? "adhan2_" + sound : "prayer2_default";
+// القنوات السابقة أُنشئت قبل وجود ملفات الصوت، وصوتها لا يتغير، فنستعمل أسماء جديدة
+const chanOf = sound => sound ? "adhan3_" + sound : "prayer3_default";
 // قناة لكل صوت، والإشعار العادي يستعمل صوت الهاتف القصير
 async function ensureChannels(LN){
   // أندرويد يثبّت صوت القناة عند إنشائها، فنستعمل أسماء جديدة لكل صوت، ونحذف القنوات القديمة
-  for(const id of ["prayer_adhan_makkah","prayer_adhan_madinah","prayer_adhan_quds","prayer_default"]) await LN.deleteChannel({ id }).catch(()=>{});
+  for(const id of ["prayer_adhan_makkah","prayer_adhan_madinah","prayer_adhan_quds","prayer_default","adhan2_adhan_makkah","adhan2_adhan_madinah","adhan2_adhan_quds","adhan2_silent","prayer2_default"]) await LN.deleteChannel({ id }).catch(()=>{});
   for(const k of [...ADHAN_SOUNDS.map(([v]) => v), "silent"]) await LN.createChannel({ id: chanOf(k), name: "Prayer times", importance: k === "silent" ? 2 : 4, visibility: 1, sound: k && k !== "silent" ? k : undefined }).catch(()=>{});
 }
 function renderSoundRows(){
@@ -1676,7 +1677,7 @@ async function scheduleAppAlerts(){
   const tz = lastData.meta && lastData.meta.timezone; if(!tz) return;
   const prefs = getPrefs();
   const sounds = PRAYERS_SND.map(([k]) => mutedOf() ? "silent" : soundOf(k));
-  const key = JSON.stringify([lastQuery, usedMethod, schoolFor(usedMethod), tz, prefs.p, lang, sounds]);
+  const key = JSON.stringify([lastQuery, usedMethod, schoolFor(usedMethod), tz, prefs.p, lang, sounds, "ch3"]);
   // الجدول محفوظ لدى نظام أندرويد ولم يتغير، فلا طلبات ولا إعادة جدولة
   if(store.get("alertsKey","") === key && Date.now() - Number(store.get("alertsAt","0")) < 7*864e5) return;
   let days;
