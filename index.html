@@ -1437,14 +1437,15 @@ function renderSoundRows(){
   if(!sndDraft) sndDraft = Object.fromEntries(PRAYERS_SND.map(([k]) => [k, soundOf(k)]));
   box.innerHTML = PRAYERS_SND.map(([k, p]) => `<div class="sndrow"><span>${t.names[p]}</span><select data-k="${k}">${ADHAN_SOUNDS.map(([v, l]) => `<option value="${v}"${v === sndDraft[k] ? " selected" : ""}>${l}</option>`).join("")}</select><button type="button" class="btn sndplay" data-k="${k}">▶</button></div>`).join("");
   box.querySelectorAll("select").forEach(sel => sel.onchange = ()=>{ sndDraft[sel.dataset.k] = sel.value; });
-  box.querySelectorAll(".sndplay").forEach(b => b.onclick = ()=> testSound(sndDraft[b.dataset.k]));
+  box.querySelectorAll(".sndplay").forEach(b => b.onclick = ()=> testSound(sndDraft[b.dataset.k], b.dataset.k));
   document.getElementById("soundSave").textContent = SAVE_LBL[lang] || SAVE_LBL.en;
 }
 // تجربة: إشعار فوري بالصوت المختار، يُوقف بزر «إيقاف» أو بإغلاقه
-async function testSound(sound){
+async function testSound(sound, k){
   const LN = appLN(); if(!LN) return;
   await ensureChannels(LN);
-  await LN.schedule({ notifications:[{ id:9000, title:"أذان كُرد", body:"", channelId: sound ? "prayer_" + sound : "prayer_default", actionTypeId:"STOP", schedule:{ at: new Date(Date.now() + 1000) } }] }).catch(()=>{});
+  const t = L(), name = t.names[PNAME[k]];
+  await LN.schedule({ notifications:[{ id:9000, title:t.notifyTitle.replace("{p}", name), body:"", channelId: sound ? "prayer_" + sound : "prayer_default", actionTypeId:"STOP", schedule:{ at: new Date(Date.now() + 1000) } }] }).catch(()=>{});
 }
 document.getElementById("soundSave").addEventListener("click", ()=>{
   PRAYERS_SND.forEach(([k]) => store.set("snd_" + k, sndDraft[k]));
