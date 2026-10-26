@@ -523,10 +523,10 @@ applyTheme();
       <div class="chips" id="advBeforeP"></div>
       <div class="seg mini" id="advBefore"></div>
       <p class="tnote">نغمة هذا التذكير هي نغمة الإشعارات الافتراضية في هاتفك، وتغيّرها من إعدادات الهاتف.</p>
-      <label data-i="extras"></label>
-      <div class="chips" id="advExtras"></div>
       <label>صوت الأذان لكل صلاة</label>
       <div id="soundRows"></div>
+      <label data-i="extras"></label>
+      <div class="chips" id="advExtras"></div>
       <div class="cstatus" id="notifyMsg" role="status" aria-live="polite"></div>
     </div>
     <div class="field">
@@ -1456,8 +1456,14 @@ function renderSoundRows(){
   if(sndMute === null) sndMute = mutedOf();
   if(sndAllOn === null){ sndAllOn = store.get("snd_all_on", "") === "1"; sndAllVal = store.get("snd_all_v", ""); }
   if(!sndDraft) sndDraft = Object.fromEntries(PRAYERS_SND.map(([k]) => [k, soundOf(k)]));
+  // المتصفح لا يملك صوت الهاتف، فلا خيار «الافتراضي» هنا، والافتراضي هو أذان مكة
+  if(!IS_APP){
+    PRAYERS_SND.forEach(([k]) => { if(!sndDraft[k]) sndDraft[k] = "adhan_makkah"; });
+    if(!sndAllVal) sndAllVal = "adhan_makkah";
+  }
   const dis = sndMute ? " disabled" : "";
-  const opts = v => ADHAN_SOUNDS.map(([val, l]) => `<option value="${val}"${val === v ? " selected" : ""}>${l}</option>`).join("");
+  const list = IS_APP ? ADHAN_SOUNDS : ADHAN_SOUNDS.filter(([val]) => val !== "");
+  const opts = v => list.map(([val, l]) => `<option value="${val}"${val === v ? " selected" : ""}>${l}</option>`).join("");
   const playAllDis = sndMute || !sndAllOn ? " disabled" : "";
   const allRow = `<div class="sndrow${sndMute ? " muted" : ""}"><div class="allname"><span>${ALL_LBL[lang] || ALL_LBL.en}</span><button type="button" class="allsw${sndAllOn ? " on" : ""}" data-allsw="1"${dis} aria-pressed="${sndAllOn}"></button></div><select data-all="1"${dis}>${opts(sndAllVal)}</select><button type="button" class="btn sndplay" data-k="all"${playAllDis}>${playingKey === "all" ? "❚❚" : "▶"}</button></div>`;
   const pdis = sndMute || sndAllOn ? " disabled" : "";
