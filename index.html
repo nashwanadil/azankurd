@@ -53,7 +53,7 @@
 <meta name="apple-mobile-web-app-title" content="AzanKurd">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Noto+Kufi+Arabic:wght@400;600&family=Noto+Sans:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Noto+Kufi+Arabic:wght@400;600;700&family=Noto+Sans:wght@400;600;700&display=swap" rel="stylesheet">
 <script>
 /* ---------- الألوان والمظهر ---------- */
 const THEMES = [
@@ -348,6 +348,25 @@ applyTheme();
   .cityrow input{max-width:none;padding:8px 12px;font-size:.92rem}
   .cityrow .btn{padding:8px 16px;font-size:.92rem;min-width:84px;flex:none}
   .cityrow select{flex:1;min-width:0}
+  /* القوائم المنسدلة بتصميم الموقع بدل قائمة الهاتف */
+  .enh{display:none!important}
+  .selbtn{width:100%;min-width:0;display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--inner);color:var(--text);border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-family:inherit;font-size:.92rem;cursor:pointer;text-align:start}
+  .selbtn:hover:not(:disabled){border-color:var(--gold)}
+  .selbtn:disabled{opacity:.45;cursor:default}
+  .selbtn span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+  .selbtn .chev{width:16px;height:16px;flex:none;stroke:var(--gold);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .cityrow .selbtn,.fold > .selbtn{flex:1}
+  .fold > .selbtn{width:calc(100% - 24px);margin:0 12px 12px}
+  .pk-ov{position:fixed;inset:0;z-index:90;background:rgba(20,12,8,.5);display:flex;align-items:center;justify-content:center;padding:16px}
+  .pk-ov[hidden]{display:none}
+  .pk{width:min(360px,100%);max-height:78vh;display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:20px;box-shadow:0 20px 50px rgba(0,0,0,.4);overflow:hidden}
+  .pk-title{padding:16px 20px 12px;color:var(--gold);font-weight:700;font-size:1rem;border-bottom:1px solid var(--line)}
+  .pk-list{overflow:auto;padding:6px}
+  .pk-opt{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;background:none;border:0;border-radius:12px;padding:12px 14px;color:var(--text);font-family:inherit;font-size:.95rem;text-align:start;cursor:pointer}
+  .pk-opt:hover,.pk-opt:focus-visible{background:var(--hover);outline:none}
+  .pk-opt .rd{width:20px;height:20px;flex:none;border-radius:50%;border:2px solid var(--muted)}
+  .pk-opt[aria-checked=true]{color:var(--gold);font-weight:700}
+  .pk-opt[aria-checked=true] .rd{border-color:var(--gold);background:var(--gold);box-shadow:inset 0 0 0 4px var(--card)}
   .cstatus{font-size:.85rem;margin-top:6px;min-height:1.4em;color:var(--muted)}
   .cstatus.ok{color:#2e9d5b;font-weight:600}
   .cstatus.err{color:#d0443c}
@@ -502,6 +521,13 @@ applyTheme();
   </section>
 </main>
 
+<div class="pk-ov" id="picker" hidden>
+  <div class="pk" role="dialog" aria-modal="true" aria-labelledby="pkTitle">
+    <div class="pk-title" id="pkTitle"></div>
+    <div class="pk-list" id="pkList"></div>
+  </div>
+</div>
+
 <div class="overlay" id="settingsOverlay" hidden>
   <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
     <div class="sheet-head">
@@ -512,7 +538,6 @@ applyTheme();
       <label for="citySelect" data-i="cityLabel"></label>
       <div class="cityrow">
         <select id="citySelect"></select>
-        <button class="btn" type="button" id="cityDone" data-i="done"></button>
       </div>
       <div class="cityrow">
         <div class="acwrap"><input id="setCityInput" autocomplete="off"><div class="aclist" id="acSet" hidden></div></div>
@@ -1455,6 +1480,54 @@ async function ensureChannels(LN){
 }
 let sndAllOn = null, sndAllVal = null;
 const ALL_LBL = { ar:"جميع الصلوات", ku:"هەموو نوێژەکان", en:"All prayers" };
+// اسم الخيار «موقعي» عندما توجد مدن مبحوث عنها (وإلا يظهر اسم مدينة الموقع)
+const MYCITIES = { ar:"موقعي / المدن", ku:"شوێنی من / شارەکان", en:"My location / Cities", de:"Mein Standort / Städte", tr:"Konumum / Şehirler", fa:"موقعیت من / شهرها", ur:"میرا مقام / شہر", fr:"Ma position / Villes", es:"Mi ubicación / Ciudades", it:"La mia posizione / Città", nl:"Mijn locatie / Steden", da:"Min placering / Byer", sv:"Min plats / Städer", ru:"Моё местоположение / Города", bs:"Moja lokacija / Gradovi", id:"Lokasi saya / Kota", bn:"আমার অবস্থান / শহর", ps:"زما موقع / ښارونه", ha:"Wurina / Garuruwa", sw:"Eneo langu / Miji" };
+// القوائم المنسدلة: <select> الأصلية تبقى مصدر القيمة، ويظهر بدلها زر وقائمة منبثقة بتصميم الموقع
+var pkSel = null;
+function selBtn(sel){ const b = sel.nextElementSibling; return b && b.classList.contains("selbtn") ? b : null; }
+function enhanceSels(){
+  document.querySelectorAll("#settingsOverlay select").forEach(sel => {
+    sel.classList.add("enh");
+    let b = selBtn(sel);
+    if(!b){
+      b = document.createElement("button"); b.type = "button"; b.className = "selbtn";
+      b.innerHTML = `<span></span><svg class="chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>`;
+      b.onclick = () => openPicker(sel);
+      sel.after(b);
+    }
+    b.firstElementChild.textContent = sel.options[sel.selectedIndex] ? sel.options[sel.selectedIndex].text : "";
+    b.disabled = sel.disabled;
+  });
+}
+function openPicker(sel){
+  if(sel.disabled) return;
+  pkSel = sel;
+  const lab = sel.labels && sel.labels[0] ? sel.labels[0].textContent : (sel.closest(".sndrow") ? sel.closest(".sndrow").querySelector("span").textContent : (sel.id === "methodSelect" ? L().methodLabel : ""));
+  document.getElementById("pkTitle").textContent = lab.trim();
+  const list = document.getElementById("pkList"); list.innerHTML = "";
+  [...sel.options].forEach(o => {
+    const b = document.createElement("button"); b.type = "button"; b.className = "pk-opt";
+    b.setAttribute("aria-checked", o.value === sel.value ? "true" : "false");
+    b.innerHTML = `<span></span><span class="rd"></span>`;
+    b.firstElementChild.textContent = o.text;
+    b.onclick = () => choosePk(o.value);
+    list.appendChild(b);
+  });
+  document.getElementById("picker").hidden = false;
+  (list.querySelector("[aria-checked=true]") || list.firstElementChild).focus();
+}
+function choosePk(v){
+  const sel = pkSel; closePicker();
+  if(!sel || sel.value === v) return;
+  sel.value = v;
+  sel.dispatchEvent(new Event("change", { bubbles:true }));
+  enhanceSels();
+}
+function closePicker(){
+  const sel = pkSel; pkSel = null;
+  document.getElementById("picker").hidden = true;
+  if(sel && selBtn(sel)) selBtn(sel).focus();
+}
 function renderSoundRows(){
   const box = document.getElementById("soundRows"); if(!box) return;
   const t = L();
@@ -1484,6 +1557,7 @@ function renderSoundRows(){
   };
   box.querySelectorAll("select[data-k]").forEach(sel => sel.onchange = ()=>{ sndDraft[sel.dataset.k] = sel.value; saveSounds(); renderSoundRows(); });
   box.querySelectorAll(".sndplay").forEach(b => b.onclick = ()=> b.dataset.k === "all" ? testSound(sndAllVal, "all") : testSound(sndDraft[b.dataset.k], b.dataset.k));
+  enhanceSels();
 }
 // تجربة: إشعار فوري بالصوت المختار، يُوقف بزر «إيقاف» أو بإغلاقه
 // إيقاف الصوت الجاري أيًا كان مصدره
@@ -1538,7 +1612,8 @@ function fillSettings(){
   renderSoundRows();
   const cs = document.getElementById("citySelect");
   const recent = getRecent();
-  let ch = `<option value="here">${t.myLocation}</option>`;
+  const hereLbl = recent.length ? (MYCITIES[lang] || MYCITIES.en) : ((lastLabel && placeLabel(lastLabel)) || t.myLocation);
+  let ch = `<option value="here">${hereLbl.replace(/</g,"&lt;")}</option>`;
   recent.forEach((q,i) => ch += `<option value="r${i}">${placeLabel(q).replace(/</g,"&lt;")}</option>`);
   cs.innerHTML = ch;
   const idx = lastQuery ? recent.findIndex(q => samePlace(q, lastQuery)) : -1;
@@ -1559,7 +1634,8 @@ function fillSettings(){
 
   document.querySelectorAll(".seg button[data-fmt]").forEach(b=> b.setAttribute("aria-pressed", b.dataset.fmt === timeFmt ? "true" : "false"));
   fillAdvanced();
-  const mode = store.get("mode","light"), theme = store.get("theme","earth");
+  enhanceSels();
+  const mode =store.get("mode","light"), theme = store.get("theme","earth");
   document.querySelectorAll(".seg button[data-mode]").forEach(b=> b.setAttribute("aria-pressed", b.dataset.mode === mode ? "true" : "false"));
   const sw = document.getElementById("swatches"); sw.innerHTML = "";
   // اللون المختار (العنابي افتراضيًا) أولًا، وبجانبه «المزيد» يكشف بقية الألوان عند مرور المؤشر أو الضغط
@@ -1590,6 +1666,7 @@ function refetch(){ if(lastQuery) getTimes(lastQuery).catch(()=>{}); }
 function openSettings(focusSearch){
   const ov = document.getElementById("settingsOverlay");
   ov.hidden = false; ov.querySelector(".sheet").scrollTop = 0;
+  enhanceSels();
   updateInstallUI();
   if(focusSearch === true) setTimeout(()=> document.getElementById("setCityInput").focus(), 50);
   else document.getElementById("closeSettings").focus();
@@ -1615,6 +1692,7 @@ document.addEventListener("click", e=>{
 });
 document.addEventListener("keydown", e=>{
   if(e.key !== "Escape") return;
+  if(!document.getElementById("picker").hidden){ closePicker(); return; }
   if(!document.getElementById("langMenu").hidden){ closeLangMenu(); document.getElementById("langBtn").focus(); }
   if(!document.getElementById("settingsOverlay").hidden) closeSettings();
   if(!document.getElementById("installOverlay").hidden) closeInstall();
@@ -1646,7 +1724,7 @@ async function settingsSearch(arg){
   btn.disabled = false;
 }
 document.getElementById("setCityBtn").addEventListener("click", ()=> settingsSearch());
-document.getElementById("cityDone").addEventListener("click", closeSettings);
+document.getElementById("picker").addEventListener("click", e=>{ if(e.target.id === "picker") closePicker(); });
 attachAC("setCityInput", "acSet", p => settingsSearch(p), ()=> settingsSearch());
 document.getElementById("methodSelect").addEventListener("change", e=>{
   methodChoice = e.target.value; store.set("method", methodChoice); refetch();
