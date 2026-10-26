@@ -310,7 +310,9 @@ applyTheme();
   .sndrow.muted{opacity:.85}
   .sndmode{margin-bottom:10px}
   .tnote{font-size:.8rem;color:var(--muted);margin:6px 2px 4px;line-height:1.6}
-  .sndrow{grid-template-columns:minmax(0,.8fr) minmax(0,1.4fr) 34px 44px}
+  .sndrow{grid-template-columns:minmax(0,.8fr) minmax(0,1.4fr) 34px}
+  .allname{display:flex;flex-direction:column;align-items:flex-start;gap:4px;min-width:0}
+  .allname > span{font-size:.78rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
   .allsw{width:44px;height:24px;border-radius:12px;border:0;background:#8a8a8a;position:relative;cursor:pointer;padding:0}
   .allsw::after{content:"";position:absolute;top:3px;inset-inline-start:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:.2s}
   .allsw.on{background:#2f6fd6}
@@ -1449,7 +1451,8 @@ function renderSoundRows(){
   if(!sndDraft) sndDraft = Object.fromEntries(PRAYERS_SND.map(([k]) => [k, soundOf(k)]));
   const dis = sndMute ? " disabled" : "";
   const opts = v => ADHAN_SOUNDS.map(([val, l]) => `<option value="${val}"${val === v ? " selected" : ""}>${l}</option>`).join("");
-  const allRow = `<div class="sndrow${sndMute ? " muted" : ""}"><span>${ALL_LBL[lang] || ALL_LBL.en}</span><select data-all="1"${dis}>${opts(sndAllVal)}</select><button type="button" class="btn sndplay" data-k="all"${dis}>${playingKey === "all" ? "❚❚" : "▶"}</button><button type="button" class="allsw${sndAllOn ? " on" : ""}" data-allsw="1"${dis} aria-pressed="${sndAllOn}"></button></div>`;
+  const playAllDis = sndMute || !sndAllOn ? " disabled" : "";
+  const allRow = `<div class="sndrow${sndMute ? " muted" : ""}"><div class="allname"><span>${ALL_LBL[lang] || ALL_LBL.en}</span><button type="button" class="allsw${sndAllOn ? " on" : ""}" data-allsw="1"${dis} aria-pressed="${sndAllOn}"></button></div><select data-all="1"${dis}>${opts(sndAllVal)}</select><button type="button" class="btn sndplay" data-k="all"${playAllDis}>${playingKey === "all" ? "❚❚" : "▶"}</button></div>`;
   const pdis = sndMute || sndAllOn ? " disabled" : "";
   const rows = PRAYERS_SND.map(([k, p]) => `<div class="sndrow${sndMute || sndAllOn ? " muted" : ""}"><span>${t.names[p]}</span><select data-k="${k}"${pdis}>${opts(sndDraft[k])}</select><button type="button" class="btn sndplay" data-k="${k}"${pdis}>${playingKey === k ? "❚❚" : "▶"}</button></div>`).join("");
   box.innerHTML = `<div class="sndmode"><button type="button" class="sw-on" data-m="0" aria-pressed="${!sndMute}">${SND_ON[lang] || SND_ON.en}</button><button type="button" class="sw-off" data-m="1" aria-pressed="${sndMute}">${SND_OFF[lang] || SND_OFF.en}</button></div>` + allRow + rows;
