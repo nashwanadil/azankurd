@@ -26,7 +26,7 @@ module.exports = {
 "todayLbl": "اليوم",
 "print": "طباعة / PDF",
 "mosque": "اسم المسجد",
-"mosqueEx": "مثال: مسجد النور",
+"mosqueEx": "مثال: مسجد الهجرة",
 "prayerTimes": "مواقيت الصلاة",
 "settings": "الإعدادات",
 "mosquePh": "اكتب اسم المسجد ليظهر على ورقة الطباعة",
