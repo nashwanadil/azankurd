@@ -1056,6 +1056,7 @@ function tick(){
   let cur, start, end;
   if(ci<0){ const y=evs[evs.length-1]; cur=y.k; start=new Date(y.d.getTime()-864e5); end=evs[0].d; }
   else { cur=evs[ci].k; start=evs[ci].d; end=ci+1<evs.length ? evs[ci+1].d : new Date(evs[0].d.getTime()+864e5); }
+  if(cur==="Sunrise") cur="Fajr"; // وقت الفجر يمتد حتى الشروق، فلا يُعرض الشروق كصلاة
   const left=(end-now)/6e4, frac=left/Math.max(1,(end-start)/6e4);
   const col = cur==="Sunrise" || left<=20 ? "#d64545" : frac<=0.4 ? "#e8922e" : "#2e9e5b";
   const CURLBL={ar:"الصلاة الآن:",ku:"نڤێژا نوکە:",en:"Now:",de:"Jetzt:",tr:"Şimdi:",fa:"اکنون:",ur:"ابھی:",fr:"Maintenant :",es:"Ahora:",it:"Ora:",nl:"Nu:",da:"Nu:",sv:"Nu:",ru:"Сейчас:",bs:"Sada:",id:"Sekarang:",ms:"Sekarang:",bn:"এখন:",ps:"اوس:",ha:"Yanzu:",sw:"Sasa:"};
