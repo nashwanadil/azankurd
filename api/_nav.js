@@ -185,6 +185,12 @@ function js(lang){
   // «اتصل بنا»: أي رابط إليها (في القائمة أو التذييل) يفتح النموذج بدل الصفحة
   // الطباعة: نفتح نسخة من الصفحة في نافذة جديدة ونطبعها، لأن الهاتف لا يطبع الصفحة نفسها بأمر window.print
   window.azPrint=function(){
+    var cap=window.Capacitor, AA=cap&&cap.Plugins&&cap.Plugins.AdhanAlarm;
+    if(cap&&cap.isNativePlatform&&cap.isNativePlatform()&&AA&&AA.printPage){
+      var nm=(document.querySelector(".pm b")||{}).textContent||document.title;
+      AA.printPage({name:nm}).catch(function(){ window.print(); });
+      return;
+    }
     var re=new RegExp("<scr"+"ipt[\\s\\S]*?</scr"+"ipt>","g");
     var fix="<style>@media print{html,body{height:auto!important;min-height:0!important;overflow:visible!important}}</style>";
     var mq=(document.getElementById("pMosqueName")||{}).textContent||"", pm=document.querySelector(".pm b");
