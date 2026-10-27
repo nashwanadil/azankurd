@@ -469,9 +469,9 @@ ${NAV.js(lang)}
   // اسم المسجد لا يُحفظ في المتصفح: يبقى لهذه الصفحة فقط، حتى لا يُطبع اسم قديم بالخطأ لاحقًا
   // (أما الخط المختار فيُحفظ). ونحذف أي اسم قديم محفوظ من النسخة السابقة
   var name="";
-  try{ localStorage.removeItem(K); }catch(e){}
+  try{ name=localStorage.getItem(K)||""; }catch(e){}
   function get(k){ if(!k || k===K) return name; try{ return localStorage.getItem(k) || ""; }catch(e){ return ""; } }
-  function put(v,k){ if(!k || k===K){ name=v||""; return; } try{ if(v) localStorage.setItem(k,v); else localStorage.removeItem(k); }catch(e){} }
+  function put(v,k){ if(!k || k===K){ name=v||""; try{ if(name) localStorage.setItem(K,name); else localStorage.removeItem(K); }catch(e){} return; } try{ if(v) localStorage.setItem(k,v); else localStorage.removeItem(k); }catch(e){} }
   var font=get(KF) || "ruqaa", pick=font;
   // حجم الخط في الطباعة حسب طول الاسم، حتى يبقى في سطر أو سطرين
   function pt(v){ var n=v.length; return n<=12 ? 25 : n<=20 ? 22 : n<=30 ? 18 : 15; }
