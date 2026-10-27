@@ -186,7 +186,8 @@ function js(lang){
   // الطباعة: نفتح نسخة من الصفحة في نافذة جديدة ونطبعها، لأن الهاتف لا يطبع الصفحة نفسها بأمر window.print
   window.azPrint=function(){
     var re=new RegExp("<scr"+"ipt[\\s\\S]*?</scr"+"ipt>","g");
-    var html="<!doctype html>"+document.documentElement.outerHTML.replace(re,"");
+    var fix="<style>@media print{html,body{height:auto!important;min-height:0!important;overflow:visible!important}}</style>";
+    var html="<!doctype html>"+document.documentElement.outerHTML.replace(re,"").replace("</head>",fix+"</head>");
     var w=window.open("","_blank");
     if(!w){ window.print(); return; }
     w.document.open(); w.document.write(html); w.document.close();
