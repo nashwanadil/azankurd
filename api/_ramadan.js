@@ -131,7 +131,7 @@ module.exports = (req, res) => {
     if(!navigator.geolocation) return;
     navigator.geolocation.getCurrentPosition(function(p){ load(Math.round(p.coords.latitude*100)/100,Math.round(p.coords.longitude*100)/100,Intl.DateTimeFormat().resolvedOptions().timeZone,"",""); },function(){ $("rMsg").textContent=X.noLoc; },{timeout:15000,maximumAge:600000});
   };
-  $("rPrint").onclick=function(){ window.print(); };
+  $("rPrint").onclick=function(){ azPrint(); };
 })();`;
   send(res, page({ lang, title:x.title, desc:x.desc, path:"/ramadan", body, css:CSS, js }));
 };

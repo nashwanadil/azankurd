@@ -183,6 +183,15 @@ function js(lang){
   all.forEach(function(d){ d.addEventListener("toggle",function(){ if(d.open) all.forEach(function(o){ if(o!==d) o.open=false; }); }); });
   document.addEventListener("click",function(e){ all.forEach(function(d){ if(d.open && !d.contains(e.target)) d.open=false; }); });
   // «اتصل بنا»: أي رابط إليها (في القائمة أو التذييل) يفتح النموذج بدل الصفحة
+  // الطباعة: نفتح نسخة من الصفحة في نافذة جديدة ونطبعها، لأن الهاتف لا يطبع الصفحة نفسها بأمر window.print
+  window.azPrint=function(){
+    var re=new RegExp("<scr"+"ipt[\\s\\S]*?</scr"+"ipt>","g");
+    var html="<!doctype html>"+document.documentElement.outerHTML.replace(re,"");
+    var w=window.open("","_blank");
+    if(!w){ window.print(); return; }
+    w.document.open(); w.document.write(html); w.document.close();
+    setTimeout(function(){ try{ w.focus(); w.print(); }catch(e){} },800);
+  };
   var C=${JSON.stringify({ title:x.contTitle, name:x.fName, email:x.fEmail, msg:x.fMsg, send:x.fSend, sending:x.fSending, ok:x.fOk, err:x.fErr, req:x.fReq })};
   var ov=null, f=null, bt=null, st=null, t0=0;
   function el(tag, cls, txt){ var e=document.createElement(tag); if(cls) e.className=cls; if(txt!=null) e.textContent=txt; return e; }

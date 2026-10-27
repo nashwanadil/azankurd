@@ -367,7 +367,7 @@ footer a{color:var(--gold)}
       <div class="next"><div><small>${esc(t.nextPrayer)}</small><strong id="nextName">—</strong></div><div class="cd" id="cd">--:--:--</div></div>
       <div class="hacts">
         <button class="btn ghost" type="button" id="mqBtn" aria-expanded="false"><svg class="ic" viewBox="0 0 24 24"><path d="M5 21V11a7 7 0 0 1 14 0v10M3 21h18M12 4V2M9 21v-4a3 3 0 0 1 6 0v4"/></svg><span id="mqLbl">${esc(t.mosque)}</span></button>
-        <button class="btn" type="button" onclick="print()"><svg class="ic" viewBox="0 0 24 24"><path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v7H6z"/></svg>${esc(t.print)}</button>
+        <button class="btn" type="button" onclick="azPrint()"><svg class="ic" viewBox="0 0 24 24"><path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v7H6z"/></svg>${esc(t.print)}</button>
       </div>
       <div class="mqedit" id="mqEdit" hidden>
         <input id="mqIn" maxlength="60" autocomplete="off" placeholder="${esc(t.mosqueEx)}" aria-label="${esc(t.mosque)}">
@@ -391,7 +391,7 @@ footer a{color:var(--gold)}
         <div class="mtitle"><b>${esc(mTitle)}</b><small>${esc(hijRange)}</small></div>
         <a href="${path}?m=${ym(nm)}" aria-label="${esc(t.next)}" rel="next">${t.dir === "rtl" ? "‹" : "›"}</a>
       </div>
-      <button class="btn" type="button" onclick="print()"><svg class="ic" viewBox="0 0 24 24"><path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v7H6z"/></svg>${esc(t.print)}</button>
+      <button class="btn" type="button" onclick="azPrint()"><svg class="ic" viewBox="0 0 24 24"><path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v7H6z"/></svg>${esc(t.print)}</button>
     </div>
     <div class="tablebox"><table><thead><tr>${th}</tr></thead><tbody>${trs}</tbody></table></div>
     <div class="legend">${isCurrent ? `<span><i style="background:var(--today)"></i>${esc(t.todayLbl)}</span>` : ""}<span><i style="background:var(--fri)"></i>${esc(t.friday)}</span><span>${esc(t.methodLabel)}: ${esc(methodName)} · ${esc(t.asrLabel)}: ${esc(asrName)}</span></div>
