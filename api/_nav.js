@@ -187,7 +187,9 @@ function js(lang){
   window.azPrint=function(){
     var re=new RegExp("<scr"+"ipt[\\s\\S]*?</scr"+"ipt>","g");
     var fix="<style>@media print{html,body{height:auto!important;min-height:0!important;overflow:visible!important}}</style>";
-    var html="<!doctype html>"+document.documentElement.outerHTML.replace(re,"").replace("</head>",fix+"</head>");
+    var mq=(document.getElementById("pMosqueName")||{}).textContent||"", pm=document.querySelector(".pm b");
+    var tt=(mq?mq+" - ":"")+(pm?pm.textContent:document.title);
+    var html="<!doctype html>"+document.documentElement.outerHTML.replace(re,"").replace("</head>",fix+"</head>").replace(/<title>[\\s\\S]*?<\\/title>/,"<title>"+tt.replace(/</g,"&lt;")+"</title>");
     var w=window.open("","_blank");
     if(!w){ window.print(); return; }
     w.document.open(); w.document.write(html); w.document.close();
