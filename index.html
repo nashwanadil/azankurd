@@ -1793,15 +1793,19 @@ function scheduleWebTimers(){
         if(!prefs.p.includes(k)) return;
         const at = zonedTime(day.timings[PNAME[k]].slice(0,5), tz, [yy, mm, dd]).getTime();
         if(at > now && at - now < 864e5 * 2) webTimers.push(setTimeout(() => showPrayerWeb(k, effSound(k) === "silent"), at - now));
+        if(prefs.b && prefs.pb.includes(k)){
+          const pre = at - prefs.b * 60000;
+          if(pre > now && pre - now < 864e5 * 2) webTimers.push(setTimeout(() => showPrayerWeb(k, false, true), pre - now));
+        }
       });
     });
   }catch(e){}
 }
-async function showPrayerWeb(k, silent){
+async function showPrayerWeb(k, silent, before){
   const t = L();
   try{
     const reg = await navigator.serviceWorker.ready;
-    await reg.showNotification(t.notifyTitle.replace("{p}", t.names[PNAME[k]]), { body:"", icon:"/icon-192.png", badge:"/icon-192.png", tag:"adhan-" + k, renotify:false, silent: !!silent, data:{ url:"/" } });
+    await reg.showNotification((before ? t.tBefore : t.notifyTitle).replace("{p}", t.names[PNAME[k]]), { body:"", icon:"/icon-192.png", badge:"/icon-192.png", tag:(before ? "before-" : "adhan-") + k, renotify:false, silent: !!silent, data:{ url:"/" } });
   }catch(e){}
 }
 async function syncNotify(force){
