@@ -1953,6 +1953,7 @@ function setPrefs(p){
   if(!any){ if(store.get("notify","0") === "1") setNotify(false); else fillAdvanced(); return; }
   if(store.get("notify","0") !== "1"){ setNotify(true); return; } // يطلب الإذن ثم يعيد الرسم
   fillAdvanced(); syncNotify();
+  if(IS_APP) scheduleAppAlerts().catch(()=>{});
 }
 function fillAdvanced(){
   const t = L(), p = getPrefs(), on = store.get("notify","0") === "1";
