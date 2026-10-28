@@ -38,7 +38,7 @@ const css = `
 .gb svg{width:17px;height:17px;flex:none;stroke:var(--gold);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .gb.on{background:var(--green);border-color:var(--green);color:#fff}
 .gb.on svg{stroke:#f3d58a}
-.gbmore{position:relative;display:none}
+.gbmore{position:relative;display:block}
 /* نموذج «اتصل بنا» يفتح فوق الصفحة بدل الانتقال إلى صفحة أخرى */
 .cov{position:fixed;inset:0;z-index:95;background:rgba(20,12,8,.5);display:flex;align-items:center;justify-content:center;padding:16px}
 .cov[hidden]{display:none}
@@ -69,11 +69,13 @@ const css = `
   .top > .gbar{justify-content:flex-end}
   /* الشعار يبقى في طرف الصفحة اليمين، ولا ينزاح مع الأزرار */
   .top > .brandmini{margin-inline-end:auto}
+  /* «المزيد» في الصف الأول بجانب اللغة، والأدوات في صف مستقل */
+  .top > .gbmore{order:3}
 }
 .top > .setbtn{order:2}
 @media (max-width:760px){
   /* الهاتف: الشعار، الرئيسية، اللغة، المزيد في سطر واحد أعلى الصفحة */
-  .top{display:grid;grid-template-columns:auto repeat(4,minmax(0,1fr));gap:8px;align-items:center}
+  .top{display:grid;grid-template-columns:auto repeat(3,minmax(0,1fr));gap:8px;align-items:center}
   .top > .gbar,.top > .tr{display:contents}
   html .top > .brandmini{order:0;font-size:0!important;gap:0}
   html[dir=ltr] .gb{font-size:.8rem;gap:5px}
@@ -147,6 +149,7 @@ function bar(lang, cur){
   return `<nav class="gbar">
 ${b(`/?lang=${lang}`, "home", HOMESHORT[lang] || t.home, " gbhome")}${b(`/${lang}/qibla`, "qibla", QSHORT[lang] || t.qibla, " wide")}
 ${tools.map(([p, k, l]) => b(`/${lang}/${p}`, k, (SHORT[lang] && SHORT[lang][p]) || l, " wide").replace(cur === p ? 'class="gb wide"' : "@@", 'class="gb wide on"')).join("")}
+</nav>
 <details class="gbmore navm"><summary class="gb">${ic("more")}<span>${esc(MORE[lang] || MORE.en)}</span></summary><div class="menu">
 ${m(`/${lang}/qibla`, "qibla", lbl(QIBLABL, lang))}
 ${tools.map(([p, k, l]) => m(`/${lang}/${p}`, k, l)).join("\n")}
@@ -156,7 +159,7 @@ ${m("/download.html", "download", DLBL[lang] || DLBL.en)}
 ${m(`/${lang}/about`, "about", x.cAbout)}
 ${m(`/${lang}/privacy`, "privacy", x.cPrivacy)}
 ${m(`/${lang}/contact`, "contact", x.cContact)}
-</div></details></nav>`;
+</div></details>`;
 }
 
 // زر الإعدادات: يفتح الإعدادات في الصفحة الرئيسية
