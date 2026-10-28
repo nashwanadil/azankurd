@@ -140,17 +140,15 @@ applyTheme();
   .navmenu a{color:var(--gold)!important;font-weight:600}
   @media (max-width:760px){
     /* الهاتف: الرئيسية، اللغة، المزيد في سطر واحد أعلى الصفحة */
-    .topbar{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,.8fr) minmax(0,.7fr) minmax(0,.9fr);gap:8px}
+    .topbar{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,.8fr) minmax(0,.9fr);gap:8px}
     .gbar{display:contents}
     #gbHome{order:1}
     .gblang{order:2;margin:0;min-width:0}
     #langBtn{width:100%;justify-content:center;height:36px;box-sizing:border-box;padding:0 4px;min-width:0}
     #langName{display:none}
     #langBtn .flag{width:22px;height:15px;position:relative;left:-3px}
-    /* الترس بين المزيد واللغة، وبلا نقاط في المزيد */
-    .topbar > #settingsBtn{display:flex;order:3;width:100%;padding:8px 4px;min-width:0;justify-content:center}
-    #settingsBtn span{display:none}
-    .gbmore{order:4;display:block}
+    /* الإعدادات داخل «المزيد»، وبلا نقاط في زر المزيد */
+    .gbmore{order:3;display:block}
     #navBtn svg{display:none}
     .gb{width:100%;padding:8px 6px;min-width:0}
     .gb span{overflow:hidden;text-overflow:ellipsis}
@@ -1998,7 +1996,7 @@ function fillAdvanced(){
 /* ---------- قائمة التنقل ---------- */
 const NAVIC = {
   download:'<path d="M12 4v11M7 10l5 5 5-5M5 20h14"/>',
-  gear:'<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/>',
+  gear:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 0 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 0 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 0 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 0 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>',
   home:'<path d="M3 11l9-7 9 7M5 10v10h14V10"/>', globe:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',
   flag:'<path d="M5 21V4M5 4h11l-2 4 2 4H5"/>', pin:'<path d="M12 22s7-6.2 7-12a7 7 0 0 0-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/>',
   about:'<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/>', privacy:'<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/>',
@@ -2055,8 +2053,8 @@ function buildNav(){
   const t = L(), m = document.getElementById("navMenu");
   const a = (href, ic, label) => `<a role="menuitem" href="${href}"><svg viewBox="0 0 24 24">${NAVIC[ic]}</svg><span>${String(label).replace(/</g,"&lt;")}</span></a>`;
   m.innerHTML = a(`/${lang}/qibla`, "qibla", toolLbl("qibla")) + BAR_TOOLS.map(([p, ic]) => a(`/${lang}/${p}`, ic, barLbl(p))).join("")
-    + `<a role="menuitem" href="#" data-act="settings"><svg viewBox="0 0 24 24">${NAVIC.gear}</svg><span>${String(t.settings).replace(/</g,"&lt;")}</span></a>`
-    + a("/download.html", "download", DL[lang] || DL.en) + "<hr>" + a(`/${lang}/about`, "about", t.cAbout) + a(`/${lang}/privacy`, "privacy", t.cPrivacy)
+    + (IS_APP ? "" : a("/download.html", "download", DL[lang] || DL.en))
+    + `<a role="menuitem" href="#" data-act="settings"><svg viewBox="0 0 24 24">${NAVIC.gear}</svg><span>${String(t.settings).replace(/</g,"&lt;")}</span></a>` + "<hr>" + a(`/${lang}/about`, "about", t.cAbout) + a(`/${lang}/privacy`, "privacy", t.cPrivacy)
     + `<a role="menuitem" href="#" data-act="contact"><svg viewBox="0 0 24 24">${NAVIC.contact}</svg><span>${String(t.cContact).replace(/</g,"&lt;")}</span></a>`;
 }
 document.getElementById("navMenu").addEventListener("click", e=>{
