@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="ku" dir="rtl" translate="no">
+<head>
+<meta charset="UTF-8">
+<meta name="google" content="notranslate">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flight Tracker – AzanKurd</title>
+<meta name="description" content="Track any flight live on the map: altitude, speed, distance left and arrival time. See every plane heading to Erbil right now.">
+<link rel="canonical" href="https://flight.nashwanadil.com/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Flight Tracker – AzanKurd">
+<meta property="og:description" content="Live flight tracking and planes arriving in Erbil.">
+<meta property="og:image" content="https://flight.nashwanadil.com/og-image.jpg">
+<link rel="icon" type="image/png" href="/icon-192.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="theme-color" content="#2a1d17">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@400;600;700&family=Noto+Sans:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<style>
+:root{--bg:#f5efea;--card:#fdfbf9;--line:#e3d8cf;--inner:#f0e9e3;--text:#2a1c17;--muted:#6b5a50;--gold:#946512;--accent:#8f2a39;--ok:#2f7d4f;--warn:#a5671a}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#1d1714;--card:#2a211d;--line:#43362f;--inner:#241c18;--text:#f2ebe6;--muted:#b3a399;--gold:#e0b860;--accent:#d0606f;--ok:#5cc28a;--warn:#e3a14a}}
+:root[data-theme="dark"]{--bg:#1d1714;--card:#2a211d;--line:#43362f;--inner:#241c18;--text:#f2ebe6;--muted:#b3a399;--gold:#e0b860;--accent:#d0606f;--ok:#5cc28a;--warn:#e3a14a}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Noto Kufi Arabic','Noto Sans',sans-serif;line-height:1.7;min-height:100vh}
+html[dir=ltr] body{font-family:'Noto Sans','Noto Kufi Arabic',sans-serif}
+a{color:inherit}
+.wrap{max-width:980px;margin:0 auto;padding:0 16px 40px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px 0}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;text-decoration:none;font-size:1.1rem}
+.brand img{width:36px;height:36px;border-radius:10px}
+.langs{display:flex;gap:4px;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:3px}
+.langs button{border:0;background:none;color:var(--muted);font:inherit;font-size:.85rem;padding:3px 12px;border-radius:999px;cursor:pointer}
+.langs button[aria-pressed=true]{background:var(--accent);color:#fff}
+h1{font-size:1.7rem;line-height:1.35;margin:6px 0}
+.sub{color:var(--muted);margin-bottom:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:18px;margin-bottom:18px}
+form{display:flex;gap:8px}
+form input{flex:1;min-width:0;font:inherit;font-size:1.1rem;letter-spacing:.06em;text-transform:uppercase;padding:10px 16px;border-radius:14px;border:1px solid var(--line);background:var(--inner);color:var(--text);direction:ltr;text-align:center}
+form input:focus{outline:2px solid var(--gold);outline-offset:1px}
+.btn{font:inherit;font-weight:600;border:0;border-radius:14px;padding:10px 18px;background:var(--accent);color:#fff;cursor:pointer;white-space:nowrap}
+.btn.ghost{background:var(--inner);color:var(--text);border:1px solid var(--line)}
+.msg{margin-top:12px;color:var(--muted);font-size:.92rem}
+.msg.err{color:var(--warn)}
+#map{height:420px;border-radius:20px;border:1px solid var(--line);overflow:hidden;margin-bottom:18px;background:var(--inner)}
+.head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.cs{font-size:1.4rem;font-weight:700;direction:ltr;display:inline-block}
+.meta{color:var(--muted);font-size:.88rem}
+.badge{display:inline-flex;align-items:center;gap:6px;font-size:.85rem;font-weight:600;padding:3px 12px;border-radius:999px;background:var(--inner);border:1px solid var(--line)}
+.badge i{width:8px;height:8px;border-radius:50%;background:var(--ok);animation:pulse 1.6s infinite}
+@keyframes pulse{50%{opacity:.3}}
+.route{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;margin:16px 0 6px}
+.route .ap{font-size:1.5rem;font-weight:700;direction:ltr}
+.route .ap small{display:block;font-size:.8rem;font-weight:400;color:var(--muted)}
+.route .ap:last-child{text-align:end}
+html[dir=rtl] .route .ap:first-child{text-align:right}html[dir=rtl] .route .ap:last-child{text-align:left}
+.bar{height:8px;border-radius:99px;background:var(--inner);border:1px solid var(--line);position:relative;margin:4px 0 18px}
+.bar b{position:absolute;inset-block:0;inset-inline-start:0;background:var(--gold);border-radius:99px;transition:width .6s}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.stat{background:var(--inner);border-radius:14px;padding:10px 12px}
+.stat span{display:block;font-size:.8rem;color:var(--muted)}
+.stat strong{font-size:1.15rem;direction:ltr;display:inline-block}
+.eta{margin-top:14px;padding:12px 14px;border-radius:14px;border:1px dashed var(--gold);font-weight:600}
+.actions{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+h2{font-size:1.15rem;margin-bottom:10px}
+.list{display:flex;flex-direction:column;gap:6px}
+.row{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:10px 12px;border-radius:12px;background:var(--inner);cursor:pointer;border:1px solid transparent;font:inherit;color:inherit;text-align:start;width:100%}
+.row:hover{border-color:var(--gold)}
+.row .c{font-weight:700;direction:ltr}
+.row .f{color:var(--muted);font-size:.88rem}
+.row .d{font-weight:600;direction:ltr}
+.note{font-size:.8rem;color:var(--muted);margin-top:10px}
+.plane{transition:transform .3s}
+.plane svg{width:100%;height:100%;filter:drop-shadow(0 1px 2px rgba(0,0,0,.45))}
+.leaflet-container{font-family:inherit}
+[hidden]{display:none!important}
+@media (max-width:640px){h1{font-size:1.35rem}.grid{grid-template-columns:repeat(2,1fr)}#map{height:340px}.route .ap{font-size:1.2rem}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <a class="brand" href="/"><img src="/icon-192.png" alt="">AzanKurd</a>
+    <div class="langs" role="group">
+      <button data-l="ku">کوردی</button><button data-l="ar">عربي</button><button data-l="en">EN</button>
+    </div>
+  </div>
+
+  <h1 data-t="h1"></h1>
+  <p class="sub" data-t="sub"></p>
+
+  <div class="card">
+    <form id="f">
+      <input id="q" autocomplete="off" spellcheck="false" maxlength="10" placeholder="IA231">
+      <button class="btn" data-t="track"></button>
+    </form>
+    <div class="msg" id="msg" hidden></div>
+  </div>
+
+  <div id="map" dir="ltr"></div>
+
+  <div class="card" id="info" hidden>
+    <div class="head">
+      <div>
+        <span class="cs" id="cs"></span>
+        <div class="meta" id="meta"></div>
+      </div>
+      <span class="badge"><i></i><span id="status"></span></span>
+    </div>
+    <div id="routeBox" hidden>
+      <div class="route">
+        <div class="ap" id="org"></div><div>✈</div><div class="ap" id="dst"></div>
+      </div>
+      <div class="bar"><b id="prog"></b></div>
+    </div>
+    <div class="grid">
+      <div class="stat"><span data-t="alt"></span><strong id="alt">–</strong></div>
+      <div class="stat"><span data-t="speed"></span><strong id="spd">–</strong></div>
+      <div class="stat"><span data-t="left"></span><strong id="left">–</strong></div>
+      <div class="stat"><span data-t="updated"></span><strong id="upd">–</strong></div>
+    </div>
+    <div class="eta" id="eta" hidden></div>
+    <div class="actions">
+      <button class="btn" id="share" data-t="share"></button>
+      <button class="btn ghost" id="stop" data-t="stop"></button>
+    </div>
+    <p class="note" data-t="note"></p>
+  </div>
+
+  <div class="card">
+    <h2 data-t="arrivals"></h2>
+    <div class="list" id="arr"><div class="meta" data-t="loading"></div></div>
+    <p class="note" data-t="arrNote"></p>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+const T = {
+  ku:{ dir:"rtl", title:"شوێنا فرۆکێ – فرۆکێن دهێنە هەولێرێ",
+    h1:"فرۆکا تە نوکە ل کیرێیە؟", sub:"ژمارا گەشتێ بنڤیسە (وەک IA231 یان TK712) و ب شێوەیەکێ زیندی ل سەر نەخشێ ب دویڤ بچە.",
+    track:"ب دویڤ بچە", alt:"بلندی", speed:"خێرایی", left:"رێکا مای", updated:"نویکرن",
+    share:"پارڤەکرنا لینکێ", stop:"راوەستاندن", copied:"لینک هاتە کۆپیکرن", loading:"چاڤەڕێ بە…",
+    climb:"بلند دبیت", cruise:"ل ئاسمانی", desc:"نزم دبیت بۆ نیشتنێ", ground:"ل سەر عەردی",
+    notfound:"ئەڤ گەشتە نوکە نەهاتە دیتن. دبیت هێشتا نەفڕیبیت، یان نیشتبیت، یان نداکرنا وێ (callsign) ژ ژمارا گەشتێ جودا بیت — ل لیستا خوارێ ل فرۆکا خۆ بگەڕە.",
+    error:"پەیوەندی ب ژێدەرێ داتایێ نەبوو، دێ دووبارە هێتە هەولدان.", bad:"ژمارەکا دروست بنڤیسە، وەک IA231.",
+    eta:"دێ گەهیتە {city} نێزیکی دەمژمێر {time} (پشتی {in})", landedEta:"گەهشتە {city}",
+    arrivals:"فرۆکێن نوکە دهێنە هەولێرێ", none:"نوکە چ فرۆکێن دیار نینن کو بەرەڤ هەولێرێ دهێن.",
+    arrNote:"فرۆکێن ل دۆر ٤٦٠ کم ژ هەولێرێ. ل سەر هەر ئێکێ بدە دا ب دویڤ بچی.",
+    note:"دەمێ گەهشتنێ نێزیکە و ل دویڤ خێرایا نوکە یە. داتا ژ تۆڕا ئازاد یا ADS-B، هەر ١٥ چرکەیان نوی دبیت.",
+    min:"خ", hr:"دەمژمێر", ago:"{n} چرکە", from:"ژ", unknownRoute:"رێڕەو نەزانراوە" },
+  ar:{ dir:"rtl", title:"تتبع الطائرات – الرحلات القادمة إلى أربيل",
+    h1:"أين طائرتك الآن؟", sub:"اكتب رقم الرحلة (مثل IA231 أو TK712) وتابعها مباشرة على الخريطة.",
+    track:"تتبّع", alt:"الارتفاع", speed:"السرعة", left:"المسافة المتبقية", updated:"آخر تحديث",
+    share:"مشاركة الرابط", stop:"إيقاف", copied:"تم نسخ الرابط", loading:"جارٍ التحميل…",
+    climb:"تصعد", cruise:"في الجو", desc:"تهبط للوصول", ground:"على الأرض",
+    notfound:"لم نجد هذه الرحلة الآن. ربما لم تُقلع بعد، أو هبطت، أو أن نداءها (callsign) يختلف عن رقم الرحلة — ابحث عن طائرتك في القائمة أدناه.",
+    error:"تعذّر الاتصال بمصدر البيانات، سنعيد المحاولة.", bad:"اكتب رقمًا صحيحًا مثل IA231.",
+    eta:"الوصول إلى {city} قرابة الساعة {time} (بعد {in})", landedEta:"وصلت إلى {city}",
+    arrivals:"الطائرات القادمة إلى أربيل الآن", none:"لا توجد حاليًا طائرات ظاهرة متجهة إلى أربيل.",
+    arrNote:"الطائرات ضمن نحو 460 كم من أربيل. اضغط على أي منها لتتبعها.",
+    note:"وقت الوصول تقريبي ويُحسب من السرعة الحالية. البيانات من شبكة ADS-B المفتوحة وتتحدّث كل 15 ثانية.",
+    min:"د", hr:"س", ago:"قبل {n} ث", from:"من", unknownRoute:"المسار غير معروف" },
+  en:{ dir:"ltr", title:"Flight Tracker – Planes arriving in Erbil",
+    h1:"Where is your plane right now?", sub:"Enter a flight number (e.g. IA231 or TK712) and follow it live on the map.",
+    track:"Track", alt:"Altitude", speed:"Speed", left:"Distance left", updated:"Updated",
+    share:"Share link", stop:"Stop", copied:"Link copied", loading:"Loading…",
+    climb:"Climbing", cruise:"In flight", desc:"Descending to land", ground:"On the ground",
+    notfound:"This flight isn't visible right now. It may not have taken off yet, may have landed, or its callsign differs from the flight number — look for it in the list below.",
+    error:"Couldn't reach the data source, retrying.", bad:"Enter a valid number, e.g. IA231.",
+    eta:"Arrives in {city} around {time} (in {in})", landedEta:"Arrived in {city}",
+    arrivals:"Planes heading to Erbil now", none:"No visible planes are heading to Erbil right now.",
+    arrNote:"Aircraft within about 460 km of Erbil. Tap one to track it.",
+    note:"Arrival time is an estimate from the current speed. Data from the open ADS-B network, refreshed every 15 seconds.",
+    min:"min", hr:"h", ago:"{n}s ago", from:"from", unknownRoute:"Route unknown" }
+};
+const EBL = [36.2376, 43.9632], EBL_CODES = ["EBL", "ORER"];
+const isEBL = a => !!a && (EBL_CODES.includes(a.iata) || EBL_CODES.includes(a.icao));
+const $ = id => document.getElementById(id);
+const fill = (s, v) => s.replace(/\{(\w+)\}/g, (_, k) => v[k] ?? "");
+const store = { get(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }, set(k, v){ try{ localStorage.setItem(k, v); }catch(e){} } };
+
+/* ---------- اللغة ---------- */
+const params = new URLSearchParams(location.search);
+function pickLang(){
+  const l = params.get("lang") || store.get("flightLang");
+  if(T[l]) return l;
+  const n = (navigator.language || "").toLowerCase();
+  return /^(ku|ckb|kmr)/.test(n) ? "ku" : n.startsWith("ar") ? "ar" : n.startsWith("en") ? "en" : "ku";
+}
+let LG = pickLang(), t = T[LG];
+function applyLang(){
+  t = T[LG];
+  document.documentElement.lang = LG; document.documentElement.dir = t.dir; document.title = t.title;
+  document.querySelectorAll("[data-t]").forEach(e => e.textContent = t[e.dataset.t]);
+  document.querySelectorAll(".langs button").forEach(b => b.setAttribute("aria-pressed", b.dataset.l === LG));
+  if(last) render(last); if(near) renderNear(near);
+}
+document.querySelectorAll(".langs button").forEach(b => b.onclick = () => { LG = b.dataset.l; store.set("flightLang", LG); applyLang(); });
+
+/* ---------- الخريطة ---------- */
+const Lf = window.L;
+const dark = matchMedia("(prefers-color-scheme: dark)").matches;
+const M = Lf.map("map", { zoomControl:true, attributionControl:true, worldCopyJump:true }).setView(EBL, 6);
+Lf.tileLayer(`https://{s}.basemaps.cartocdn.com/${dark ? "dark_all" : "light_all"}/{z}/{x}/{y}{r}.png`, {
+  maxZoom:18, subdomains:"abcd", attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/">CARTO</a>'
+}).addTo(M);
+Lf.circleMarker(EBL, { radius:6, color:"#946512", weight:2, fillColor:"#e0b860", fillOpacity:1 }).addTo(M).bindTooltip("Erbil (EBL)");
+const nearLayer = Lf.layerGroup().addTo(M), trackLayer = Lf.layerGroup().addTo(M);
+const PLANE = c => `<svg viewBox="0 0 24 24"><path fill="${c}" stroke="#fff" stroke-width=".8" d="M12 2c.8 0 1.3.9 1.3 2v5.3l7.7 4.6v2l-7.7-2.4v4.6l2.2 1.7V21L12 20l-3.5 1v-1.2l2.2-1.7v-4.6L3 15.9v-2l7.7-4.6V4c0-1.1.5-2 1.3-2z"/></svg>`;
+const planeIcon = (deg, c, s) => Lf.divIcon({ className:"", iconSize:[s, s], iconAnchor:[s/2, s/2],
+  html:`<div class="plane" style="width:${s}px;height:${s}px;transform:rotate(${deg || 0}deg)">${PLANE(c)}</div>` });
+
+/* ---------- حسابات ---------- */
+const R = d => d * Math.PI / 180;
+function km(a, b){
+  const dLat = R(b[0] - a[0]), dLon = R(b[1] - a[1]);
+  const h = Math.sin(dLat/2)**2 + Math.cos(R(a[0])) * Math.cos(R(b[0])) * Math.sin(dLon/2)**2;
+  return 6371 * 2 * Math.asin(Math.sqrt(h));
+}
+const nf = n => Math.round(n).toLocaleString("en");
+const dur = m => (m = Math.round(m)) < 60 ? `${Math.round(m)} ${t.min}` : `${Math.floor(m/60)} ${t.hr} ${Math.round(m % 60)} ${t.min}`;
+const clock = d => d.toLocaleTimeString(LG === "en" ? "en-GB" : LG === "ar" ? "ar-IQ-u-nu-latn" : "en-GB", { hour:"2-digit", minute:"2-digit", timeZone:"Asia/Baghdad" });
+const EBL_NAME = { ku:"هەولێر", ar:"أربيل", en:"Erbil" };
+const apName = a => !a ? "" : isEBL(a) ? EBL_NAME[LG] : (a.city || a.name || a.iata);
+
+/* ---------- تتبع رحلة ---------- */
+let current = params.get("f") || "", last = null, timer = null, firstFit = true, trail = [];
+function msg(s, err){ const m = $("msg"); m.hidden = !s; m.textContent = s || ""; m.classList.toggle("err", !!err); }
+
+async function poll(){
+  if(!current) return;
+  try{
+    const r = await fetch(`/api/flight?q=${encodeURIComponent(current)}`);
+    const j = await r.json();
+    if(r.status === 400) return msg(t.bad, true);
+    if(j.error) return msg(t.error, true);
+    if(!j.found){ msg(t.notfound, true); $("info").hidden = !last; return; }
+    msg("");
+    const p = j.flight;
+    if(p.lat != null){
+      const k = p.lat + "," + p.lon;
+      if(!trail.length || trail[trail.length - 1].join() !== k) trail.push([p.lat, p.lon]);
+      try{ sessionStorage.setItem("trail:" + p.callsign, JSON.stringify(trail.slice(-400))); }catch(e){}
+    }
+    last = p; render(p);
+  }catch(e){ msg(t.error, true); }
+}
+
+function render(p){
+  $("info").hidden = false;
+  $("cs").textContent = p.callsign + (p.route && p.route.flight && p.route.flight !== p.callsign ? ` · ${p.route.flight}` : "");
+  $("meta").textContent = [p.route && p.route.airline, p.type, p.reg].filter(Boolean).join(" · ");
+  const st = p.ground ? "ground" : p.vr > 500 ? "climb" : p.vr < -500 ? "desc" : "cruise";
+  $("status").textContent = t[st];
+  $("alt").textContent = p.ground ? "0" : p.alt != null ? `${nf(p.alt * .3048)} m` : "–";
+  $("spd").textContent = p.gs != null ? `${nf(p.gs * 1.852)} km/h` : "–";
+  $("upd").textContent = fill(t.ago, { n:p.seen });
+
+  const ro = p.route, pos = p.lat != null ? [p.lat, p.lon] : null;
+  const o = ro && ro.origin, d = ro && ro.destination;
+  $("routeBox").hidden = !(o && d);
+  let leftKm = null;
+  if(o && d){
+    $("org").innerHTML = `${o.iata || o.icao}<small></small>`; $("org").querySelector("small").textContent = apName(o);
+    $("dst").innerHTML = `${d.iata || d.icao}<small></small>`; $("dst").querySelector("small").textContent = apName(d);
+    if(pos && d.lat != null && o.lat != null){
+      leftKm = km(pos, [d.lat, d.lon]);
+      const done = km([o.lat, o.lon], pos);
+      $("prog").style.width = Math.min(100, Math.max(2, done / (done + leftKm) * 100)) + "%";
+    }
+  }
+  $("left").textContent = leftKm != null ? `${nf(leftKm)} km` : "–";
+
+  const e = $("eta");
+  if(d && p.ground && leftKm != null && leftKm < 15){ e.hidden = false; e.textContent = fill(t.landedEta, { city:apName(d) }); }
+  else if(leftKm != null && p.gs > 80 && !p.ground){
+    // نضيف قليلًا للاقتراب والهبوط لأن الطائرة تبطئ في آخر الرحلة
+    const mins = leftKm / (p.gs * 1.852) * 60 + (leftKm > 150 ? 12 : leftKm / 150 * 12);
+    e.hidden = false; e.textContent = fill(t.eta, { city:apName(d), time:clock(new Date(Date.now() + mins * 60000)), in:dur(mins) });
+  } else e.hidden = true;
+
+  trackLayer.clearLayers();
+  if(trail.length > 1) Lf.polyline(trail, { color:"#946512", weight:3, opacity:.8 }).addTo(trackLayer);
+  if(o && o.lat != null) Lf.circleMarker([o.lat, o.lon], { radius:5, color:"#8f2a39", weight:2, fillOpacity:.6 }).addTo(trackLayer).bindTooltip(`${o.iata} · ${apName(o)}`);
+  if(d && d.lat != null){
+    Lf.circleMarker([d.lat, d.lon], { radius:6, color:"#8f2a39", weight:2, fillColor:"#8f2a39", fillOpacity:1 }).addTo(trackLayer).bindTooltip(`${d.iata} · ${apName(d)}`);
+    if(pos) Lf.polyline([pos, [d.lat, d.lon]], { color:"#8f2a39", weight:2, dashArray:"6 8", opacity:.7 }).addTo(trackLayer);
+  }
+  if(pos){
+    Lf.marker(pos, { icon:planeIcon(p.track, "#8f2a39", 34), zIndexOffset:1000 }).addTo(trackLayer);
+    if(firstFit){
+      firstFit = false;
+      const pts = [pos].concat(d && d.lat != null ? [[d.lat, d.lon]] : []);
+      pts.length > 1 ? M.fitBounds(pts, { padding:[40, 40], maxZoom:8 }) : M.setView(pos, 7);
+    }
+  }
+}
+
+function start(q){
+  q = String(q || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+  if(!q) return;
+  current = q; last = null; firstFit = true;
+  try{ trail = JSON.parse(sessionStorage.getItem("trail:" + q) || "[]"); }catch(e){ trail = []; }
+  $("q").value = q; msg(t.loading);
+  const u = new URL(location.href); u.searchParams.set("f", q); history.replaceState(null, "", u);
+  clearInterval(timer); poll(); timer = setInterval(poll, 15000);
+}
+$("f").onsubmit = e => { e.preventDefault(); start($("q").value); };
+$("stop").onclick = () => {
+  clearInterval(timer); current = ""; last = null; $("info").hidden = true; trackLayer.clearLayers(); msg("");
+  const u = new URL(location.href); u.searchParams.delete("f"); history.replaceState(null, "", u);
+};
+$("share").onclick = async () => {
+  const u = new URL(location.href); u.searchParams.set("lang", LG);
+  const text = last && last.route && last.route.destination ? `${last.callsign} → ${apName(last.route.destination)}` : t.title;
+  if(navigator.share){ try{ await navigator.share({ title:t.title, text, url:u.href }); return; }catch(e){ if(e.name === "AbortError") return; } }
+  try{ await navigator.clipboard.writeText(u.href); msg(t.copied); }catch(e){ prompt("", u.href); }
+};
+
+/* ---------- الطائرات القادمة إلى أربيل ---------- */
+let near = null;
+async function loadNear(){
+  try{
+    const r = await fetch("/api/flight?near=1"); const j = await r.json();
+    if(j.error) throw 0;
+    near = j.ac; renderNear(near);
+  }catch(e){ if(!near) $("arr").innerHTML = `<div class="meta"></div>`, $("arr").firstChild.textContent = t.error; }
+}
+function renderNear(list){
+  nearLayer.clearLayers();
+  const inbound = [];
+  for(const a of list){
+    const toEBL = isEBL(a.route && a.route.destination);
+    if(a.callsign === (last && last.callsign)) continue;
+    Lf.marker([a.lat, a.lon], { icon:planeIcon(a.track, toEBL ? "#946512" : "#8a8a8a", toEBL ? 24 : 18), opacity:toEBL ? 1 : .6 })
+      .addTo(nearLayer).bindTooltip(a.callsign + (a.route ? ` · ${a.route.origin.iata}→${a.route.destination.iata}` : ""))
+      .on("click", () => start(a.callsign));
+    if(toEBL && !a.ground) inbound.push({ ...a, dist:km([a.lat, a.lon], EBL) });
+  }
+  inbound.sort((x, y) => x.dist - y.dist);
+  const box = $("arr"); box.innerHTML = "";
+  if(!inbound.length){ box.innerHTML = `<div class="meta"></div>`; box.firstChild.textContent = t.none; return; }
+  for(const a of inbound){
+    const b = document.createElement("button"); b.className = "row";
+    const mins = a.gs > 80 ? a.dist / (a.gs * 1.852) * 60 + 10 : null;
+    b.innerHTML = `<span class="c"></span><span class="f"></span><span class="d"></span>`;
+    b.children[0].textContent = a.callsign;
+    b.children[1].textContent = `${t.from} ${apName(a.route.origin)}${a.type ? " · " + a.type : ""}`;
+    b.children[2].textContent = `${nf(a.dist)} km` + (mins ? ` · ${clock(new Date(Date.now() + mins * 60000))}` : "");
+    b.onclick = () => { start(a.callsign); scrollTo({ top:0, behavior:"smooth" }); };
+    box.appendChild(b);
+  }
+}
+
+applyLang();
+if(current) start(current);
+loadNear(); setInterval(loadNear, 30000);
+</script>
+</body>
+</html>
