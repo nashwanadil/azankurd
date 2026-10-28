@@ -15,6 +15,7 @@ module.exports = {
 ],
 "hname": "حسن قادر عقراوي",
 "sign": "نشوان عادل",
+"fontCredit": "الخط المستخدم في صور التطبيق: DG Tofan Al Aqsa (عرب فونتس)",
 "privTitle": "سياسة الخصوصية",
 "priv": [
 [
@@ -131,6 +132,7 @@ module.exports = {
 ],
 "hname": "Hasan Qadir Aqrawi",
 "sign": "Nashwan Adil",
+"fontCredit": "Font used in our graphics: DG Tofan Al Aqsa (Arab Fonts)",
 "privTitle": "Privacy policy",
 "priv": [
 [

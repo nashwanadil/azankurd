@@ -40,7 +40,7 @@ module.exports = (req, res) => {
     title = x.aboutTitle;
     desc = x.about[0];
     const ps = x.about.map(p => `<p>${esc(p).replace("{name}", `<b class="nm">${esc(x.hname)}</b>`)}</p>`).join("");
-    body = `${crumbs(title)}<section class="hcard prose"><h1>${esc(title)}</h1>${ORN}${ps}<div class="sign">${esc(x.sign)}</div></section>`;
+    body = `${crumbs(title)}<section class="hcard prose"><h1>${esc(title)}</h1>${ORN}${ps}${x.fontCredit ? `<p class="muted">${esc(x.fontCredit)} · <a href="https://arbfonts.com" rel="noopener" target="_blank">arbfonts.com</a></p>` : ""}<div class="sign">${esc(x.sign)}</div></section>`;
   } else if(which === "privacy"){
     title = x.privTitle;
     desc = x.priv[0][1];
