@@ -239,6 +239,9 @@ applyTheme();
   /* المواقيت */
   .next{text-align:center;margin-bottom:18px}
   .next .sub{font-weight:700}
+  .nextline{display:flex;align-items:baseline;justify-content:center;gap:8px;flex-wrap:wrap}
+  .nextline .sub{margin-top:0}
+  .nextline .sub::after{content:":"}
   .next .name{font-size:1.6rem;color:var(--title);font-weight:700}
   .next .count{font-size:3.2rem;font-variant-numeric:tabular-nums;letter-spacing:2px;direction:ltr;color:var(--gold);font-weight:800}
   /* الهاتف: نضغط المسافات قليلًا حتى يظهر صف المواقيت الأول كاملًا */
@@ -269,6 +272,23 @@ applyTheme();
   .notice .btn{font-size:.88rem;padding:6px 14px}
   @media (min-width:600px){.t{padding:20px 8px 18px}.t b{font-size:1.5rem}.t svg{width:32px;height:32px}}
   .loc{text-align:center;color:var(--muted);font-size:.85rem;margin-top:14px}
+  /* الهاتف: نرفع نوافذ المواقيت قليلًا حتى تظهر الصلوات كلها بلا تمرير */
+  @media (max-width:599px){
+    header{padding:12px 16px 10px}
+    main>section:first-of-type{padding:12px 14px 14px}
+    main>section:first-of-type h2{margin-bottom:6px}
+    .cityline{margin:0 auto 4px}
+    .next{margin-bottom:8px}
+    .next .count{font-size:2.4rem;line-height:1.2}
+    .curline{margin-bottom:2px}
+    .sub{margin-top:2px}
+    .times{gap:8px}
+    .t{padding:9px 4px 8px}
+    .t svg{width:24px;height:24px;margin-bottom:1px}
+    .t b{font-size:1.15rem}
+    .t.qiyam{padding:8px 12px}
+    .loc{margin-top:8px}
+  }
   .methodline{display:block;margin:6px auto 0;background:none;border:0;color:var(--muted);font-family:inherit;font-size:.8rem;cursor:pointer;text-decoration:underline dotted;text-underline-offset:4px}
   .methodline:hover{color:var(--gold)}
   .monthly{display:flex;width:max-content;margin:14px auto 0;align-items:center;gap:8px;background:var(--green);color:#fff;border-radius:12px;padding:9px 18px;font-size:.92rem;text-decoration:none}
@@ -381,8 +401,9 @@ applyTheme();
   .cityline[hidden]{display:none}
   .cityline svg{width:20px;height:20px;stroke:var(--gold);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
   .cityline .clabel::after{content:":"}
-  .cityline{flex-wrap:wrap;max-width:100%;row-gap:0}
-  .cityline .cplace{flex-basis:100%;display:flex;align-items:center;justify-content:center;gap:6px;min-width:0}
+  .cityline .clabel{flex:none}
+  .cityline{flex-wrap:nowrap;max-width:100%}
+  .cityline .cplace{flex:0 1 auto;display:flex;align-items:center;justify-content:center;gap:6px;min-width:0}
   .cityline b{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .curline{display:flex;align-items:center;justify-content:center;gap:8px;margin:0 auto 6px;font-size:1.05rem;font-weight:700;color:var(--cur,#2e9e5b)}
   .curline[hidden]{display:none}
@@ -497,8 +518,7 @@ applyTheme();
     </button>
     <div class="next">
       <div class="curline" id="curLine" hidden><i class="dot"></i><span id="curLbl"></span><span id="curName"></span> <b id="curTime"></b></div>
-      <div class="sub" data-i="nextPrayer"></div>
-      <div class="name" id="nextName">—</div>
+      <div class="nextline"><div class="sub" data-i="nextPrayer"></div><div class="name" id="nextName">—</div></div>
       <div class="count" id="countdown">--:--:--</div>
     </div>
     <div class="times" id="times"></div>
