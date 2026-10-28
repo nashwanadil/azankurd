@@ -2026,8 +2026,8 @@ function fitBar(){
   const wide = [...document.querySelectorAll("#gbWide > a.gb")];
   if(!bar || innerWidth <= 760) return;
   wide.forEach(a => a.hidden = false);
-  // مفتوح: تظهر كل الأزرار، ويختفي «المزيد» من مكانه، ويُغلق بالنقر خارج الشريط
-  if(barOpen){ more.classList.remove("ov"); return; }
+  // مفتوح: تظهر كل الأزرار مع بقاء «المزيد» ليغلقها، ويُغلق أيضًا بالنقر خارج الشريط
+  if(barOpen){ more.classList.add("ov"); return; }
   const oneLine = () => { const els = [...bar.querySelectorAll("a.gb, button.gb, #langBtn")].filter(e => e.getClientRects().length); const top = els[0].getBoundingClientRect().top; return els.every(e => Math.abs(e.getBoundingClientRect().top - top) < 2); };
   more.classList.add("ov");
   let over = false;
@@ -2082,7 +2082,7 @@ function closeNav(){ document.getElementById("navMenu").hidden = true; document.
 document.getElementById("navBtn").addEventListener("click", e=>{
   e.stopPropagation();
   // الحاسوب: «المزيد» يُظهر الأزرار المخفية في الشريط نفسه، لا القائمة
-  if(document.querySelector("#gbar .gbmore").classList.contains("ov") && innerWidth > 760){ barOpen = !barOpen; fitBar(); return; }
+  if((barOpen || document.querySelector("#gbar .gbmore").classList.contains("ov")) && innerWidth > 760){ barOpen = !barOpen; fitBar(); return; }
   const m = document.getElementById("navMenu");
   if(m.hidden){ closeLangMenu(); buildNav(); m.hidden = false; document.getElementById("navBtn").setAttribute("aria-expanded","true"); }
   else closeNav();
