@@ -2013,6 +2013,7 @@ const TOOLS_LBL = {"cal": {"ar": "تحويل التاريخ", "ku": "گوهۆڕ�
 const HOMESHORT = {"ar": "الرئيسية", "ku": "سەرەکی", "en": "Home", "de": "Start", "tr": "Ana sayfa", "fa": "خانه", "ur": "ہوم", "fr": "Accueil", "es": "Inicio", "it": "Home", "nl": "Home", "da": "Forside", "sv": "Start", "ru": "Главная", "bs": "Početna", "id": "Beranda", "ms": "Utama", "bn": "হোম", "ps": "کور", "ha": "Gida", "sw": "Mwanzo"};
 const toolLbl = k => TOOLS_LBL[k][lang] || TOOLS_LBL[k].en;
 const MORE_LBL = { ar:"المزيد", ku:"زێدەتر", en:"More", de:"Mehr", tr:"Daha fazla", fa:"بیشتر", ur:"مزید", fr:"Plus", es:"Más", it:"Altro", nl:"Meer", da:"Mere", sv:"Mer", ru:"Ещё", bs:"Više", id:"Lainnya", ms:"Lagi", bn:"আরও", ps:"نور", ha:"Ƙari", sw:"Zaidi" };
+const LESS_LBL = { ar:"أقل", ku:"کەمتر", en:"Less", de:"Weniger", tr:"Daha az", fa:"کمتر", ur:"کم", fr:"Moins", es:"Menos", it:"Meno", nl:"Minder", da:"Mindre", sv:"Mindre", ru:"Меньше", bs:"Manje", id:"Lebih sedikit", ms:"Kurang", bn:"কম", ps:"لږ", ha:"Ƙasa", sw:"Chache" };
 const QSHORT = { ar:"القبلة", ku:"قیبلە", en:"Qibla", de:"Qibla", tr:"Kıble", fa:"قبله", ur:"قبلہ", fr:"Qibla", es:"Alquibla", it:"Qibla", nl:"Qibla", da:"Qibla", sv:"Qibla", ru:"Кибла", bs:"Kibla", id:"Kiblat", ms:"Kiblat", bn:"কিবলা", ps:"قبله", ha:"Alƙibla", sw:"Qibla" };
 const BAR_TOOLS = [["countries","globe"],["hijri","cal"],["zakat","zakat"],["azkar","azkar"],["ramadan","ramadan"],["occasions","occasions"]];
 const barLbl = k => k === "countries" ? L().allCountries : toolLbl(k === "hijri" ? "cal" : k);
@@ -2028,12 +2029,16 @@ function fitBar(){
   if(!bar || innerWidth <= 760) return;
   wide.forEach(a => a.hidden = false);
   // مفتوح: تظهر كل الأزرار مع بقاء «المزيد» ليغلقها، ويُغلق أيضًا بالنقر خارج الشريط
-  if(barOpen){ more.classList.add("ov"); return; }
+  if(barOpen){ more.classList.add("ov"); moreText(true); return; }
   const oneLine = () => { const els = [...bar.querySelectorAll("a.gb, button.gb, #langBtn")].filter(e => e.getClientRects().length); const top = els[0].getBoundingClientRect().top; return els.every(e => Math.abs(e.getBoundingClientRect().top - top) < 2); };
+  moreText(false);
   more.classList.add("ov");
   let over = false;
   while(!oneLine()){ const vis = wide.filter(a => !a.hidden); if(!vis.length) break; vis[vis.length-1].hidden = true; over = true; }
   more.classList.toggle("ov", over);
+}
+function moreText(open){
+  document.getElementById("gbMoreT").textContent = open ? (LESS_LBL[lang] || LESS_LBL.en) : (MORE_LBL[lang] || MORE_LBL.en);
 }
 window.addEventListener("resize", fitBar);
 document.addEventListener("click", e=>{ if(barOpen && !e.target.closest("#gbar")){ barOpen = false; fitBar(); } });
