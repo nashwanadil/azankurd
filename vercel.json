@@ -5,15 +5,6 @@
   "cleanUrls": false,
   "rewrites": [
     {
-      "source": "/",
-      "has": [{ "type": "host", "value": "flight.nashwanadil.com" }],
-      "destination": "/flight.html"
-    },
-    {
-      "source": "/flight",
-      "destination": "/flight.html"
-    },
-    {
       "source": "/sitemap-cities.xml",
       "destination": "/api/sitemap"
     },
