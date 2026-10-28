@@ -2044,8 +2044,11 @@ const DL = {"ar":"تحميل التطبيق","ku":"داگرتنی ئەپ","en":"
 function buildNav(){
   const t = L(), m = document.getElementById("navMenu");
   const a = (href, ic, label) => `<a role="menuitem" href="${href}"><svg viewBox="0 0 24 24">${NAVIC[ic]}</svg><span>${String(label).replace(/</g,"&lt;")}</span></a>`;
-  m.innerHTML = a(`/${lang}/qibla`, "qibla", toolLbl("qibla")) + BAR_TOOLS.map(([p, ic]) => a(`/${lang}/${p}`, ic, barLbl(p))).join("")
-    + (IS_APP ? "" : a("/download.html", "download", DL[lang] || DL.en))
+  // الحاسوب: لا نكرر في القائمة ما هو ظاهر في الشريط، ولا رابط تحميل التطبيق
+  const desk = innerWidth > 760;
+  const inBar = href => desk && [...document.querySelectorAll("#gbar a.gb")].some(e => !e.hidden && e.getClientRects().length && e.getAttribute("href") === href);
+  m.innerHTML = (inBar(`/${lang}/qibla`) ? "" : a(`/${lang}/qibla`, "qibla", toolLbl("qibla"))) + BAR_TOOLS.filter(([p]) => !inBar(`/${lang}/${p}`)).map(([p, ic]) => a(`/${lang}/${p}`, ic, barLbl(p))).join("")
+    + (IS_APP || desk ? "" : a("/download.html", "download", DL[lang] || DL.en))
     + `<a role="menuitem" href="#" data-act="settings"><svg viewBox="0 0 24 24">${NAVIC.gear}</svg><span>${String(t.settings).replace(/</g,"&lt;")}</span></a>` + "<hr>" + a(`/${lang}/about`, "about", t.cAbout) + a(`/${lang}/privacy`, "privacy", t.cPrivacy)
     + `<a role="menuitem" href="#" data-act="contact"><svg viewBox="0 0 24 24">${NAVIC.contact}</svg><span>${String(t.cContact).replace(/</g,"&lt;")}</span></a>`;
 }

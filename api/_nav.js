@@ -59,6 +59,8 @@ const css = `
 .gbmore .menu{inset-inline-start:auto!important;inset-inline-end:0!important}
 .gbmore > summary.gb{width:100%;height:auto;border-radius:999px;background:var(--card);border:1.5px solid var(--gold);display:flex}
 .gbmore .menu a{color:var(--gold);font-weight:600}
+/* الحاسوب: لا نكرر في القائمة ما هو ظاهر في الشريط، ولا رابط تحميل التطبيق */
+@media (min-width:761px){.gbmore .menu a[href$="/qibla"],.gbmore .menu a[href$="/countries"],.gbmore .menu a[href$="/hijri"],.gbmore .menu a[href$="/zakat"],.gbmore .menu a[href$="/azkar"],.gbmore .menu a[href="/download.html"]{display:none}}
 .top{flex-wrap:wrap;gap:8px}
 .top > .brandmini{order:1}
 .top > .tr{order:3}

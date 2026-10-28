@@ -26,7 +26,7 @@ const ORN = '<svg class="orn" viewBox="0 0 240 24" aria-hidden="true"><path d="M
 
 // أدوات (التاريخ والزكاة والأذكار) تُخدم من هذه الدالة نفسها، لأن خطة Vercel المجانية تسمح بـ12 دالة فقط
 // أسماء الملفات مكتوبة صراحةً ليضمّها Vercel إلى الدالة (لا يتتبّع require بمتغيّر)
-const TOOLS = { hijri:() => require("./_hijri.js"), zakat:() => require("./_zakat.js"), azkar:() => require("./_azkar.js"), qibla:() => require("./_qibla.js"), ramadan:() => require("./_ramadan.js"), occasions:() => require("./_occasions.js") };
+const TOOLS = { download:() => require("./_download.js"), hijri:() => require("./_hijri.js"), zakat:() => require("./_zakat.js"), azkar:() => require("./_azkar.js"), qibla:() => require("./_qibla.js"), ramadan:() => require("./_ramadan.js"), occasions:() => require("./_occasions.js") };
 module.exports = (req, res) => {
   { const pg = new URL(req.url, "https://azankurd.com").searchParams.get("page"); if(TOOLS[pg]) return TOOLS[pg]()(req, res); }
   const u = new URL(req.url, "https://azankurd.com");
