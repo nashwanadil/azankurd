@@ -122,10 +122,11 @@ applyTheme();
   .langwrap{position:relative}
   /* الشريط الأفقي بأزرار ذهبية */
   .topbar{width:100%;max-width:980px;flex-wrap:wrap;gap:10px;justify-content:flex-end}
-  .gbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:flex-end;order:2;flex-basis:100%;min-width:0}
+  .gbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;order:2;flex-basis:100%;min-width:0}
   /* الحاسوب: زر الإعدادات على يمين زر اللغة مباشرة، وشريط الأزرار في صف مستقل */
   .topbar > .gbar{order:3}
   #settingsBtn{display:none}
+  .gblang #langBtn{height:40px;box-sizing:border-box}
   @media (min-width:761px){.gblang .menu{inset-inline-start:auto!important;inset-inline-end:0!important}}
   .gbwide{display:contents}
   .gb{box-sizing:border-box;height:40px;line-height:1.3;display:inline-flex;align-items:center;justify-content:center;gap:7px;border:1.5px solid var(--gold);color:var(--gold);background:var(--card);border-radius:999px;padding:7px 13px;font-family:inherit;font-size:.88rem;font-weight:700;white-space:nowrap;text-decoration:none;cursor:pointer}
@@ -133,8 +134,7 @@ applyTheme();
   .gb svg{width:17px;height:17px;flex:none;stroke:var(--gold);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
   .gb.on{background:var(--green);border-color:var(--green);color:#fff}
   .gb.on svg{stroke:#f3d58a}
-  .gbmore{display:none}
-  .gbmore.ov{display:block}
+  .gbmore{display:block}
   .gb[hidden]{display:none}
   .gbmore .menu{inset-inline-start:auto!important;inset-inline-end:0!important}
   .navmenu a{color:var(--gold)!important;font-weight:600}
@@ -2019,23 +2019,16 @@ const BAR_SHORT = { ar:{countries:"البلدان",hijri:"التاريخ",zakat:
   ku:{countries:"وەلات",hijri:"بەروار",zakat:"زەکات",azkar:"زکر",ramadan:"ڕەمەزان",occasions:"بۆنە"},
   en:{countries:"Countries",hijri:"Dates",zakat:"Zakat",azkar:"Adhkar",ramadan:"Ramadan",occasions:"Occasions"} };
 const barShort = k => (BAR_SHORT[lang] && BAR_SHORT[lang][k]) || barLbl(k);
-// الحاسوب: أزرار الشريط في سطر واحد، والزائد يخفى خلف «المزيد» في آخره
-let barOpen = false;
+// الحاسوب: أزرار الشريط في سطر واحد، والزائد يخفى ويبقى في قائمة «المزيد»
 function fitBar(){
-  const bar = document.getElementById("gbar"), more = bar.querySelector(".gbmore");
+  const bar = document.getElementById("gbar");
   const wide = [...document.querySelectorAll("#gbWide > a.gb")];
   if(!bar || innerWidth <= 760) return;
   wide.forEach(a => a.hidden = false);
-  // مفتوح: تظهر كل الأزرار، ويختفي «المزيد» من مكانه، ويُغلق بالنقر خارج الشريط
-  if(barOpen){ more.classList.remove("ov"); return; }
   const oneLine = () => { const els = [...bar.querySelectorAll("a.gb, button.gb, #langBtn")].filter(e => e.getClientRects().length); const top = els[0].getBoundingClientRect().top; return els.every(e => Math.abs(e.getBoundingClientRect().top - top) < 2); };
-  more.classList.add("ov");
-  let over = false;
-  while(!oneLine()){ const vis = wide.filter(a => !a.hidden); if(!vis.length) break; vis[vis.length-1].hidden = true; over = true; }
-  more.classList.toggle("ov", over);
+  while(!oneLine()){ const vis = wide.filter(a => !a.hidden); if(!vis.length) break; vis[vis.length-1].hidden = true; }
 }
 window.addEventListener("resize", fitBar);
-document.addEventListener("click", e=>{ if(barOpen && !e.target.closest("#gbar")){ barOpen = false; fitBar(); } });
 document.fonts && document.fonts.ready.then(fitBar);
 // أزرار الشريط بلغة الصفحة (تُستدعى عند تغيير اللغة)
 function setBar(){
@@ -2044,7 +2037,6 @@ function setBar(){
   document.getElementById("gbHome").querySelector("span").textContent = HOMESHORT[lang] || t.home;
   const q = document.getElementById("gbQibla"); q.href = `/${lang}/qibla`; q.querySelector("span").textContent = QSHORT[lang] || toolLbl("qibla");
   document.getElementById("gbMoreT").textContent = MORE_LBL[lang] || MORE_LBL.en;
-  barOpen = false;
   document.getElementById("gbWide").innerHTML = BAR_TOOLS.map(([p, ic]) => `<a class="gb wide" href="/${lang}/${p}"><svg viewBox="0 0 24 24">${NAVIC[ic]}</svg><span>${esc(barShort(p))}</span></a>`).join("");
   fitBar();
 }
@@ -2052,8 +2044,11 @@ const DL = {"ar":"تحميل التطبيق","ku":"داگرتنی ئەپ","en":"
 function buildNav(){
   const t = L(), m = document.getElementById("navMenu");
   const a = (href, ic, label) => `<a role="menuitem" href="${href}"><svg viewBox="0 0 24 24">${NAVIC[ic]}</svg><span>${String(label).replace(/</g,"&lt;")}</span></a>`;
-  m.innerHTML = a(`/${lang}/qibla`, "qibla", toolLbl("qibla")) + BAR_TOOLS.map(([p, ic]) => a(`/${lang}/${p}`, ic, barLbl(p))).join("")
-    + (IS_APP ? "" : a("/download.html", "download", DL[lang] || DL.en))
+  // الحاسوب: لا نكرر في القائمة ما هو ظاهر في الشريط، ولا رابط تحميل التطبيق
+  const desk = innerWidth > 760;
+  const inBar = href => desk && [...document.querySelectorAll("#gbar a.gb")].some(e => !e.hidden && e.getClientRects().length && e.getAttribute("href") === href);
+  m.innerHTML = (inBar(`/${lang}/qibla`) ? "" : a(`/${lang}/qibla`, "qibla", toolLbl("qibla"))) + BAR_TOOLS.filter(([p]) => !inBar(`/${lang}/${p}`)).map(([p, ic]) => a(`/${lang}/${p}`, ic, barLbl(p))).join("")
+    + (IS_APP || desk ? "" : a("/download.html", "download", DL[lang] || DL.en))
     + `<a role="menuitem" href="#" data-act="settings"><svg viewBox="0 0 24 24">${NAVIC.gear}</svg><span>${String(t.settings).replace(/</g,"&lt;")}</span></a>` + "<hr>" + a(`/${lang}/about`, "about", t.cAbout) + a(`/${lang}/privacy`, "privacy", t.cPrivacy)
     + `<a role="menuitem" href="#" data-act="contact"><svg viewBox="0 0 24 24">${NAVIC.contact}</svg><span>${String(t.cContact).replace(/</g,"&lt;")}</span></a>`;
 }
@@ -2081,8 +2076,6 @@ function closeContact(){ const ov = document.getElementById("contactOv"); if(ov)
 function closeNav(){ document.getElementById("navMenu").hidden = true; document.getElementById("navBtn").setAttribute("aria-expanded","false"); }
 document.getElementById("navBtn").addEventListener("click", e=>{
   e.stopPropagation();
-  // الحاسوب: «المزيد» يُظهر الأزرار المخفية في الشريط نفسه، لا القائمة
-  if(document.querySelector("#gbar .gbmore").classList.contains("ov") && innerWidth > 760){ barOpen = !barOpen; fitBar(); return; }
   const m = document.getElementById("navMenu");
   if(m.hidden){ closeLangMenu(); buildNav(); m.hidden = false; document.getElementById("navBtn").setAttribute("aria-expanded","true"); }
   else closeNav();

@@ -5,6 +5,10 @@
   "cleanUrls": false,
   "rewrites": [
     {
+      "source": "/download.html",
+      "destination": "/api/info?lang=ar&page=download"
+    },
+    {
       "source": "/sitemap-cities.xml",
       "destination": "/api/sitemap"
     },
@@ -21,7 +25,7 @@
       "destination": "/api/country?lang=:lang&cc=:cc"
     },
     {
-      "source": "/:lang(ar|ku|en|de|tr|fa|ur|fr|es|it|nl|da|sv|ru|bs|id|ms|bn|ps|ha|sw)/:page(about|privacy|contact|hijri|zakat|azkar|qibla|ramadan|occasions)",
+      "source": "/:lang(ar|ku|en|de|tr|fa|ur|fr|es|it|nl|da|sv|ru|bs|id|ms|bn|ps|ha|sw)/:page(about|privacy|contact|hijri|zakat|azkar|qibla|ramadan|occasions|download)",
       "destination": "/api/info?lang=:lang&page=:page"
     },
     {

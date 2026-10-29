@@ -26,7 +26,7 @@ const ORN = '<svg class="orn" viewBox="0 0 240 24" aria-hidden="true"><path d="M
 
 // أدوات (التاريخ والزكاة والأذكار) تُخدم من هذه الدالة نفسها، لأن خطة Vercel المجانية تسمح بـ12 دالة فقط
 // أسماء الملفات مكتوبة صراحةً ليضمّها Vercel إلى الدالة (لا يتتبّع require بمتغيّر)
-const TOOLS = { hijri:() => require("./_hijri.js"), zakat:() => require("./_zakat.js"), azkar:() => require("./_azkar.js"), qibla:() => require("./_qibla.js"), ramadan:() => require("./_ramadan.js"), occasions:() => require("./_occasions.js") };
+const TOOLS = { download:() => require("./_download.js"), hijri:() => require("./_hijri.js"), zakat:() => require("./_zakat.js"), azkar:() => require("./_azkar.js"), qibla:() => require("./_qibla.js"), ramadan:() => require("./_ramadan.js"), occasions:() => require("./_occasions.js") };
 module.exports = (req, res) => {
   { const pg = new URL(req.url, "https://azankurd.com").searchParams.get("page"); if(TOOLS[pg]) return TOOLS[pg]()(req, res); }
   const u = new URL(req.url, "https://azankurd.com");
@@ -40,7 +40,7 @@ module.exports = (req, res) => {
     title = x.aboutTitle;
     desc = x.about[0];
     const ps = x.about.map(p => `<p>${esc(p).replace("{name}", `<b class="nm">${esc(x.hname)}</b>`)}</p>`).join("");
-    body = `${crumbs(title)}<section class="hcard prose"><h1>${esc(title)}</h1>${ORN}${ps}<div class="sign">${esc(x.sign)}</div></section>`;
+    body = `${crumbs(title)}<section class="hcard prose"><h1>${esc(title)}</h1>${ORN}${ps}${x.fontCredit ? `<p class="muted">${esc(x.fontCredit)} · <a href="https://arbfonts.com" rel="noopener" target="_blank">arbfonts.com</a></p>` : ""}<div class="sign">${esc(x.sign)}</div></section>`;
   } else if(which === "privacy"){
     title = x.privTitle;
     desc = x.priv[0][1];

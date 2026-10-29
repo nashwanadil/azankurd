@@ -1,46 +1,34 @@
-<!doctype html>
-<html lang="ar" dir="rtl">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>تحميل تطبيق أذان كُرد</title>
-<meta name="description" content="حمّل تطبيق أذان كُرد لمواقيت الصلاة والأذان الكامل على هاتفك أندرويد.">
-<meta name="robots" content="noindex">
-<link rel="icon" type="image/png" href="/icon-192.png">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@400;600;700&display=swap" rel="stylesheet">
-<style>
-  :root{--bg:#f5f1f0;--card:#fffdf9;--line:#e6d6c2;--text:#2a1d17;--muted:#7a6a5c;--gold:#946512;--btn:#8f2a39}
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{background:var(--bg);color:var(--text);font-family:'Noto Kufi Arabic',sans-serif;line-height:1.8;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px 16px}
-  main{width:min(460px,100%);background:var(--card);border:1px solid var(--line);border-radius:24px;padding:28px 22px;text-align:center}
-  .app{width:120px;height:120px;border-radius:28px;box-shadow:0 8px 22px rgba(0,0,0,.2);margin:0 auto 14px;display:block}
-  h1{font-size:1.5rem;color:var(--gold);font-weight:400}
-  .desc{color:var(--muted);font-size:.98rem;margin:6px 0 20px}
-  .dl{display:block;width:100%;padding:15px;border-radius:14px;background:var(--btn);color:#fff;font-weight:400;font-size:1.05rem;text-decoration:none}
-  .note{margin-top:24px;text-align:start;background:var(--bg);border:1px solid var(--line);border-radius:16px;padding:16px 18px}
-  .note h2{font-size:1rem;color:var(--gold);font-weight:400;margin-bottom:6px}
-  .note p{font-size:.92rem;color:var(--muted);margin-bottom:10px}
-  .note ol{padding-inline-start:20px;font-size:.92rem}
-  .note li{margin-bottom:6px}
-  .specs dl{display:grid;grid-template-columns:auto 1fr;gap:8px 14px;font-size:.92rem}
-  .specs dt{color:var(--gold);font-weight:400}
-  .specs dd{color:var(--text)}
-  .specs dd ul{list-style:none;padding:0;display:grid;gap:6px}
-  .specs dd li{color:var(--muted);font-size:.9rem}
-  .specs dd li b{color:var(--text)}
-  .specs dd:has(ul){grid-column:1 / -1}
-  .specs dt:has(+ dd ul){grid-column:1 / -1}
-  .feat{list-style:none;padding:0;display:grid;gap:9px;margin-bottom:22px}
-  .feat li{position:relative;padding-inline-start:18px;font-size:.92rem;color:var(--muted)}
-  .feat li::before{content:"";position:absolute;inset-inline-start:0;top:.7em;width:7px;height:7px;border-radius:50%;background:var(--gold)}
-  .feat b{color:var(--text)}
-  .foot{margin-top:24px;font-size:.85rem;color:var(--muted)}
-  .foot a{color:var(--gold);text-decoration:none}
-</style>
-</head>
-<body>
-<main>
-  <img class="app" src="/icon-192.png" alt="أذان كُرد" width="120" height="120">
+// صفحة تحميل التطبيق: /download.html و/ar/download، بالهيدر والقائمة نفسيهما في بقية الصفحات
+const { LANGS } = require("./_core.js");
+const { page, send } = require("./_layout.js");
+
+const CSS = `
+.dlp{text-align:center;padding:28px 22px}
+.dlp .app{width:120px;height:120px;border-radius:28px;box-shadow:0 8px 22px rgba(0,0,0,.2);margin:0 auto 14px;display:block}
+.dlp h1{font-size:1.5rem;color:var(--gold);font-weight:400}
+.dlp .desc{color:var(--muted);font-size:.98rem;margin:6px 0 20px}
+.dlp .dl{display:block;width:100%;padding:15px;border-radius:14px;background:var(--green);color:#fff;font-weight:400;font-size:1.05rem;text-decoration:none}
+.dlp .note{margin-top:24px;text-align:start;background:var(--inner);border:1px solid var(--line);border-radius:16px;padding:16px 18px}
+.dlp .note h2{font-size:1rem;color:var(--gold);font-weight:400;margin-bottom:6px}
+.dlp .note p{font-size:.92rem;color:var(--muted);margin-bottom:10px}
+.dlp .note ol{padding-inline-start:20px;font-size:.92rem}
+.dlp .note li{margin-bottom:6px}
+.dlp .specs dl{display:grid;grid-template-columns:auto 1fr;gap:8px 14px;font-size:.92rem}
+.dlp .specs dt{color:var(--gold);font-weight:400}
+.dlp .specs dd{color:var(--text)}
+.dlp .specs dd ul{list-style:none;padding:0;display:grid;gap:6px}
+.dlp .specs dd li{color:var(--muted);font-size:.9rem}
+.dlp .specs dd li b{color:var(--text)}
+.dlp .specs dd:has(ul){grid-column:1 / -1}
+.dlp .specs dt:has(+ dd ul){grid-column:1 / -1}
+.dlp .feat{list-style:none;padding:0;display:grid;gap:9px;margin-bottom:22px}
+.dlp .feat li{position:relative;padding-inline-start:18px;font-size:.92rem;color:var(--muted)}
+.dlp .feat li::before{content:"";position:absolute;inset-inline-start:0;top:.7em;width:7px;height:7px;border-radius:50%;background:var(--gold)}
+.dlp .feat b{color:var(--text)}`;
+
+// المحتوى بالعربية في كل اللغات (كما كانت الصفحة)، وهيدر الصفحة وقائمتها بلغة المستخدم
+const BODY = `<section class="hcard dlp" dir="rtl">
+<img class="app" src="/icon-192.png" alt="أذان كُرد" width="120" height="120">
   <h1>أذان كُرد</h1>
   <p class="desc">مواقيت الصلاة والأذان الكامل لكل مدن العالم، مع تنبيه قبل كل صلاة.</p>
   <a class="dl" href="/AzanKurd.apk" download>تنزيل التطبيق (APK)</a>
@@ -102,7 +90,11 @@
       <li>اضغط تثبيت، ثم فتح.</li>
     </ol>
   </section>
-  <footer class="foot">© 2026 <a href="/?lang=ar">azankurd.com</a> · <a href="/ar/about">عن الموقع</a> · <a href="/ar/privacy">سياسة الخصوصية</a> · <a href="/ar/contact">اتصل بنا</a></footer>
-</main>
-</body>
-</html>
+</section>`;
+
+module.exports = (req, res) => {
+  const u = new URL(req.url, "https://azankurd.com");
+  const lang = LANGS.includes(u.searchParams.get("lang")) ? u.searchParams.get("lang") : "ar";
+  res.setHeader("X-Robots-Tag", "noindex");
+  send(res, page({ lang, title:"تحميل تطبيق أذان كُرد", desc:"حمّل تطبيق أذان كُرد لمواقيت الصلاة والأذان الكامل على هاتفك أندرويد.", path:"/download", body:BODY, css:CSS }));
+};

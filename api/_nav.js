@@ -38,7 +38,7 @@ const css = `
 .gb svg{width:17px;height:17px;flex:none;stroke:var(--gold);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .gb.on{background:var(--green);border-color:var(--green);color:#fff}
 .gb.on svg{stroke:#f3d58a}
-.gbmore{position:relative;display:none}
+.gbmore{position:relative;display:block}
 /* نموذج «اتصل بنا» يفتح فوق الصفحة بدل الانتقال إلى صفحة أخرى */
 .cov{position:fixed;inset:0;z-index:95;background:rgba(20,12,8,.5);display:flex;align-items:center;justify-content:center;padding:16px}
 .cov[hidden]{display:none}
@@ -57,44 +57,36 @@ const css = `
 .cst.err{color:#b3261e}
 .cov .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
 .gbmore .menu{inset-inline-start:auto!important;inset-inline-end:0!important}
-.gbmore > summary.gb{width:100%;height:auto;border-radius:999px;background:var(--card);border:1.5px solid var(--gold);display:flex}
+.gbmore > summary.gb{width:100%;height:40px;border-radius:999px;background:var(--card);border:1.5px solid var(--gold);display:flex}
 .gbmore .menu a{color:var(--gold);font-weight:600}
-.top{flex-wrap:wrap;gap:8px}
-.top > .brandmini{order:1}
-.top > .tr{order:3}
-.top > .gbar{order:4;flex-basis:100%;margin:6px 0 0}
-@media (min-width:761px){
-  /* الحاسوب: الصفان يبدآن من الطرف الأيسر معًا، فتحاذي حافة زر اللغة حافة المناسبات */
-  .top{justify-content:flex-end}
-  .top > .gbar{justify-content:flex-end}
-  /* الشعار يبقى في طرف الصفحة اليمين، ولا ينزاح مع الأزرار */
-  .top > .brandmini{margin-inline-end:auto}
-}
-.top > .setbtn{order:2}
+/* الحاسوب: لا رابط تحميل التطبيق في القائمة (للهاتف فقط) */
+@media (min-width:761px){.gbmore .menu a[href="/download.html"]{display:none}}
+.gb[hidden],.gbmore .menu a[hidden]{display:none}
+/* الشريط كالصفحة الرئيسية: الرئيسية والقبلة والأدوات واللغة والمزيد في سطر واحد، والشعار تحته */
+.top{display:block;padding:16px 0 0}
+.top > .gbar{display:flex;flex-wrap:nowrap;justify-content:center;align-items:center;gap:8px;margin:0}
+.gblang{position:relative}
+.gbar .langs summary{height:40px;box-sizing:border-box;padding:0 14px}
+.gbar .langs .menu{inset-inline-start:auto;inset-inline-end:0}
+.subhead{text-align:center;padding:18px 0 6px}
+.subhead .brandmini{justify-content:center;font-size:2.4rem;gap:12px}
+html[dir=ltr] .subhead .brandmini{font-size:1.9rem}
+.subhead .brandmini img{width:52px;height:52px;border-radius:13px}
 @media (max-width:760px){
-  /* الهاتف: الشعار، الرئيسية، اللغة، المزيد في سطر واحد أعلى الصفحة */
-  .top{display:grid;grid-template-columns:auto repeat(4,minmax(0,1fr));gap:8px;align-items:center}
-  .top > .gbar,.top > .tr{display:contents}
-  html .top > .brandmini{order:0;font-size:0!important;gap:0}
-  html[dir=ltr] .gb{font-size:.8rem;gap:5px}
-  .gb svg{width:16px;height:16px}
+  .top > .gbar{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,.8fr) minmax(0,.9fr);gap:8px}
   .gb.gbhome{order:1}
-  .gb.gbhome span{display:none}
-  .gb.gbhome svg{width:22px;height:22px}
-  .top .langs{order:2;min-width:0}
-  .top .langs summary{width:100%;justify-content:center;box-sizing:border-box;height:40px}
-  .top .langs .lname{display:none}
-  .top .langs summary .flag{width:25px;height:17px}
-  .gbmore{order:4;display:block}
+  .gblang{order:2;min-width:0}
+  .gbar .langs summary{width:100%;justify-content:center;padding:0 4px}
+  .gbar .langs .lname{display:none}
+  .gbar .langs summary .flag{width:22px;height:15px}
+  .gbar .langs .menu{inset-inline-end:auto;inset-inline-start:0;max-width:calc(100vw - 24px)}
+  .gbmore{order:3;display:block}
   .gbmore > summary svg{display:none}
-  .top .langs summary{height:36px}
-  .top .langs summary .flag{width:22px;height:15px}
-  .top .langs .menu{inset-inline-end:auto;inset-inline-start:0;max-width:calc(100vw - 24px)}
   .gb{width:100%;padding:8px 6px;min-width:0}
   .gb span{overflow:hidden;text-overflow:ellipsis}
+  html[dir=ltr] .gb{font-size:.8rem;gap:5px}
   .gb.wide{display:none}
-  .top > .setbtn{display:flex;order:3;width:100%;padding:8px 6px;min-width:0;justify-content:center}
-  .top > .setbtn span{display:none}
+  .subhead .brandmini{font-size:2.1rem}
 }
 
 .tr{display:flex;align-items:center;gap:8px}
@@ -139,7 +131,7 @@ function html(lang){
 
 // الشريط الأفقي: الرئيسية والقبلة دائمًا؛ في الحاسوب بقية الأدوات والإعدادات، وفي الهاتف زر «المزيد» يفتح القائمة
 const DLBL = {"ar":"تحميل التطبيق","ku":"داگرتنی ئەپ","en":"Download app","de":"App herunterladen","tr":"Uygulamayı indir","fa":"دانلود برنامه","ur":"ایپ ڈاؤن لوڈ کریں","fr":"Télécharger l’app","es":"Descargar la app","it":"Scarica l’app","nl":"App downloaden","da":"Download app","sv":"Ladda ner appen","ru":"Скачать приложение","bs":"Preuzmi aplikaciju","id":"Unduh aplikasi","bn":"অ্যাপ ডাউনলোড করুন","ps":"اپلیکیشن ډاونلوډ کړئ","ha":"Zazzage app","sw":"Pakua programu"};
-function bar(lang, cur){
+function bar(lang, cur, langHtml = ""){
   const t = T[lang], x = INFO[lang];
   const b = (href, k, label, cls = "") => `<a class="gb${cls}${cur === k ? " on" : ""}" href="${href}">${ic(k)}<span>${esc(label)}</span></a>`;
   const m = (href, k, label) => `<a href="${href}">${ic(k)}<span>${esc(label)}</span></a>`;
@@ -147,6 +139,7 @@ function bar(lang, cur){
   return `<nav class="gbar">
 ${b(`/?lang=${lang}`, "home", HOMESHORT[lang] || t.home, " gbhome")}${b(`/${lang}/qibla`, "qibla", QSHORT[lang] || t.qibla, " wide")}
 ${tools.map(([p, k, l]) => b(`/${lang}/${p}`, k, (SHORT[lang] && SHORT[lang][p]) || l, " wide").replace(cur === p ? 'class="gb wide"' : "@@", 'class="gb wide on"')).join("")}
+${langHtml}
 <details class="gbmore navm"><summary class="gb">${ic("more")}<span>${esc(MORE[lang] || MORE.en)}</span></summary><div class="menu">
 ${m(`/${lang}/qibla`, "qibla", lbl(QIBLABL, lang))}
 ${tools.map(([p, k, l]) => m(`/${lang}/${p}`, k, l)).join("\n")}
@@ -179,6 +172,24 @@ function js(lang){
       }
     }
   }catch(e){}
+  // الحاسوب: أزرار الشريط في سطر واحد، والزائد يختفي منه ويبقى في قائمة «المزيد»
+  var bar=document.querySelector(".top .gbar");
+  function fit(){
+    if(!bar) return;
+    var wide=[].slice.call(bar.querySelectorAll("a.gb.wide")), menu=bar.querySelector(".gbmore .menu"), desk=innerWidth>760;
+    wide.forEach(function(a){ a.hidden=false; });
+    function one(){
+      var kids=[].slice.call(bar.children).filter(function(e){ return e.getClientRects().length>0; }), w=(kids.length-1)*8;
+      kids.forEach(function(k){ w+=k.getBoundingClientRect().width; });
+      return w<=bar.clientWidth;
+    }
+    if(desk) while(!one()){ var v=wide.filter(function(a){ return !a.hidden; }); if(!v.length) break; v[v.length-1].hidden=true; }
+    [].slice.call(menu.querySelectorAll("a")).forEach(function(m){
+      var h=m.getAttribute("href"), twin=wide.filter(function(a){ return a.getAttribute("href")===h; })[0];
+      m.hidden=!!(desk && twin && !twin.hidden);
+    });
+  }
+  window.addEventListener("resize",fit); window.addEventListener("load",fit); fit(); setTimeout(fit,400); setTimeout(fit,1500); if(document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
   var all=[].slice.call(document.querySelectorAll("details.navm, details.langs"));
   all.forEach(function(d){ d.addEventListener("toggle",function(){ if(d.open) all.forEach(function(o){ if(o!==d) o.open=false; }); }); });
   document.addEventListener("click",function(e){ all.forEach(function(d){ if(d.open && !d.contains(e.target)) d.open=false; }); });
