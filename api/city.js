@@ -136,18 +136,14 @@ module.exports = async (req, res) => {
   const desc = fill(t.desc, V);
   const asrName = method === 1 ? t.hanafi : t.standard;
   const qrSvg = await QR.toString(SITE + path, { type:"svg", margin:0, color:{ dark:"#2a1c17", light:"#0000" } });
-  const near = nearby(city);
-  const nearNames = await Promise.all(near.map(c => localName(c, lang).then(r => r?.name || c.name)));
   const sep = t.dir === "rtl" ? "، " : ", ";
   const coordTxt = `${Math.abs(city.lat).toFixed(2)}°${city.lat >= 0 ? "N" : "S"}, ${Math.abs(city.lng).toFixed(2)}°${city.lng >= 0 ? "E" : "W"}`;
 
-  const faq = [[t.q1, t.a1], [t.q2, t.a2], [t.q3, t.a3]].map(([q, a]) => [fill(q, V), fill(a, V)]);
   const ld = [
     { "@context":"https://schema.org", "@type":"BreadcrumbList", itemListElement:[
       { "@type":"ListItem", position:1, name:t.home, item:`${SITE}/?lang=${lang}` },
       { "@type":"ListItem", position:2, name:country, item:`${SITE}/${lang}/country/${city.cc.toLowerCase()}` },
-      { "@type":"ListItem", position:3, name:cityName, item:SITE + path } ] },
-    { "@context":"https://schema.org", "@type":"FAQPage", mainEntity: faq.map(([q, a]) => ({ "@type":"Question", name:q, acceptedAnswer:{ "@type":"Answer", text:a } })) }
+      { "@type":"ListItem", position:3, name:cityName, item:SITE + path } ] }
   ];
 
   const th = `<th class="dcol">${esc(t.dayCol)}</th><th class="hijcol">${esc(t.hijriCol)}</th>` + KEYS.map(k => `<th>${IC[k]}${esc(t.names[NAMEKEY[k]])}</th>`).join("");
@@ -400,22 +396,6 @@ footer a{color:var(--gold)}
     </div>
     <div class="tablebox"><table><thead><tr>${th}</tr></thead><tbody>${trs}</tbody></table></div>
     <div class="legend">${isCurrent ? `<span><i style="background:var(--today)"></i>${esc(t.todayLbl)}</span>` : ""}<span><i style="background:var(--fri)"></i>${esc(t.friday)}</span><span>${esc(t.methodLabel)}: ${esc(methodName)} · ${esc(t.asrLabel)}: ${esc(asrName)}</span></div>
-  </section>
-
-  <section class="grid2">
-    <div class="hcard info">
-      <h3>${esc(fill(t.aboutCity, V))}</h3>
-      <dl><dt>${esc(t.coords)}</dt><dd>${coordTxt}</dd><dt>${esc(t.tzLbl)}</dt><dd>${esc(city.tz)}</dd><dt>${esc(t.methodLabel)}</dt><dd>${esc(methodName)}</dd><dt>${esc(t.qibla)}</dt><dd>${esc(fill(t.qiblaVal, { deg:qibla(city) }))}</dd></dl>
-    </div>
-    <div class="hcard info">
-      <h3>${esc(t.nearby)}</h3>
-      <div class="chips">${near.map((c, i) => `<a href="/${lang}/${c.slug}">${esc(nearNames[i])}</a>`).join("")}</div>
-    </div>
-  </section>
-
-  <section class="hcard info faq" style="margin-bottom:22px">
-    <h3>${esc(t.faq)}</h3>
-    ${faq.map(([q, a], i) => `<details${i === 0 ? " open" : ""}><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join("")}
   </section>
 
   <footer>© ${today.y} <a href="/?lang=${lang}">azankurd.com</a> · <a href="/${lang}/countries">${esc(t.allCountries)}</a> · <a href="/${lang}/about">${esc(INFO[lang].cAbout)}</a> · <a href="/${lang}/privacy">${esc(INFO[lang].cPrivacy)}</a> · <a href="/${lang}/contact">${esc(INFO[lang].cContact)}</a></footer>
