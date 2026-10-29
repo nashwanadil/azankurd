@@ -182,6 +182,8 @@ ${alts}
 <script type="application/ld+json">${JSON.stringify(ld).replace(/</g, "\\u003c")}</script>
 <script>${THEME_JS}</script>
 <style>
+html[data-bg]{background:var(--bg)}html[data-bg]::before{content:\"\";position:fixed;inset:0;z-index:-1;background:var(--bgimg)}html[data-bg] body{background:transparent}
+
 :root{--bg:#f5efea;--card:#fdfbf9;--line:#e3d8cf;--inner:#f0e9e3;--hover:#e9dfd7;--text:#2a1c17;--muted:#6b5a50;--gold:#946512;--green:#8f2a39;--glow:#efe0d5;--title:#2a1c17}
 html[data-mode=dark]{--fri:color-mix(in srgb,var(--gold) 14%,var(--card));--today:color-mix(in srgb,var(--green) 30%,var(--card))}
 html:not([data-mode=dark]){--fri:color-mix(in srgb,var(--gold) 10%,var(--card));--today:color-mix(in srgb,var(--green) 9%,var(--card))}

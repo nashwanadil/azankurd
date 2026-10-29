@@ -118,6 +118,8 @@ ${alts}
 ${ld ? `<script type="application/ld+json">${JSON.stringify(ld).replace(/</g, "\\u003c")}</script>` : ""}
 <script>${THEME_JS}</script>
 <style>
+html[data-bg]{background:var(--bg)}html[data-bg]::before{content:\"\";position:fixed;inset:0;z-index:-1;background:var(--bgimg)}html[data-bg] body{background:transparent}
+
 :root{--bg:#f5efea;--card:#fdfbf9;--line:#e3d8cf;--inner:#f0e9e3;--hover:#e9dfd7;--text:#2a1c17;--muted:#6b5a50;--gold:#946512;--green:#8f2a39;--glow:#efe0d5;--title:#2a1c17}
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--bg);background-image:radial-gradient(circle at 50% 0%,var(--glow) 0%,transparent 55%);color:var(--text);font-family:'Noto Kufi Arabic','Noto Sans',sans-serif;line-height:1.7;min-height:100vh}
