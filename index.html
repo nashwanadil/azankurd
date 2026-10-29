@@ -971,6 +971,7 @@ function applyLang(){
   document.getElementById("langFlag").src = flagSrc(lang);
   document.querySelectorAll("[data-i]").forEach(el => el.textContent = t[el.dataset.i]);
   document.querySelectorAll(".icard[data-page]").forEach(a => a.href = `/${lang}/${a.dataset.page}`);
+  document.querySelectorAll(".icard[data-page]").forEach(a => a.addEventListener("click", e => { e.preventDefault(); openContact(a.dataset.page); }));
   document.getElementById("setCityInput").placeholder = t.cityPh;
   document.getElementById("settingsBtn").setAttribute("aria-label", t.settings);
   document.getElementById("closeSettings").setAttribute("aria-label", t.close);
@@ -2062,7 +2063,7 @@ document.getElementById("navMenu").addEventListener("click", e=>{
 });
 setBar();
 // «اتصل بنا» من القائمة: النموذج نفسه من صفحة الاتصال يفتح داخل نافذة فوق الصفحة
-function openContact(){
+function openContact(page = "contact"){
   let ov = document.getElementById("contactOv");
   if(!ov){
     ov = document.createElement("div"); ov.id = "contactOv"; ov.className = "ctc-ov"; ov.hidden = true;
@@ -2072,7 +2073,7 @@ function openContact(){
   }
   const fr = ov.querySelector("iframe");
   fr.title = L().cContact || "";
-  fr.src = `/${lang}/contact?embed=1`;
+  fr.src = `/${lang}/${page}?embed=1`;
   ov.hidden = false;
 }
 function closeContact(){ const ov = document.getElementById("contactOv"); if(ov) ov.hidden = true; }
