@@ -971,6 +971,7 @@ function applyLang(){
   document.getElementById("langFlag").src = flagSrc(lang);
   document.querySelectorAll("[data-i]").forEach(el => el.textContent = t[el.dataset.i]);
   document.querySelectorAll(".icard[data-page]").forEach(a => a.href = `/${lang}/${a.dataset.page}`);
+  if(IS_APP){ const ab = document.querySelector('.icard[data-page="about"] span:last-child'); if(ab) ab.textContent = ({ ar:"عن التطبيق", ku:"دەربارەی ئەپ", en:"About the app" })[lang] || ab.textContent; }
   document.querySelectorAll(".icard[data-page]").forEach(a => a.addEventListener("click", e => { e.preventDefault(); openContact(a.dataset.page); }));
   document.getElementById("setCityInput").placeholder = t.cityPh;
   document.getElementById("settingsBtn").setAttribute("aria-label", t.settings);
