@@ -319,6 +319,8 @@ footer a{color:var(--gold)}
   html,body{background:#fff!important;color:#1d1410}
   .wrap>*:not(.sheet-print){display:none!important}
   .sheet-print{display:block;font-size:10pt}
+  .sheet-print .cform,.sheet-print .cform *,.sheet-print .cedit,.sheet-print .cst,.sheet-print input,.sheet-print .mqedit{display:none!important}
+  .sheet-print{overflow:hidden;max-width:100%}
   .ph{display:flex;align-items:center;justify-content:space-between;border-bottom:2.2pt solid #8f2a39;padding-bottom:4mm;margin-bottom:4mm}
   .ph .b{display:flex;align-items:center;gap:3.5mm}
   .ph img{width:15mm;height:15mm;border-radius:3.5mm}
