@@ -23,9 +23,10 @@ for (const f of fs.readdirSync(ROOT)) {
   }
 }
 
-// يعترض النقر على الأدوات المحلية، فتفتح نسختها داخل التطبيق بدل الإنترنت
+// يعترض النقر على كل روابط الموقع: الأدوات المحلية تفتح من داخل التطبيق، والصفحة الرئيسية كذلك،
+// وأي صفحة أخرى تفتح من الموقع (بدل أن يعيد خادم التطبيق المحلي الصفحة الرئيسية لكل مسار مجهول)
 function interceptor(prefix) {
-  return `<script>(function(){var L=${JSON.stringify(LOCAL)},P=${JSON.stringify(prefix)};document.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest("a[href]");if(!a)return;var m=a.getAttribute("href").match(/^(?:https:\\/\\/www\\.azankurd\\.com)?\\/((?:ar|ku|en)\\/(?:azkar|zakat|hijri|occasions))\\/?(?:[?#].*)?$/);if(!m||L.indexOf(m[1])<0)return;e.preventDefault();location.href=P+m[1]+"/index.html";},true);})();</script>`;
+  return `<script>(function(){var L=${JSON.stringify(LOCAL)},P=${JSON.stringify(prefix)},S=${JSON.stringify(SITE)};document.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest("a[href]");if(!a||a.hasAttribute("download"))return;var h=a.getAttribute("href")||"",p=null;if(h.indexOf(S+"/")===0)p=h.slice(S.length);else if(h.charAt(0)==="/"&&h.charAt(1)!=="/")p=h;if(p===null)return;var k=p.replace(/[?#].*$/,"").replace(/^\\/+|\\/+$/g,"");e.preventDefault();if(k===""||k==="index.html"){location.href=P+"index.html";return;}if(L.indexOf(k)>=0){location.href=P+k+"/index.html";return;}location.href=S+p;},true);})();</script>`;
 }
 
 function finish(html, prefix) {
@@ -33,6 +34,8 @@ function finish(html, prefix) {
   html = html.replace(/(["'`])\/api\//g, `$1${SITE}/api/`);
   // الروابط إلى صفحات الموقع الأخرى تفتح على الموقع
   html = html.replace(/href="\/(?!\/)([^"]*)"/g, (m, p) => `href="${SITE}/${p}"`);
+  // نوافذ «عن الموقع» و«اتصل بنا» تُحمَّل من الموقع
+  html = html.split("fr.src = `/${lang}/${page}?embed=1`").join("fr.src = `" + SITE + "/${lang}/${page}?embed=1`");
   return html.replace("</body>", interceptor(prefix) + "</body>");
 }
 

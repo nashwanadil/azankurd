@@ -1450,7 +1450,17 @@ function showLocWait(){
   document.getElementById("setupSpin").hidden = true;
   setupStep("setupStepWait");
   document.getElementById("setupOverlay").hidden = false;
+  offlineNote();
 }
+// أول تشغيل بلا إنترنت: لا يمكن معرفة المدينة ولا جلب المواقيت، فنقول ذلك بدل الدوران بلا نهاية
+function offlineNote(){
+  if(navigator.onLine || lastData) return;
+  const OFFLINE_FIRST = { ar:"تحتاج إلى الإنترنت في أول تشغيل لتحديد مدينتك وجلب المواقيت. اتصل بالإنترنت وسيكمل التطبيق تلقائيًا.", ku:"بۆ یەکەمجار پێویستت بە ئینتەرنێتە بۆ دیاریکردنی شارەکەت و هێنانی کاتەکان. پەیوەندی بکە و ئەپەکە خۆی بەردەوام دەبێت.", en:"The first launch needs the internet to find your city and load prayer times. Connect and the app will continue on its own." };
+  document.getElementById("setupWaitMsg").textContent = OFFLINE_FIRST[lang] || OFFLINE_FIRST.en;
+  document.getElementById("setupWaitGeo").hidden = true;
+  document.getElementById("setupSpin").hidden = true;
+}
+addEventListener("online", ()=>{ if(!lastData) useLocation(); });
 
 /* ---------- الاقتراحات أثناء الكتابة ---------- */
 function hideAC(id){ const l = document.getElementById(id); l.hidden = true; l.innerHTML = ""; l._items = []; }
@@ -2263,6 +2273,7 @@ function finishSetup(){
   document.getElementById("setupWaitGeo").hidden = true;
   document.getElementById("setupSpin").hidden = false;
   setupStep("setupStepWait");
+  offlineNote();
 }
 if(IS_APP && store.get("setupDone","0") !== "1") openSetup();
 
