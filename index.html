@@ -65,8 +65,19 @@ const THEMES = [
   {id:"rose",    h:332, s:24, accent:"#eab6ca", accentL:"#a03a6a", btn:"#a03a6a"},
   {id:"sand",    h:36,  s:38, accent:"#eeaa45", accentL:"#9a5c0c", btn:"#b5651d"},
   {id:"mono",    h:0,   s:0,  accent:"#f2f2f2", accentL:"#111111", btn:"#111111"},
-  {id:"sky",     h:205, s:45, accent:"#93d2ff", accentL:"#1f6fb0", btn:"#1f78c8"}
+  {id:"sky",     h:205, s:45, accent:"#93d2ff", accentL:"#1f6fb0", btn:"#1f78c8"},
+  // تصاميم بخلفية: رسمان للمساجد (فاتح وداكن)، وصورتا الكعبة والمسجد الأقصى
+  {id:"dawnmosque", h:32,  s:40, accent:"#c98a2e", accentL:"#8a5a12", btn:"#9a5a1e", fixed:"light", bg:"dawn"},
+  {id:"duskmosque", h:265, s:22, accent:"#f0c27b", accentL:"#8a6510", btn:"#c0703e", fixed:"dark",  bg:"dusk"},
+  {id:"kaaba",      h:30,  s:6,  accent:"#e0b860", accentL:"#8a6510", btn:"#8a6a2a", fixed:"dark",  bg:"kaaba"},
+  {id:"aqsa",       h:222, s:30, accent:"#e8c36a", accentL:"#8a6510", btn:"#3b56b0", fixed:"dark",  bg:"aqsa"}
 ];
+// أسماء تصاميم الخلفيات حين لا توجد في ترجمة اللغة
+const BGNAMES = {
+  ar:{dawnmosque:"فجر المسجد", duskmosque:"شفق المآذن", kaaba:"الكعبة المشرفة", aqsa:"المسجد الأقصى"},
+  ku:{dawnmosque:"بەرەبەیانی مزگەوت", duskmosque:"ئێوارەی منارەکان", kaaba:"کەعبە", aqsa:"مزگەوتی ئەقسا"},
+  en:{dawnmosque:"Mosque at dawn", duskmosque:"Minarets at dusk", kaaba:"The Kaaba", aqsa:"Al-Aqsa Mosque"}
+};
 function themeVars(t, mode){
   const H=t.h, S=t.s, hsl=(s,l)=>`hsl(${H} ${s}% ${l}%)`;
   return mode === "light" ? {
@@ -79,18 +90,38 @@ function themeVars(t, mode){
     gold:t.accent, green:t.btn, glow:hsl(S,22)
   };
 }
+// طبقات الخلفية: رسم المسجد فوق تدرّج السماء، أو صورة حقيقية تحت تظليل يُبقي المواقيت واضحة
+function bgLayers(id){
+  const svg = s => 'url("data:image/svg+xml,' + encodeURIComponent(s) + '") center bottom / 100% auto no-repeat';
+  if(id === "dawn") return svg('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 260"><g fill="#e3c08a" opacity=".85"><rect x="30" y="92" width="9" height="140"/><path d="M28 92 L34.5 64 L41 92Z"/><rect x="261" y="92" width="9" height="140"/><path d="M259 92 L265.5 64 L272 92Z"/><rect x="70" y="172" width="160" height="60"/><path d="M95 174 Q150 86 205 174Z"/><path d="M78 176 Q96 150 114 176Z"/><path d="M186 176 Q204 150 222 176Z"/><rect x="147" y="84" width="6" height="14"/></g><rect x="0" y="230" width="300" height="30" fill="#ddb67c"/></svg>')
+    + ", linear-gradient(180deg,#fdf6ea 0%,#f8e7cb 55%,#f1d09e 100%)";
+  if(id === "dusk") return svg('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 260"><g fill="#2a2235"><rect x="18" y="80" width="7" height="140"/><path d="M16 80 L21.5 55 L27 80Z"/><rect x="48" y="95" width="7" height="125"/><path d="M46 95 L51.5 72 L57 95Z"/><rect x="245" y="95" width="7" height="125"/><path d="M243 95 L248.5 72 L254 95Z"/><rect x="275" y="80" width="7" height="140"/><path d="M273 80 L278.5 55 L284 80Z"/><rect x="60" y="170" width="180" height="60"/><path d="M100 150 Q150 80 200 150Z"/><rect x="95" y="148" width="110" height="24"/><path d="M70 175 Q90 145 110 175Z"/><path d="M190 175 Q210 145 230 175Z"/><rect x="148" y="78" width="4" height="12"/></g><rect x="0" y="228" width="300" height="32" fill="#1c1626"/></svg>')
+    + ", linear-gradient(180deg,#2a3f63 0%,#6d5a7d 40%,#e08a5a 75%,#f6c48a 100%)";
+  if(id === "kaaba") return "linear-gradient(180deg,rgba(0,0,0,.35),rgba(0,0,0,.68)), url(/bg-kaaba.jpg) center / cover no-repeat, linear-gradient(180deg,#1b1714,#3a2f25)";
+  if(id === "aqsa") return "linear-gradient(180deg,rgba(0,0,0,.3),rgba(0,0,0,.66)), url(/bg-aqsa.jpg) center / cover no-repeat, linear-gradient(180deg,#0f1c3d,#3b3166 50%,#c98b4a)";
+  return "";
+}
 function applyTheme(){
   let id="earth", mode="light";
   try{ id = localStorage.getItem("theme") || id; mode = localStorage.getItem("mode") || mode; }catch(e){}
   const t = THEMES.find(x=>x.id===id) || THEMES[0];
-  const v = themeVars(t, mode), r = document.documentElement.style;
+  if(t.fixed) mode = t.fixed;
+  const v = themeVars(t, mode), el = document.documentElement, r = el.style;
+  // تصاميم الخلفية: بطاقات شبه شفافة لتظهر الخلفية من خلفها
+  if(t.bg) Object.assign(v, mode === "light"
+    ? { card:"rgba(255,252,246,.84)", inner:"rgba(255,248,236,.72)", line:"rgba(140,100,50,.22)", hover:"rgba(255,244,228,.92)", glow:"transparent" }
+    : { card:"rgba(18,13,11,.62)", inner:"rgba(0,0,0,.32)", line:"rgba(255,255,255,.16)", hover:"rgba(255,255,255,.1)", glow:"transparent" });
   Object.entries(v).forEach(([k,val])=> r.setProperty("--"+k, val));
-  document.documentElement.dataset.mode = mode;
+  el.dataset.mode = mode;
+  if(t.bg){ el.dataset.bg = t.bg; r.setProperty("--bgimg", bgLayers(t.bg)); }
+  else { delete el.dataset.bg; r.removeProperty("--bgimg"); }
   const m = document.querySelector('meta[name="theme-color"]'); if(m) m.content = v.bg;
 }
 applyTheme();
 </script>
 <style>
+  html[data-bg]{background:var(--bg)}html[data-bg]::before{content:"";position:fixed;inset:0;z-index:-1;background:var(--bgimg)}html[data-bg] body{background:transparent}
+
   :root{
     --bg:#2a1d17; --card:#362720; --line:#4f3b2f; --inner:#2f221b; --hover:#43312a;
     --text:#f5ece0; --muted:#c4af98; --gold:#e0b860; --green:#8f2a39; --title:#fff; --glow:#4a3226;
@@ -1710,7 +1741,7 @@ function fillSettings(){
   order.forEach((th,i)=>{
     const v = themeVars(th, mode), b = document.createElement("button");
     b.type = "button"; b.className = "sw";
-    const nm = (t.themes && t.themes[th.id]) || `${t.color} ${i+1}`;
+    const nm = (t.themes && t.themes[th.id]) || (BGNAMES[lang] || BGNAMES.en)[th.id] || `${t.color} ${i+1}`;
     b.innerHTML = `<span class="dots"><i style="background:${themeVars(th,"light").bg}"></i><i style="background:${th.btn}"></i></span><span class="nm"></span><svg class="ok" viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></svg>`;
     b.querySelector(".nm").textContent = nm;
     b.setAttribute("aria-label", nm);
