@@ -111,8 +111,8 @@ function applyTheme(){
   const v = themeVars(t, mode), el = document.documentElement, r = el.style;
   // تصاميم الخلفية: بطاقات شبه شفافة لتظهر الخلفية من خلفها
   if(t.bg) Object.assign(v, mode === "light"
-    ? { card:"rgba(255,252,246,.84)", inner:"rgba(255,248,236,.72)", line:"rgba(140,100,50,.22)", hover:"rgba(255,244,228,.92)", glow:"transparent" }
-    : { card:"rgba(18,13,11,.62)", inner:"rgba(0,0,0,.32)", line:"rgba(255,255,255,.16)", hover:"rgba(255,255,255,.1)", glow:"transparent" });
+    ? { card:"rgba(255,252,246,.84)", inner:"rgba(255,248,236,.72)", line:"rgba(140,100,50,.22)", hover:"rgba(255,244,228,.92)", glow:"transparent", menu:"#fffaf2" }
+    : { card:"rgba(18,13,11,.62)", inner:"rgba(0,0,0,.32)", line:"rgba(255,255,255,.16)", hover:"rgba(255,255,255,.1)", glow:"transparent", menu:"#1c1512" });
   Object.entries(v).forEach(([k,val])=> r.setProperty("--"+k, val));
   el.dataset.mode = mode;
   if(t.bg){ el.dataset.bg = t.bg; r.setProperty("--bgimg", bgLayers(t.bg)); }
@@ -122,7 +122,7 @@ function applyTheme(){
 applyTheme();
 </script>
 <style>
-  html[data-bg]{background:var(--bg)}html[data-bg]::before{content:"";position:fixed;inset:0;z-index:-1;background:var(--bgimg)}html[data-bg] body{background:transparent}
+  html[data-bg]{background:var(--bg)}html[data-bg]::before{content:"";position:fixed;inset:0;z-index:-1;background:var(--bgimg)}html[data-bg] body{background:transparent}html[data-bg] .menu,html[data-bg] .sheet,html[data-bg] .pk,html[data-bg] .cbox,html[data-bg] .ctc-box,html[data-bg] .aclist{background:var(--menu)}
 
   :root{
     --bg:#2a1d17; --card:#362720; --line:#4f3b2f; --inner:#2f221b; --hover:#43312a;
