@@ -241,7 +241,7 @@ html[data-mode=dark] h1 em{color:var(--gold)}
 .btn.ghost{background:transparent;color:var(--green);border-color:var(--green)}
 .mqedit{display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:12px;margin-top:12px;border:1px solid var(--line);border-radius:14px;background:var(--inner)}
 .mqedit[hidden]{display:none}
-.mqedit input{flex:1 1 220px;min-width:0;font:inherit;font-size:.95rem;padding:9px 12px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--text)}
+.mqedit input{flex:1 1 220px;width:100%;min-width:0;font:inherit;font-size:.95rem;padding:9px 12px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--text)}
 .mqedit small{flex-basis:100%;color:var(--muted);font-size:.8rem}
 .mqprev{flex-basis:100%;display:flex;align-items:center;justify-content:center;gap:12px;background:#fff;border:1px dashed var(--line);border-radius:10px;padding:12px 10px}
 .mqprev[hidden]{display:none}
