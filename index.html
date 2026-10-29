@@ -70,13 +70,14 @@ const THEMES = [
   {id:"dawnmosque", h:32,  s:40, accent:"#c98a2e", accentL:"#8a5a12", btn:"#9a5a1e", fixed:"light", bg:"dawn"},
   {id:"duskmosque", h:265, s:22, accent:"#f0c27b", accentL:"#8a6510", btn:"#c0703e", fixed:"dark",  bg:"dusk"},
   {id:"kaaba",      h:30,  s:6,  accent:"#e0b860", accentL:"#8a6510", btn:"#8a6a2a", fixed:"dark",  bg:"kaaba"},
-  {id:"aqsa",       h:222, s:30, accent:"#e8c36a", accentL:"#8a6510", btn:"#3b56b0", fixed:"dark",  bg:"aqsa"}
+  {id:"aqsa",       h:222, s:30, accent:"#e8c36a", accentL:"#8a6510", btn:"#3b56b0", fixed:"dark",  bg:"aqsa"},
+  {id:"kaabadoor",  h:30,  s:6,  accent:"#e0b860", accentL:"#8a6510", btn:"#8a6a2a", fixed:"dark",  bg:"kaabadoor"}
 ];
 // أسماء تصاميم الخلفيات حين لا توجد في ترجمة اللغة
 const BGNAMES = {
-  ar:{dawnmosque:"فجر المسجد", duskmosque:"شفق المآذن", kaaba:"الكعبة المشرفة", aqsa:"المسجد الأقصى"},
-  ku:{dawnmosque:"بەرەبەیانی مزگەوت", duskmosque:"ئێوارەی منارەکان", kaaba:"کەعبە", aqsa:"مزگەوتی ئەقسا"},
-  en:{dawnmosque:"Mosque at dawn", duskmosque:"Minarets at dusk", kaaba:"The Kaaba", aqsa:"Al-Aqsa Mosque"}
+  ar:{dawnmosque:"فجر المسجد", duskmosque:"شفق المآذن", kaaba:"الكعبة المشرفة", aqsa:"المسجد الأقصى", kaabadoor:"باب الكعبة"},
+  ku:{dawnmosque:"بەرەبەیانی مزگەوت", duskmosque:"ئێوارەی منارەکان", kaaba:"کەعبە", aqsa:"مزگەوتی ئەقسا", kaabadoor:"دەرگای کەعبە"},
+  en:{dawnmosque:"Mosque at dawn", duskmosque:"Minarets at dusk", kaaba:"The Kaaba", aqsa:"Al-Aqsa Mosque", kaabadoor:"The Kaaba door"}
 };
 function themeVars(t, mode){
   const H=t.h, S=t.s, hsl=(s,l)=>`hsl(${H} ${s}% ${l}%)`;
@@ -101,6 +102,8 @@ function bgLayers(id){
     + ", linear-gradient(180deg,#070b18 0%,#121a33 55%,#2a2f48 100%)";
   if(id === "aqsa") return "linear-gradient(180deg,rgba(0,0,0,.2),rgba(0,0,0,.6)), url(/bg-aqsa.jpg) center / cover no-repeat, " + svg('<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 300 260\'><circle cx=\'232\' cy=\'38\' r=\'9\' fill=\'#f6e7b0\' opacity=\'.85\'/><g fill=\'#14261c\'><ellipse cx=\'34\' cy=\'196\' rx=\'9\' ry=\'34\'/><ellipse cx=\'58\' cy=\'204\' rx=\'7\' ry=\'26\'/><ellipse cx=\'244\' cy=\'204\' rx=\'7\' ry=\'26\'/><ellipse cx=\'268\' cy=\'196\' rx=\'9\' ry=\'34\'/></g><rect x=\'0\' y=\'212\' width=\'300\' height=\'20\' fill=\'#1a1530\'/><rect x=\'84\' y=\'150\' width=\'132\' height=\'62\' fill=\'#2c4a8a\'/><rect x=\'84\' y=\'150\' width=\'132\' height=\'6\' fill=\'#d9c27a\'/><g fill=\'#1b2f5c\'><rect x=\'96\' y=\'166\' width=\'8\' height=\'18\' rx=\'4\'/><rect x=\'114\' y=\'166\' width=\'8\' height=\'18\' rx=\'4\'/><rect x=\'132\' y=\'166\' width=\'8\' height=\'18\' rx=\'4\'/><rect x=\'160\' y=\'166\' width=\'8\' height=\'18\' rx=\'4\'/><rect x=\'178\' y=\'166\' width=\'8\' height=\'18\' rx=\'4\'/><rect x=\'196\' y=\'166\' width=\'8\' height=\'18\' rx=\'4\'/></g><rect x=\'142\' y=\'180\' width=\'16\' height=\'32\' rx=\'8\' fill=\'#16264a\'/><rect x=\'114\' y=\'122\' width=\'72\' height=\'30\' fill=\'#34539a\'/><path d=\'M110 124 Q150 38 190 124Z\' fill=\'#d9a441\'/><rect x=\'148\' y=\'40\' width=\'4\' height=\'12\' fill=\'#d9a441\'/><rect x=\'0\' y=\'232\' width=\'300\' height=\'28\' fill=\'#120f22\'/></svg>')
     + ", linear-gradient(180deg,#0f1c3d 0%,#3b3166 45%,#c98b4a 80%,#f0c27b 100%)";
+  // باب الكعبة: تظليل أقوى لأن الصورة كلها زخرفة مذهّبة
+  if(id === "kaabadoor") return "linear-gradient(180deg,rgba(0,0,0,.5),rgba(0,0,0,.75)), url(/bg-kaabadoor.jpg) center / cover no-repeat, linear-gradient(180deg,#1b1714,#3a2f25)";
   return "";
 }
 function applyTheme(){
