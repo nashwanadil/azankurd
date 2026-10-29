@@ -1951,19 +1951,21 @@ async function alertDays(){
 }
 // الصوت الفعّال: صوت الصف العام إن كان مفعّلًا، وإلا صوت الصلاة
 const effSound = k => store.get("snd_all_on", "") === "1" ? store.get("snd_all_v", "") : soundOf(k);
+// عنوان السطر الصغير في إشعار الصلاة القادمة، بلغة المستخدم
+const NEXT = { ar:"الصلاة القادمة", ku:"نوێژی داهاتوو", en:"Next prayer" };
 async function scheduleAppAlerts(){
   const LN = appLN();
   if(!LN || !lastData || !timings || !lastQuery || !usedMethod || store.get("notify","0") !== "1") return;
   const tz = lastData.meta && lastData.meta.timezone; if(!tz) return;
   const prefs = getPrefs();
   const sounds = PRAYERS_SND.map(([k]) => mutedOf() ? "silent" : effSound(k));
-  const key = JSON.stringify([lastQuery, usedMethod, schoolFor(usedMethod), tz, prefs.p, lang, sounds, prefs.b, prefs.pb, "native2"]);
+  const key = JSON.stringify([lastQuery, usedMethod, schoolFor(usedMethod), tz, prefs.p, lang, sounds, prefs.b, prefs.pb, "native3"]);
   // الجدول محفوظ لدى نظام أندرويد ولم يتغير، فلا طلبات ولا إعادة جدولة
   if(store.get("alertsKey","") === key && Date.now() - Number(store.get("alertsAt","0")) < 7*864e5) return;
   let days;
   try{ days = await alertDays(); }catch(e){ return; }   // بلا إنترنت تبقى التنبيهات السابقة كما هي
   if(!days.length) return;
-  const t = L(), list = [];
+  const t = L(), list = [], nx = NEXT[lang] || NEXT.en;
   const AA = appAA();
   if(AA){
     const alerts = [];
@@ -1971,9 +1973,9 @@ async function scheduleAppAlerts(){
       const [dd, mm, yy] = day.date.gregorian.date.split("-").map(Number);
       PKEYS.forEach(k=>{
         const at = zonedTime(day.timings[PNAME[k]].slice(0,5), tz, [yy, mm, dd]);
-        if(at > Date.now()) alerts.push({ t: at.getTime(), s: mutedOf() ? "silent" : effSound(k), n: t.notifyTitle.replace("{p}", t.names[PNAME[k]]) });
+        if(at > Date.now()) alerts.push({ t: at.getTime(), s: mutedOf() ? "silent" : effSound(k), n: t.notifyTitle.replace("{p}", t.names[PNAME[k]]), sub: nx });
         // تذكير قبل الصلاة بالدقائق المختارة: صوت الهاتف الافتراضي (قصير)
-        if(prefs.b && prefs.pb.includes(k)){ const pre = new Date(at.getTime() - prefs.b * 60000); if(pre > Date.now()) alerts.push({ t: pre.getTime(), s: "", n: t.tBefore.replace("{p}", t.names[PNAME[k]]) }); }
+        if(prefs.b && prefs.pb.includes(k)){ const pre = new Date(at.getTime() - prefs.b * 60000); if(pre > Date.now()) alerts.push({ t: pre.getTime(), s: "", n: t.tBefore.replace("{p}", t.names[PNAME[k]]), sub: nx }); }
       });
     });
     await cancelAppAlerts().catch(()=>{});
