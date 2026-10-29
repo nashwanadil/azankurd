@@ -194,6 +194,7 @@ function js(lang){
   all.forEach(function(d){ d.addEventListener("toggle",function(){ if(d.open) all.forEach(function(o){ if(o!==d) o.open=false; }); }); });
   document.addEventListener("click",function(e){ all.forEach(function(d){ if(d.open && !d.contains(e.target)) d.open=false; }); });
   // «اتصل بنا»: أي رابط إليها (في القائمة أو التذييل) يفتح النموذج بدل الصفحة
+  if(/AzanKurdApp/.test(navigator.userAgent)||(window.Capacitor&&window.Capacitor.isNativePlatform&&window.Capacitor.isNativePlatform())) document.querySelectorAll('a[href="/download.html"]').forEach(function(e){e.remove();});
   // الطباعة: نفتح نسخة من الصفحة في نافذة جديدة ونطبعها، لأن الهاتف لا يطبع الصفحة نفسها بأمر window.print
   window.azPrint=function(){
     var cap=window.Capacitor, AA=cap&&cap.Plugins&&cap.Plugins.AdhanAlarm;
