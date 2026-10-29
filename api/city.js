@@ -243,6 +243,13 @@ html[data-mode=dark] h1 em{color:var(--gold)}
 .mqedit[hidden]{display:none}
 .mqedit input{flex:1 1 100%;width:100%;min-width:0;font:inherit;font-size:.95rem;padding:9px 12px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--text)}
 .mqedit small{flex-basis:100%;color:var(--muted);font-size:.8rem}
+.cedit{background:none;border:0;cursor:pointer;color:var(--gold);font-size:1rem;padding:0 4px}
+.cform{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:8px 0}
+.cform input{flex:1 1 200px;min-width:0;padding:9px 12px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--text);font:inherit}
+.cform .btn{flex:0 0 auto}
+.cst{text-align:center;font-size:.9rem;min-height:1.2em}
+.cst.ok{color:#2e9e5b}
+.cst.err{color:#d64545}
 .mqedit>.btn{flex:1 1 0;min-width:0;justify-content:center}
 .mqprev{flex-basis:100%;display:flex;align-items:center;justify-content:center;gap:12px;background:#fff;border:1px dashed var(--line);border-radius:10px;padding:12px 10px}
 .mqprev[hidden]{display:none}
@@ -417,7 +424,7 @@ footer a{color:var(--gold)}
     <div class="ph">
       <div class="b" id="pBrand"><img src="/icon-192.png" alt=""><div><div class="bn">${esc(t.logo)}</div><div class="bs">AZANKURD.COM · ${esc(t.tagline)}</div></div></div>
       <div class="b mqb" id="pMq" hidden>${ROSETTE}<div class="mqt"><div class="mqn" id="pMosqueName"></div>${FLOURISH}<div class="bs">AZANKURD.COM · ${esc(t.tagline)}</div></div></div>
-      <div class="city"><b>${esc(t.prayerTimes)}</b><span>${esc(country)} – ${esc(cityName)}</span></div>
+      <div class="city"><b>${esc(t.prayerTimes)}</b><span>${esc(country)} – ${esc(cityName)}</span> <button class="cedit" id="cEdit" type="button" aria-label="${esc(t.cityLabel)}">&#9998;</button></div><form class="cform" id="cForm" hidden><input id="cIn" maxlength="60" autocomplete="off" placeholder="${esc(t.cityPh)}"><button class="btn" type="submit">${esc(t.search)}</button></form><div class="cst" id="cSt" role="status" aria-live="polite"></div>
     </div>
     <div class="pm"><span>${esc(t.printHead)}</span><b>${esc(mTitle)}</b><span>${esc(hijRange)}</span></div>
     <table class="pt"><thead><tr>${pth}</tr></thead><tbody>${ptrs}</tbody></table>
@@ -493,6 +500,34 @@ ${NAV.js(lang)}
   inp.addEventListener("keydown",function(e){ if(e.key==="Enter") document.getElementById("mqSave").click(); });
   document.getElementById("mqDel").addEventListener("click",function(){ put(""); inp.value=""; show(); box.hidden=true; btn.setAttribute("aria-expanded","false"); });
   show();
+})();
+(function(){
+  var L=${JSON.stringify(lang)}, T=${JSON.stringify({ updated: t.updated, err: t.notFound, searching: t.searching })};
+  var btn=document.getElementById("cEdit"), form=document.getElementById("cForm"), inp=document.getElementById("cIn"), st=document.getElementById("cSt");
+  function msg(text, cls){ st.textContent=text||""; st.className="cst"+(cls?" "+cls:""); }
+  btn.addEventListener("click", function(){ form.hidden=!form.hidden; if(!form.hidden) inp.focus(); });
+  form.addEventListener("submit", function(e){
+    e.preventDefault();
+    var q=inp.value.trim(); if(!q) return;
+    msg(T.searching);
+    fetch("https://geocoding-api.open-meteo.com/v1/search?count=1&language="+encodeURIComponent(L)+"&name="+encodeURIComponent(q))
+      .then(function(r){ return r.json(); })
+      .then(function(j){
+        var c=j && j.results && j.results[0];
+        if(!c) throw 0;
+        return fetch("/api/nearest?lat="+c.latitude+"&lng="+c.longitude+"&lang="+encodeURIComponent(L)).then(function(r){ return r.json(); });
+      })
+      .then(function(n){
+        if(!n || !n.slug) throw 0;
+        location.href="/"+L+"/"+n.slug+"?updated=1";
+      })
+      .catch(function(){ msg(T.err, "err"); });
+  });
+  if(/[?&]updated=1/.test(location.search)){
+    msg(T.updated, "ok");
+    history.replaceState(null, "", location.pathname);
+    setTimeout(function(){ msg(""); }, 2500);
+  }
 })();
 </script>
 <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "bfceae96a7da49f1a6906ba6c7586176"}'></script><!-- End Cloudflare Web Analytics -->
