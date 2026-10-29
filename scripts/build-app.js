@@ -25,21 +25,24 @@ for (const f of fs.readdirSync(ROOT)) {
 
 // يعترض النقر على كل روابط الموقع: الأدوات المحلية تفتح من داخل التطبيق، والصفحة الرئيسية كذلك،
 // وأي صفحة أخرى تفتح من الموقع (بدل أن يعيد خادم التطبيق المحلي الصفحة الرئيسية لكل مسار مجهول)
-function interceptor(prefix) {
-  return `<script>(function(){var L=${JSON.stringify(LOCAL)},P=${JSON.stringify(prefix)},S=${JSON.stringify(SITE)};document.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest("a[href]");if(!a||a.hasAttribute("download"))return;var h=a.getAttribute("href")||"",p=null;if(h.indexOf(S+"/")===0)p=h.slice(S.length);else if(h.charAt(0)==="/"&&h.charAt(1)!=="/")p=h;if(p===null)return;var k=p.replace(/[?#].*$/,"").replace(/^\\/+|\\/+$/g,"");e.preventDefault();if(k===""||k==="index.html"){location.href=P+"index.html";return;}if(L.indexOf(k)>=0){location.href=P+k+"/index.html";return;}location.href=S+p;},true);})();</script>`;
+// المسارات المحلية تبدأ من جذر التطبيق، فلا تتراكم مثل /ar/ar/zakat
+function interceptor() {
+  return `<script>(function(){var L=${JSON.stringify(LOCAL)},S=${JSON.stringify(SITE)};document.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest("a[href]");if(!a||a.hasAttribute("download"))return;var h=a.getAttribute("href")||"",p=null;if(h.indexOf(S+"/")===0)p=h.slice(S.length);else if(h.charAt(0)==="/"&&h.charAt(1)!=="/")p=h;if(p===null)return;var k=p.replace(/[?#].*$/,"").replace(/^\\/+|\\/+$/g,"");e.preventDefault();if(k===""||k==="index.html"){location.href="/index.html";return;}if(L.indexOf(k)>=0){location.href="/"+k+"/index.html";return;}location.href=S+p;},true);})();</script>`;
 }
 
-function finish(html, prefix) {
+function finish(html) {
   // طلبات البيانات تذهب إلى الموقع دائمًا
   html = html.replace(/(["'`])\/api\//g, `$1${SITE}/api/`);
   // الروابط إلى صفحات الموقع الأخرى تفتح على الموقع
   html = html.replace(/href="\/(?!\/)([^"]*)"/g, (m, p) => `href="${SITE}/${p}"`);
   // نوافذ «عن الموقع» و«اتصل بنا» تُحمَّل من الموقع
   html = html.split("fr.src = `/${lang}/${page}?embed=1`").join("fr.src = `" + SITE + "/${lang}/${page}?embed=1`");
-  return html.replace("</body>", interceptor(prefix) + "</body>");
+  // الخطوط من Google لا تؤخر عرض الصفحة إن لم يتوفر الإنترنت
+  html = html.replace(/<link href="(https:\/\/fonts\.googleapis\.com\/[^"]*)" rel="stylesheet">/g, (m, u) => `<link href="${u}" rel="stylesheet" media="print" onload="this.media='all'">`);
+  return html.replace("</body>", interceptor() + "</body>");
 }
 
-fs.writeFileSync(path.join(OUT, "index.html"), finish(fs.readFileSync(path.join(ROOT, "index.html"), "utf8"), ""));
+fs.writeFileSync(path.join(OUT, "index.html"), finish(fs.readFileSync(path.join(ROOT, "index.html"), "utf8")));
 
 // الأدوات الثابتة: تُولَّد من دوال الموقع نفسها، بلا اتصال بالسيرفر
 const res = () => {
@@ -56,7 +59,7 @@ for (const l of APP_LANGS) {
     handler({ url: `/${l}/${tool}`, headers: {}, method: "GET" }, r);
     const dir = path.join(OUT, l, tool);
     fs.mkdirSync(dir, { recursive: true });
-    fs.writeFileSync(path.join(dir, "index.html"), finish(r.body, "../../"));
+    fs.writeFileSync(path.join(dir, "index.html"), finish(r.body));
   }
 }
 
