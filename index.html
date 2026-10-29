@@ -691,7 +691,7 @@ applyTheme();
   </div>
 </div>
 
-<footer>© <span id="year"></span> azankurd.com · <a id="allCountriesLink" href="/ar/countries" data-i="allCountries" style="color:var(--gold)"></a></footer>
+<footer>© <span id="year"></span> <a href="/?lang=ar" style="color:var(--gold)">azankurd.com</a> · <a id="allCountriesLink" href="/ar/countries" data-i="allCountries" style="color:var(--gold)"></a> · <a id="footAbout" href="/ar/about" data-i="cAbout" style="color:var(--gold)"></a> · <a id="footPrivacy" href="/ar/privacy" data-i="cPrivacy" style="color:var(--gold)"></a> · <a id="footContact" href="/ar/contact" data-i="cContact" style="color:var(--gold)"></a></footer>
 
 <script>
 /* ---------- الترجمات ---------- */
@@ -965,6 +965,9 @@ function applyLang(){
   document.getElementById("logo").textContent = t.logo;
   document.getElementById("langName").textContent = t.label; document.getElementById("langBtn").setAttribute("aria-label", t.label);
   document.getElementById("allCountriesLink").href = `/${lang}/countries`;
+  document.getElementById("footAbout").href = `/${lang}/about`;
+  document.getElementById("footPrivacy").href = `/${lang}/privacy`;
+  document.getElementById("footContact").href = `/${lang}/contact`;
   document.getElementById("langFlag").src = flagSrc(lang);
   document.querySelectorAll("[data-i]").forEach(el => el.textContent = t[el.dataset.i]);
   document.querySelectorAll(".icard[data-page]").forEach(a => a.href = `/${lang}/${a.dataset.page}`);
