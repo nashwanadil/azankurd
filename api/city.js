@@ -314,7 +314,7 @@ footer a{color:var(--gold)}
   tbody td.day small{display:block;color:var(--muted);font-size:.66rem;line-height:1.2}
 }
 @media (min-width:761px){ tbody td.day small{display:none} }
-@page{size:A4 portrait;margin:11mm 12mm}
+@page{size:A4 portrait;margin:9mm 10mm}
 @media print{
   html,body{background:#fff!important;color:#1d1410}
   .wrap>*:not(.sheet-print){display:none!important}
@@ -336,18 +336,18 @@ footer a{color:var(--gold)}
   .ph .mqt .fl{display:block;width:58mm;height:4.6mm;margin:.3mm auto .6mm;fill:#c9a24e;stroke:#c9a24e}
   .pm{display:flex;justify-content:space-between;align-items:center;background:#f6efe8;border-radius:2.5mm;padding:2.4mm 4mm;margin-bottom:3.5mm;font-size:9.5pt}
   .pm b{font-size:12pt;color:#8f2a39}
-  table.pt{width:100%;border-collapse:collapse;font-size:9pt}
+  table.pt{width:100%;border-collapse:collapse;font-size:8.4pt}
   .pt th{line-height:1.3;background:#2a1c17;color:#fff;font-weight:600;font-size:8.2pt;padding:1.8mm 1mm;text-align:center}
-  .pt td{text-align:center;line-height:1.2;padding:.6mm 1mm;border-bottom:.4pt solid #e6dcd3;font-variant-numeric:tabular-nums}
+  .pt td{text-align:center;line-height:1.15;padding:.3mm 1mm;border-bottom:.4pt solid #e6dcd3;font-variant-numeric:tabular-nums}
   .pt td.d{text-align:start;padding-inline-start:3mm;white-space:nowrap}
   .pt td.d b{display:inline-block;min-width:11mm;font-variant-numeric:tabular-nums}
   .pt td.h{color:#7a6a60;font-size:8.2pt;white-space:nowrap}
   .pt tr:nth-child(even) td{background:#fbf8f5}
   .pt tr.fri td{background:#f6ead2!important;font-weight:600}
   .pt td.em{color:#8f2a39;font-weight:600}
-  .pf{display:flex;justify-content:space-between;align-items:flex-end;margin-top:4mm;padding-top:3mm;border-top:.6pt solid #d9cdc3;font-size:7.6pt;color:#7a6a60;gap:6mm}
+  .pf{display:flex;justify-content:space-between;align-items:flex-end;margin-top:2.5mm;padding-top:2mm;border-top:.6pt solid #d9cdc3;font-size:7.6pt;color:#7a6a60;gap:6mm}
   .pf .q{display:flex;align-items:center;gap:3mm;text-align:end}
-  .pf .q svg{width:17mm;height:17mm;flex:none}
+  .pf .q svg{width:14mm;height:14mm;flex:none}
   .pf .q b{display:block;color:#2a1c17;font-size:9pt;direction:ltr}
   .pf .dua{font-family:'Amiri',serif;font-size:11pt;color:#2a1c17;margin-bottom:1mm;direction:rtl}
   * {-webkit-print-color-adjust:exact;print-color-adjust:exact}
