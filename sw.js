@@ -1,9 +1,13 @@
 // AzanKurd service worker: يجعل الموقع قابلاً للتثبيت ويعمل دون إنترنت
-const CACHE = 'azankurd-v4';
+const CACHE = 'azankurd-v5';
 const CORE = ['/', '/index.html', '/manifest.json', '/icon-192.png', '/icon-512.png'];
+// داخل تطبيق أندرويد فقط: نحفظ الأدوات مسبقًا لتفتح دون إنترنت حتى لو لم يزرها المستخدم
+const APP_PAGES = ['ar', 'ku', 'en'].flatMap(l => ['azkar', 'zakat', 'hijri', 'occasions', 'qibla', 'ramadan'].map(p => `/${l}/${p}`));
+const IS_APP = /AzanKurdApp/.test(self.navigator.userAgent);
 
 self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(CORE)));
+  e.waitUntil(caches.open(CACHE).then(c => c.addAll(CORE).then(() =>
+    IS_APP ? Promise.all(APP_PAGES.map(u => c.add(u).catch(() => {}))) : null)));
   self.skipWaiting();
 });
 
