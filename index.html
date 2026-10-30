@@ -2262,7 +2262,6 @@ attachAC("setupCityInput", "acSetup", p => setupSearch(p), ()=> setupSearch());
 document.querySelectorAll("[data-sfmt]").forEach(b=> b.addEventListener("click", ()=>{
   timeFmt = b.dataset.sfmt; store.set("fmt", timeFmt); store.set("setupDone","1");
   fillSettings();
-  if(IS_APP && appAA() && store.get("batAsked","0") !== "1"){ setupStep("setupStepBat"); return; }
   finishSetup();
 }));
 function finishSetup(){
